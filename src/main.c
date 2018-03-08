@@ -22,7 +22,7 @@ void load(TAD_community com){
 	xmlChar* id; 
 	int i=0;
 
-	xmlDocPtr doc = xmlParseFile("/Users/pedroferreira/Desktop/Li3/dumpExemplo/android/Users.xml");
+	xmlDocPtr doc = xmlParseFile("../../dump exemplo/android/Users.xml");
 	if(!doc){
 		printf("Document not parsed successfully\n");
 	}
@@ -33,18 +33,29 @@ void load(TAD_community com){
 		xmlFreeDoc(doc);
 	}
 
-	else {		
-			cur = cur->xmlChildrenNode;
-			while(cur && i<50){
-		   			id = xmlGetProp(cur, (const xmlChar *)"Id");
-		   			if(id!=NULL) sscanf((const char*)id, "%d", &(com->info)[i++]);
-					xmlFree(id);
-					cur = cur->next;
-			}
+	else{		
+		cur = cur->xmlChildrenNode;
+		while(cur && i<50){
+   			id = xmlGetProp(cur, (const xmlChar *)"Id");
+   			if(id!=NULL) sscanf((const char*)id, "%d", &(com->info)[i++]);
+			xmlFree(id);
+			cur = cur->next;
 		}
+	}
 
 	xmlFreeDoc(doc);		
 }
+
+
+/*
+STR_pair info_from_post(TAD_community com, int id){
+	// se tivermos uma hash é em tempo constante
+	int hash = hash(id);
+	while((com->info)[hash] != id && (com->estado)[i] != LIVRE) hash++;
+	if()
+
+}
+*/
 
 
 
