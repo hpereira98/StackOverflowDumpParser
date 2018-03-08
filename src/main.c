@@ -2,11 +2,27 @@
 #include <stdio.h>
 #include <interface.h>
 #include <libxml/parser.h>
+#include <gmodule.h>
 
 // teste: passar para um array de inteiros os primeiros 50 id's presentes em Users.xml
 // !!!!! prototipo load() alterado
 
-struct TCD_community {
+/*
+struct User{
+	int id;
+	char* display_name;
+	int rep;
+	int n_posts;
+	int n_respostas;
+	Date data_posts[];
+	Date data_respostas[];
+	char* títulos[];
+	char* short_bio[];
+};
+*/
+
+
+struct TCD_community{
 	int* info;
 };
 
@@ -18,7 +34,6 @@ TAD_community init(){
 }
 
 void load(TAD_community com){
-
 	xmlChar* id; 
 	int i=0;
 
