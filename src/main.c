@@ -59,8 +59,8 @@ TAD_community init(){
 TAD_community load(TAD_community com, char* dump_path){
 	xmlChar* id; 
 	xmlChar* name;
-	int *aux = 0;
-	int i = 0;
+	int aux = 0; int i=0;//so para comparar tamanho da hashT com numero insercoes
+;
 
 	xmlDocPtr doc = xmlParseFile(dump_path);
 	if(!doc){
@@ -74,26 +74,27 @@ TAD_community load(TAD_community com, char* dump_path){
 	}
 	else{		
 		cur = cur->xmlChildrenNode;
-		while(cur && i<1){
+		while(cur){
    			id = xmlGetProp(cur, (const xmlChar *)"Id");
    			name = xmlGetProp(cur, (const xmlChar *)"DisplayName");
    			if(id != NULL){
    				struct User* new = malloc(sizeof(struct User));
+   				new->display_name = malloc(sizeof(char)*strlen((const char*)name));
    				
-   				sscanf((const char*)id, "%d", aux);
-   				new->id = *aux; 
+   				sscanf((const char*)id, "%d", &aux);
+   				new->id = aux; 
    				strcpy(new->display_name,(const char*)name);
-   				g_hash_table_insert(com->user, aux, new);
-   				printf("Teste: %d %s\n", new->id, new->display_name); // nao imprime
-				printf("teste\n"); // nao imprime
+   				g_hash_table_insert(com->user,&aux, new); i++;
+   				printf("Teste: %d %s\n", new->id, new->display_name); 
+				
    			}
-   			printf("%d\n", (int)id); // id == 0 logo nao está a entrar no if
 			xmlFree(id);
 			xmlFree(name);
 			cur = cur->next;
-			i++;
+		;
 		}
 	}
+	printf("Num insercoes: %d\n",i );
 	xmlFreeDoc(doc);
 
 	return(com);		
@@ -113,11 +114,11 @@ void iterator(gpointer key, gpointer value, gpointer user_data){
 
 int main(){
 	struct TCD_community* teste = init();
-	char* path = "../../dump exemplo/android/Users.xml";
+	char* path = "../../dumpexemplo/android/Users.xml";
 	
 	load(teste, path);
 	
-	g_hash_table_foreach(teste->user, (GHFunc)iterator, "%d");
-  
+	//g_hash_table_foreach(teste->user, (GHFunc)iterator, "%d");
+   	printf("Tamnho hash: %d\n",g_hash_table_size(teste->user));
   	return 0;
 } 
