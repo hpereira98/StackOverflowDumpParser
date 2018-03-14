@@ -3,41 +3,51 @@
 #include <interface.h>
 #include <libxml/parser.h>
 #include <gmodule.h>
+#include <string.h>
 
 // teste: passar para um array de inteiros os primeiros 50 id's presentes em Users.xml
 // !!!!! prototipo load() alterado
 
-/*
+
 struct User{
 	int id;
 	char* display_name;
-	int rep;
-	int n_posts;
-	int n_respostas;
-	Date data_posts[];
-	Date data_respostas[];
-	char* títulos[];
-	char* short_bio[];
+	//int rep;
+	//int n_posts;
+	//int n_respostas;
+	//Date data_posts[];
+	//Date data_respostas[];
+	//char* títulos[];
+	//char* short_bio[];
 };
-*/
+
+struct Post{
+	int id;
+	char* titulo;
+};
+
 
 
 struct TCD_community{
-	int* info;
+	GHashTable* user;
+	GHashTable* post;
 };
 
 
 TAD_community init(){
-  	struct TCD_community* new = malloc(sizeof(struct TCD_community));
-  	new->info = malloc(sizeof(int)*100);
+	struct TCD_community* new = malloc(sizeof(struct TCD_community));
+  	GHashTable* newUserHash = g_hash_table_new (g_int_hash,g_int_equal);
+  	GHashTable* newPostHash = g_hash_table_new (g_int_hash,g_int_equal);
+  	new->user = newUserHash;
+  	new->post = newPostHash;
   	return new;
 }
 
-void load(TAD_community com){
-	xmlChar* id; 
-	int i=0;
+TAD_community load(TAD_community com, char* dump_path){
+	xmlChar* id; int *aux;
+	xmlChar* name;
 
-	xmlDocPtr doc = xmlParseFile("../../dump exemplo/android/Users.xml");
+	xmlDocPtr doc = xmlParseFile(dump_path);
 	if(!doc){
 		printf("Document not parsed successfully\n");
 	}
@@ -50,15 +60,23 @@ void load(TAD_community com){
 
 	else{		
 		cur = cur->xmlChildrenNode;
-		while(cur && i<50){
+		while(cur){
    			id = xmlGetProp(cur, (const xmlChar *)"Id");
-   			if(id!=NULL) sscanf((const char*)id, "%d", &(com->info)[i++]);
+   			name = xmlGetProp(cur, (const xmlChar *)"DisplayName");
+   			if(id!=NULL){
+   				sscanf((const char*)id, "%d", aux);
+   				struct User* new = malloc(sizeof(struct User));
+   				new->id=*aux;
+   				strcpy(new->display_name,(const char*)name);
+   				g_hash_table_insert(com->user,aux,new);
+   			}
 			xmlFree(id);
+			xmlFree(name);
 			cur = cur->next;
 		}
 	}
-
-	xmlFreeDoc(doc);		
+	xmlFreeDoc(doc);
+	return(com);		
 }
 
 
@@ -76,9 +94,6 @@ STR_pair info_from_post(TAD_community com, int id){
 
 
 int main(){
-  struct TCD_community* teste = init();
-  load(teste);
-  for(int i=0;i<50;i++)
-  	printf("%d\n", (teste->info)[i]);
+  //struct TCD_community* teste = init();
   return 0;
 } 
