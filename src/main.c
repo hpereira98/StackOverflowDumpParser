@@ -1,12 +1,24 @@
-#include <date.h>
+#include "date.h"
 #include <stdio.h>
-#include <interface.h>
+#include "interface.h"
 #include <libxml/parser.h>
 #include <gmodule.h>
 #include <string.h>
 
 // teste: passar para um array de inteiros os primeiros 50 id's presentes em Users.xml
 // !!!!! prototipo load() alterado
+
+
+/*NOTAS:
+&#xA - \n codificado
+&quot - "
+&apos - '
+&lt - <
+&gt - >
+&amp - &
+*/
+
+
 
 
 struct User{
