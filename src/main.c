@@ -3,6 +3,7 @@
 #include <interface.h>
 #include <libxml/parser.h>
 #include <gmodule.h>
+#include <glib.h>
 #include <string.h>
 
 // teste: passar para um array de inteiros os primeiros 50 id's presentes em Users.xml
@@ -78,14 +79,15 @@ TAD_community load(TAD_community com, char* dump_path){
    			id = xmlGetProp(cur, (const xmlChar *)"Id");
    			name = xmlGetProp(cur, (const xmlChar *)"DisplayName");
    			if(id != NULL){
-   				struct User* new = malloc(sizeof(struct User));
-   				new->display_name = malloc(sizeof(char)*strlen((const char*)name));
+   				struct User* new = g_new(struct User,1);//forma de fazer malloc
+   				new->display_name = malloc(strlen((const char*)name));
    				
-   				sscanf((const char*)id, "%d", &aux);
+   				sscanf((const char*)id, "%d", &aux); 
    				new->id = aux; 
    				strcpy(new->display_name,(const char*)name);
    				g_hash_table_insert(com->user,&aux, new); i++;
-   				printf("Teste: %d %s\n", new->id, new->display_name); 
+
+   				//printf("Teste: %d %s\n", new->id, new->display_name); 
 				
    			}
 			xmlFree(id);
@@ -109,7 +111,13 @@ STR_pair info_from_post(TAD_community com, int id){
 
 
 void iterator(gpointer key, gpointer value, gpointer user_data){
-	printf(user_data, *(gint*)key, value);
+	struct User* aux = (struct User*)value;
+	printf("%d %s\n", aux->id, aux->display_name);
+}
+
+void print(gpointer data, gpointer user_data){
+	int* aux = (int*)data;
+	printf("%d\n",*aux);
 }
 
 int main(){
@@ -118,7 +126,11 @@ int main(){
 	
 	load(teste, path);
 	
-	//g_hash_table_foreach(teste->user, (GHFunc)iterator, "%d");
-   	printf("Tamnho hash: %d\n",g_hash_table_size(teste->user));
+	g_hash_table_foreach(teste->user,iterator,"");//imprimir id e display_name
+
+	GList* new = g_hash_table_get_keys(teste->user);//algo esta mal, mete as chaves todas a 1
+	g_list_foreach (new,print,"");
+
+   	printf("Tamanho hash: %d\n",g_hash_table_size(teste->user));
   	return 0;
 } 
