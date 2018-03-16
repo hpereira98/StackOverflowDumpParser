@@ -104,8 +104,16 @@ TAD_community load(TAD_community com, char* dump_path){
 
 
 /*
-STR_pair info_from_post(TAD_community com, int id){
+STR_pair info_from_post(TAD_community com, int id){ // mudar pois é post id
+	struct User* user = (struct User*)g_hash_table_lookup(com->user, (gconstpointer)id);
+	struct Post* post = (struct Post*)g_hash_table_lookup(com->post, (gconstpointer)id);
 
+	char* titulo = post->titulo;
+	char* nome = user->display_name;
+
+	STR_pair new = create_str_pair(titulo, nome);
+
+	return new;
 }
 */
 
