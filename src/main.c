@@ -99,7 +99,7 @@ TAD_community load(TAD_community com, char* dump_path){
    				new->id = *idUser;			 
    				
    				g_hash_table_insert(com->user, (gpointer*)idUser, new); i++;
-				
+				free(idUser);
    			}
 			xmlFree(id);
 			xmlFree(name);
@@ -146,7 +146,7 @@ TAD_community load(TAD_community com, char* dump_path){
 	   				struct Post* new = g_new(struct Post, 1);printf("6\n");
 	   				
 	   				// Titulo
-	   				new->titulo = malloc(strlen((const char*)titulo));printf("7\n");
+	   				new->titulo = malloc(strlen((const char*)titulo));printf("%s %d\n",titulo,strlen((const char*)titulo));
 	   				strcpy(new->titulo,(const char*)titulo);printf("8\n");
 
 	   				// Owner ID
@@ -164,6 +164,9 @@ TAD_community load(TAD_community com, char* dump_path){
 	   				
 	   				/*Debugging*/ printf("Inserido %d\n", i);
 	   				i++;
+	   				free(idOwner);
+	   				free(idPost);
+	   				//free(new);
 
 	   			}
 				xmlFree(post_id);
@@ -211,16 +214,18 @@ STR_pair info_from_post(TAD_community com, int id){
 }
 
 
+/* Funcao para Debugging de PostHashT */
+void printPostHT(gpointer key, gpointer value, gpointer user_data){
+	struct Post* aux = (struct Post*)value;
+	int* keyId = (int* )key;
+	printf(user_data,*keyId, aux->id, aux->owner_id,aux->titulo);
+}
 
-void iterator(gpointer key, gpointer value, gpointer user_data){
+/* Funcao para Debugging de UserHashT */
+void printUserHT(gpointer key, gpointer value, gpointer user_data){
 	struct User* aux = (struct User*)value;
 	int* keyId = (int* )key;
 	printf(user_data,*keyId, aux->id, aux->display_name);
-}
-
-void print(gpointer data, gpointer user_data){
-	int* aux = (int*)data;
-	printf("%d\n",*aux);
 }
 
 int main(){
@@ -228,8 +233,10 @@ int main(){
 	char* path = "../../dumpexemplo/android/";
 	
 	load(teste, path);
-	
-	//g_hash_table_foreach(teste->user,(GHFunc)iterator,"%d %d %s\n"); // imprimir id e display_name
+/* Funcao para Debugging de UserHashT*/
+	g_hash_table_foreach(teste->user,(GHFunc)printUserHT,"%d %d %s\n");
+/* Funcao para Debugging de PostHashT */
+	g_hash_table_foreach(teste->post,(GHFunc)printPostHT,"%d %d %d %s\n"); 
 
 	/*GList* new = g_hash_table_get_keys(teste->user);
 	g_list_foreach(new,print,NULL);*/
