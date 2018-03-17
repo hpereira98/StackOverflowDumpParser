@@ -36,13 +36,14 @@ struct User{
 struct Post{
 	int id;
 	char* titulo;
+	//int creatorUserId;
 };
 
 
 
 struct TCD_community{
 	GHashTable* user;
-	GHashTable* post;
+	GHashTable* post;	
 };
 
 
@@ -61,15 +62,21 @@ TAD_community load(TAD_community com, char* dump_path){
 	xmlChar* id; 
 	xmlChar* name; 
 	xmlChar* titulo;
+	int i=0;
+	char users[10] = "Users.xml";
+	char* users_path = malloc(strlen(dump_path)+strlen(users));
+	strcpy(users_path,dump_path);
+	strcat(users_path,users);
+	
 
-	int i=0;//so para comparar tamanho da hashT com numero insercoes
-	char users[9] = "Users.xml";
-	char* users_path = malloc(sizeof(strlen(dump_path)+strlen(users)));
-	strcat(users_path, dump_path); strcat(users_path, users);
+	char posts[10] = "Posts.xml";
+	char* posts_path = malloc(strlen(dump_path)+strlen(posts));
+	strcpy(posts_path,dump_path);
+	strcat(posts_path,posts);
+	
 
-	char posts[9] = "Posts.xml";
-	char* posts_path = malloc(sizeof(strlen(dump_path)+strlen(posts)));
-	strcat(posts_path, dump_path); strcat(posts_path, posts);
+
+	
 
 
 	// USERS
@@ -199,7 +206,7 @@ int main(){
 	
 	load(teste, path);
 	
-	//g_hash_table_foreach(teste->user,(GHFunc)iterator,"%d %d %s\n"); // imprimir id e display_name
+	g_hash_table_foreach(teste->user,(GHFunc)iterator,"%d %d %s\n"); // imprimir id e display_name
 
 	/*GList* new = g_hash_table_get_keys(teste->user);
 	g_list_foreach(new,print,NULL);*/
