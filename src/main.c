@@ -184,18 +184,29 @@ TAD_community load(TAD_community com, char* dump_path){
 
 
 STR_pair info_from_post(TAD_community com, int id){
-	printf("ola\n");
-	struct Post* post = (struct Post*)g_hash_table_lookup(com->post, GINT_TO_POINTER(id));
 	
-	char* titulo = post->titulo;
-	gint user_id = post->owner_id;
+	/* Debugging */ printf("A executar info_from_post\n");
+
+	struct Post* post = malloc(sizeof(struct Post));
+	post = (struct Post*)g_hash_table_lookup(com->post, GINT_TO_POINTER(id));
 	
-	struct User* user = (struct User*)g_hash_table_lookup(com->user, GINT_TO_POINTER(user_id));
+	/* Debugging */ printf("Alocou memória para a estrutura Post\n");
 
-	char* nome = user->display_name;
+	//gint user_id = (gint)post->owner_id; // O PROBLEMA ESTÁ AQUI
 
-	STR_pair new = create_str_pair(titulo, nome);
+	/* Debugging */ printf("Atribuiu o valor a user_id\n");
 
+	struct User* user = malloc(sizeof(struct User));
+	user = (struct User*)g_hash_table_lookup(com->user, GINT_TO_POINTER(17)); // substituir por 17 o user_id
+
+	/* Debugging */ printf("Alocou memória para a estrutura User\n");
+
+	/* Debugging */ printf("%s - %s", post->titulo, user->display_name); // não chega aqui caso esteja 17
+
+	STR_pair new = create_str_pair(post->titulo, user->display_name);
+
+	/* Debugging */ printf("%s %s\n", get_fst_str(new), get_fst_str(new));
+	
 	return new;
 }
 
