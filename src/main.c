@@ -6,8 +6,6 @@
 #include <glib.h>
 #include <string.h>
 
-// teste: passar para um array de inteiros os primeiros 50 id's presentes em Users.xml
-
 
 /*NOTAS:
 &#xA - \n codificado
@@ -17,7 +15,6 @@
 &gt - >
 &amp - &
 */
-
 
 
 
@@ -36,9 +33,8 @@ struct User{
 struct Post{
 	int id;
 	char* titulo;
-	//int creatorUserId;
+	int owner_id;
 };
-
 
 
 struct TCD_community{
@@ -59,9 +55,6 @@ TAD_community init(){
 }
 
 TAD_community load(TAD_community com, char* dump_path){
-	xmlChar* id; 
-	xmlChar* name; 
-	xmlChar* titulo;
 	int i=0;
 	char users[10] = "Users.xml";
 	char* users_path = malloc(strlen(dump_path)+strlen(users));
@@ -75,8 +68,6 @@ TAD_community load(TAD_community com, char* dump_path){
 	strcat(posts_path,posts);
 	
 
-
-	
 
 
 	// USERS
@@ -94,8 +85,8 @@ TAD_community load(TAD_community com, char* dump_path){
 	else{		
 		cur = cur->xmlChildrenNode;
 		while(cur){
-   			id = xmlGetProp(cur, (const xmlChar *)"AccountId");
-   			name = xmlGetProp(cur, (const xmlChar *)"DisplayName");
+   			xmlChar* id = xmlGetProp(cur, (const xmlChar *)"AccountId");
+   			xmlChar* name = xmlGetProp(cur, (const xmlChar *)"DisplayName");
 
    			if(id != NULL){
    				int* idUser = malloc(sizeof(int));
@@ -108,10 +99,6 @@ TAD_community load(TAD_community com, char* dump_path){
    				new->id = *idUser;			 
    				
    				g_hash_table_insert(com->user, (gpointer*)idUser, new); i++;
-   				
-   				
-
-   				//printf("Teste: %d %s\n", new->id, new->display_name); 
 				
    			}
 			xmlFree(id);
@@ -122,7 +109,7 @@ TAD_community load(TAD_community com, char* dump_path){
 	printf("Users: %d\n", i);
 	xmlFreeDoc(doc_users);
 
-	/*
+	
 	// POSTS
 	i = 0;
 
@@ -131,7 +118,7 @@ TAD_community load(TAD_community com, char* dump_path){
 		printf("Document not parsed successfully\n");
 	}
 
-	printf("Abriu Posts.xml\n"); // Teste
+	/*Debugging*/ printf("Abriu Posts.xml\n");
 
 	cur = xmlDocGetRootElement(doc_posts);
 	if(!cur){
@@ -141,42 +128,66 @@ TAD_community load(TAD_community com, char* dump_path){
 	else{		
 		cur = cur->xmlChildrenNode;
 		while(cur){
-   			id = xmlGetProp(cur, (const xmlChar *)"OwnerUserId");
-   			xmlChar* teste = xmlGetProp(cur, (const xmlChar *)"Title");
-   			if(teste) titulo = teste; else titulo = ""; 
+			xmlChar* post_type_id = xmlGetProp(cur, (const xmlChar *)"PostTypeId");
 
-   			if(id != NULL){
-   				int* idUser = malloc(sizeof(int));
-   				struct Post* new = g_new(struct Post, 1);//forma de fazer malloc
-   				
-   				new->titulo = malloc(strlen((const char*)titulo));
-   				strcpy(new->titulo,(const char*)titulo);
+			/*Debugging*/ printf("Verificou o PostTypeId = %s\n", (char*)post_type_id); // está a dar null e para o programa. Porque??
+			
+			if(strcmp((char*)post_type_id, "1") == 0){
 
-   				sscanf((const char*)id, "%d", idUser); 
-   				new->id = *idUser;	
+				/*Debugging*/ printf("Comparou o PostTypeId\n");
+	   			
+	   			xmlChar* post_id = xmlGetProp(cur, (const xmlChar *)"Id");
+	   			xmlChar* user_id = xmlGetProp(cur, (const xmlChar *)"OwnerUserId");
+	   			xmlChar* titulo = xmlGetProp(cur, (const xmlChar *)"Title");
 
-   				printf("A inserir %d\n", i); //teste
-   				g_hash_table_insert(com->post, (gpointer*)idUser, new); i++;
-				printf("Inserido\n");
-   			}
-			xmlFree(id);
-			xmlFree(titulo);
+	   			if(post_id != NULL){
+	   				int* idOwner = malloc(sizeof(int));
+	   				int* idPost = malloc(sizeof(int));
+	   				struct Post* new = g_new(struct Post, 1);
+	   				
+	   				// Titulo
+	   				new->titulo = malloc(strlen((const char*)titulo));
+	   				strcpy(new->titulo,(const char*)titulo);
+
+	   				// Owner ID
+	   				sscanf((const char*)user_id, "%d", idOwner); 
+	   				new->owner_id = *idOwner;
+
+	   				// Post ID
+					sscanf((const char*)post_id, "%d", idPost); 
+	   				new->id = *idPost;
+
+	   				/*Debugging*/ printf("A inserir %d\n", i);
+
+	   				// Inserir conforme o Post ID
+	   				g_hash_table_insert(com->post, (gpointer*)idPost, new);
+	   				
+	   				/*Debugging*/ printf("Inserido %d\n", i);
+	   				i++;
+
+	   			}
+				xmlFree(post_id);
+				xmlFree(user_id);
+				xmlFree(titulo);
+			}
+			/*Debugging*/ else printf("Verificou o PostTypeId e não é do tipo 1\n");
+			xmlFree(post_type_id);
 			cur = cur->next;
 		}
 	}
 	printf("Posts: %d\n", i);
 	xmlFreeDoc(doc_posts);
-	*/
+	
 	return(com);		
 }
 
 
 
-STR_pair info_from_post(TAD_community com, int id){ // mudar pois é post id
+STR_pair info_from_post(TAD_community com, int id){
 	struct Post* post = (struct Post*)g_hash_table_lookup(com->post, GINT_TO_POINTER(id));
 	
 	char* titulo = post->titulo;
-	gint user_id = post->id;
+	gint user_id = post->owner_id;
 	
 	struct User* user = (struct User*)g_hash_table_lookup(com->user, GINT_TO_POINTER(user_id));
 
@@ -206,7 +217,7 @@ int main(){
 	
 	load(teste, path);
 	
-	g_hash_table_foreach(teste->user,(GHFunc)iterator,"%d %d %s\n"); // imprimir id e display_name
+	//g_hash_table_foreach(teste->user,(GHFunc)iterator,"%d %d %s\n"); // imprimir id e display_name
 
 	/*GList* new = g_hash_table_get_keys(teste->user);
 	g_list_foreach(new,print,NULL);*/
