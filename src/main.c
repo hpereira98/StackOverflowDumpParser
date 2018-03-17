@@ -132,26 +132,26 @@ TAD_community load(TAD_community com, char* dump_path){
 
 			/*Debugging*/ printf("Verificou o PostTypeId = %s\n", (char*)post_type_id); // está a dar null e para o programa. Porque??
 			
-			if(strcmp((char*)post_type_id, "1") == 0){
+			if(post_type_id!=NULL && strcmp((char*)post_type_id, "1") == 0){
 
 				/*Debugging*/ printf("Comparou o PostTypeId\n");
 	   			
-	   			xmlChar* post_id = xmlGetProp(cur, (const xmlChar *)"Id");
-	   			xmlChar* user_id = xmlGetProp(cur, (const xmlChar *)"OwnerUserId");
-	   			xmlChar* titulo = xmlGetProp(cur, (const xmlChar *)"Title");
+	   			xmlChar* post_id = xmlGetProp(cur, (const xmlChar *)"Id");printf("1\n");
+	   			xmlChar* user_id = xmlGetProp(cur, (const xmlChar *)"OwnerUserId");printf("2\n");
+	   			xmlChar* titulo = xmlGetProp(cur, (const xmlChar *)"Title");printf("3\n");
 
-	   			if(post_id != NULL){
-	   				int* idOwner = malloc(sizeof(int));
-	   				int* idPost = malloc(sizeof(int));
-	   				struct Post* new = g_new(struct Post, 1);
+	   			if(post_id != NULL){printf("4\n");
+	   				int* idOwner = malloc(sizeof(int));printf("4\n");
+	   				int* idPost = malloc(sizeof(int));printf("5\n");
+	   				struct Post* new = g_new(struct Post, 1);printf("6\n");
 	   				
 	   				// Titulo
-	   				new->titulo = malloc(strlen((const char*)titulo));
-	   				strcpy(new->titulo,(const char*)titulo);
+	   				new->titulo = malloc(strlen((const char*)titulo));printf("7\n");
+	   				strcpy(new->titulo,(const char*)titulo);printf("8\n");
 
 	   				// Owner ID
-	   				sscanf((const char*)user_id, "%d", idOwner); 
-	   				new->owner_id = *idOwner;
+	   				printf("Ola\n");if(user_id)sscanf((const char*)user_id, "%d", idOwner);else(printf("nao tem owner(?)\n")); printf("9\n");
+	   				new->owner_id = *idOwner;printf("10\n");
 
 	   				// Post ID
 					sscanf((const char*)post_id, "%d", idPost); 
@@ -184,6 +184,7 @@ TAD_community load(TAD_community com, char* dump_path){
 
 
 STR_pair info_from_post(TAD_community com, int id){
+	printf("ola\n");
 	struct Post* post = (struct Post*)g_hash_table_lookup(com->post, GINT_TO_POINTER(id));
 	
 	char* titulo = post->titulo;
@@ -221,7 +222,9 @@ int main(){
 
 	/*GList* new = g_hash_table_get_keys(teste->user);
 	g_list_foreach(new,print,NULL);*/
-
+	STR_pair new ;
+	new = info_from_post(teste,9);printf("dd\n");
+	printf("%s %s\n",get_fst_str(new),get_fst_str(new));
    	//printf("Tamanho hash: %d\n",g_hash_table_size(teste->user));
   	
   	return 0;
