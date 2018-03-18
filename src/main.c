@@ -22,7 +22,7 @@ struct User{
 	int id;
 	char* display_name;
 	//int rep;
-	//int n_posts;
+	//int n_perguntas;
 	//int n_respostas;
 	//Date data_posts[];
 	//Date data_respostas[];
@@ -209,6 +209,60 @@ STR_pair info_from_post(TAD_community com, int id){
 	return new;
 }
 
+/* INTERROGAÇÃO 2 - Protótipo:
+
+int check_post (LONG_list l, int userId) {
+	int res=-1;	
+	for (i=0;i<l.size;i++)
+		if (get_list(l,i)==userId) res=i;
+	return res;
+}
+
+LONG_list top_most_active(TAD community com, int N) {  // A SUBSTITUIÇÃO NAO PODE SER ASSIM COM O MIN, DEPOIS PENSO MELHOR, JÁ ESTOU CANSADO
+
+	struct User* user = malloc(sizeof(struct User));
+	int iU;
+	int min=-1;
+	int pos=0;
+	int nPosts=-1;
+	LONG_list res = create_list(N);	
+	
+	for (iU=-1;iU<=245699;iU++) { // preencher as N posições da lista
+		
+		while (pos!=20) {
+
+			user = (struct User*)g_hash_table_lookup(com->user, GINT_TO_POINTER(iU));		
+
+			if (user!=NULL) {
+
+				nPosts=user.n_respostas + user.n_perguntas;			
+				if (nPosts < min) min=nPosts;
+				set_list(res,pos,user.id);
+				pos++;
+			}
+		}
+		
+		break;
+	}							
+
+	for (;iU<=245699;iU++) { // preencher a lista com os N user com mais posts
+
+		user = (struct User*)g_hash_table_lookup(com->user, GINT_TO_POINTER(iU));
+
+		if (user!=NULL) {			
+
+			nPosts = user.n_respostas + user.n_perguntas;
+			if (nPosts > min) {
+				set_list(res,check_pos(res,user.id),user.id);
+				min=nPosts;
+			}
+		}
+	}	
+	
+	return res;
+}		
+
+*/
 
 /* Funcao para Debugging de PostHashT */
 void printPostHT(gpointer key, gpointer value, gpointer user_data){
