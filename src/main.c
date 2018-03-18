@@ -211,40 +211,59 @@ STR_pair info_from_post(TAD_community com, int id){
 
 /* INTERROGAÇÃO 2 - Protótipo:
 
-int check_post (LONG_list l, int userId) {
-	int res=-1;	
-	for (i=0;i<l.size;i++)
-		if (get_list(l,i)==userId) res=i;
-	return res;
+int get_min (int lista[],int tam) {
+	int min=0,i;	
+	if (lista!=NULL) {
+		min=lista[0];
+		for (i=1;i<tam;i++)
+			if (lista[i]<min) min=lista[i];
+	}
+	return min;
 }
 
-LONG_list top_most_active(TAD community com, int N) {  // A SUBSTITUIÇÃO NAO PODE SER ASSIM COM O MIN, DEPOIS PENSO MELHOR, JÁ ESTOU CANSADO
+int get_min_pos (int lista[],int tam) {
+	int min=0,pos=0,i;	
+	if (lista!=NULL) {
+		min=lista[0];
+		for (i=1;i<tam;i++)
+			if (lista[i]<min) {
+				min=lista[i];
+				pos=i;
+			}
+	}
+	return pos;
+}
+
+LONG_list top_most_active(TAD community com, int N) { 
 
 	struct User* user = malloc(sizeof(struct User));
 	int iU;
-	int min=-1;
+	int min-1;
 	int pos=0;
-	int nPosts=-1;
+	int minPos=0;
+	int nPosts;
+	int listaAux[N];
 	LONG_list res = create_list(N);	
 	
 	for (iU=-1;iU<=245699;iU++) { // preencher as N posições da lista
-		
-		while (pos!=20) {
 
-			user = (struct User*)g_hash_table_lookup(com->user, GINT_TO_POINTER(iU));		
+		user = (struct User*)g_hash_table_lookup(com->user, GINT_TO_POINTER(iU));		
 
-			if (user!=NULL) {
+		if (user!=NULL) {
 
-				nPosts=user.n_respostas + user.n_perguntas;			
-				if (nPosts < min) min=nPosts;
-				set_list(res,pos,user.id);
-				pos++;
-			}
+			nPosts=user.n_respostas + user.n_perguntas;			
+			if(min==-1) min=nPosts;  // inicializar min com o primeiro nPosts
+			else if (nPosts < min) {
+				min=nPosts; // atualizar min nas primeiras N inserções
+				minPos=pos; // atualizar posição do mínimo no array auxiliar
+			set_list(res,pos,user.id); // colocar userId na lista res
+			listaAux[pos]=nPosts; // colocar o nPosts na listaAux
+			pos++;
 		}
 		
-		break;
-	}							
-
+		if (pos==N) break;
+	}								
+	
 	for (;iU<=245699;iU++) { // preencher a lista com os N user com mais posts
 
 		user = (struct User*)g_hash_table_lookup(com->user, GINT_TO_POINTER(iU));
@@ -253,12 +272,15 @@ LONG_list top_most_active(TAD community com, int N) {  // A SUBSTITUIÇÃO NAO P
 
 			nPosts = user.n_respostas + user.n_perguntas;
 			if (nPosts > min) {
-				set_list(res,check_pos(res,user.id),user.id);
-				min=nPosts;
+				set_list(res,minPos,user.id); // colocar na lista
+
+				min=get_min(listaAux,N); // atualiza o menos nPosts
+				minPos=get_min_pos(listaAux,N); // atualiza a posição do menor nPosts
 			}
 		}
 	}	
 	
+	free(listaAux);
 	return res;
 }		
 
