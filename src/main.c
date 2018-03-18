@@ -45,7 +45,7 @@ struct TCD_community{
 
 TAD_community init(){
 	struct TCD_community* new = malloc(sizeof(struct TCD_community));
-  	GHashTable* newUserHash = g_hash_table_new(g_direct_hash, g_direct_equal);
+  	GHashTable* newUserHash = g_hash_table_new(g_int_hash, g_int_equal);
   	GHashTable* newPostHash = g_hash_table_new(g_direct_hash, g_direct_equal);
 
   	new->user = newUserHash;
@@ -98,8 +98,8 @@ TAD_community load(TAD_community com, char* dump_path){
    				sscanf((const char*)id, "%d", idUser); 
    				new->id = *idUser;			 
    				
-   				g_hash_table_insert(com->user, (gpointer*)idUser, new); i++;
-				free(idUser);
+   				g_hash_table_insert(com->user, idUser, new); i++;
+				
    			}
 			xmlFree(id);
 			xmlFree(name);
@@ -110,76 +110,6 @@ TAD_community load(TAD_community com, char* dump_path){
 	xmlFreeDoc(doc_users);
 
 	
-	// POSTS
-	i = 0;
-
-	xmlDocPtr doc_posts = xmlParseFile(posts_path);
-	if(!doc_posts){
-		printf("Document not parsed successfully\n");
-	}
-
-	/*Debugging*/ printf("Abriu Posts.xml\n");
-
-	cur = xmlDocGetRootElement(doc_posts);
-	if(!cur){
-		printf("Empty Document\n");
-		xmlFreeDoc(doc_posts);
-	}
-	else{		
-		cur = cur->xmlChildrenNode;
-		while(cur){
-			xmlChar* post_type_id = xmlGetProp(cur, (const xmlChar *)"PostTypeId");
-
-			/*Debugging*/ printf("Verificou o PostTypeId = %s\n", (char*)post_type_id); // está a dar null e para o programa. Porque??
-			
-			if(post_type_id!=NULL && strcmp((char*)post_type_id, "1") == 0){
-
-				/*Debugging*/ printf("Comparou o PostTypeId\n");
-	   			
-	   			xmlChar* post_id = xmlGetProp(cur, (const xmlChar *)"Id");printf("1\n");
-	   			xmlChar* user_id = xmlGetProp(cur, (const xmlChar *)"OwnerUserId");printf("2\n");
-	   			xmlChar* titulo = xmlGetProp(cur, (const xmlChar *)"Title");printf("3\n");
-
-	   			if(post_id != NULL){printf("4\n");
-	   				int* idOwner = malloc(sizeof(int));printf("4\n");
-	   				int* idPost = malloc(sizeof(int));printf("5\n");
-	   				struct Post* new = g_new(struct Post, 1);printf("6\n");
-	   				
-	   				// Titulo
-	   				new->titulo = malloc(strlen((const char*)titulo));printf("%s %d\n",titulo,strlen((const char*)titulo));
-	   				strcpy(new->titulo,(const char*)titulo);printf("8\n");
-
-	   				// Owner ID
-	   				printf("Ola\n");if(user_id)sscanf((const char*)user_id, "%d", idOwner);else(printf("nao tem owner(?)\n")); printf("9\n");
-	   				new->owner_id = *idOwner;printf("10\n");
-
-	   				// Post ID
-					sscanf((const char*)post_id, "%d", idPost); 
-	   				new->id = *idPost;
-
-	   				/*Debugging*/ printf("A inserir %d\n", i);
-
-	   				// Inserir conforme o Post ID
-	   				g_hash_table_insert(com->post, (gpointer*)idPost, new);
-	   				
-	   				/*Debugging*/ printf("Inserido %d\n", i);
-	   				i++;
-	   				free(idOwner);
-	   				free(idPost);
-	   				//free(new);
-
-	   			}
-				xmlFree(post_id);
-				xmlFree(user_id);
-				xmlFree(titulo);
-			}
-			/*Debugging*/ else printf("Verificou o PostTypeId e não é do tipo 1\n");
-			xmlFree(post_type_id);
-			cur = cur->next;
-		}
-	}
-	printf("Posts: %d\n", i);
-	xmlFreeDoc(doc_posts);
 	
 	return(com);		
 }
@@ -228,6 +158,16 @@ void printUserHT(gpointer key, gpointer value, gpointer user_data){
 	printf(user_data,*keyId, aux->id, aux->display_name);
 }
 
+/* Funcao para verificar procura na UserHashT */ 
+void testeAcessoUserHT(TAD_community com, int id){
+	int* aux = malloc(sizeof(int));
+	*aux=id;
+	struct User* user = malloc(sizeof(struct User));
+	user = (struct User*)g_hash_table_lookup(com->user, aux);
+	if(user) printf("%d %s\n",user->id,user->display_name);
+	 else printf("user not found\n");
+}
+
 int main(){
 	struct TCD_community* teste = init();
 	char* path = "../../dumpexemplo/android/";
@@ -235,14 +175,15 @@ int main(){
 	load(teste, path);
 /* Funcao para Debugging de UserHashT*/
 	g_hash_table_foreach(teste->user,(GHFunc)printUserHT,"%d %d %s\n");
+	testeAcessoUserHT(teste,4980640);
 /* Funcao para Debugging de PostHashT */
-	g_hash_table_foreach(teste->post,(GHFunc)printPostHT,"%d %d %d %s\n"); 
+	//g_hash_table_foreach(teste->post,(GHFunc)printPostHT,"%d %d %d %s\n"); 
 
 	/*GList* new = g_hash_table_get_keys(teste->user);
 	g_list_foreach(new,print,NULL);*/
-	STR_pair new ;
-	new = info_from_post(teste,9);printf("dd\n");
-	printf("%s %s\n",get_fst_str(new),get_fst_str(new));
+	//STR_pair new ;
+	//new = info_from_post(teste,9);printf("dd\n");
+	//printf("%s %s\n",get_fst_str(new),get_fst_str(new));
    	//printf("Tamanho hash: %d\n",g_hash_table_size(teste->user));
   	
   	return 0;
