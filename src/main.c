@@ -221,83 +221,6 @@ STR_pair info_from_post(TAD_community com, int id){
 	return new;
 }
 
-/* INTERROGAÇÃO 2 - Protótipo:
-
-int get_min (int lista[],int tam) {
-	int min=0,i;	
-	if (lista!=NULL) {
-		min=lista[0];
-		for (i=1;i<tam;i++)
-			if (lista[i]<min) min=lista[i];
-	}
-	return min;
-}
-
-int get_min_pos (int lista[],int tam) {
-	int min=0,pos=0,i;	
-	if (lista!=NULL) {
-		min=lista[0];
-		for (i=1;i<tam;i++)
-			if (lista[i]<min) {
-				min=lista[i];
-				pos=i;
-			}
-	}
-	return pos;
-}
-
-LONG_list top_most_active(TAD community com, int N) { 
-
-	struct User* user = malloc(sizeof(struct User));
-	int iU;
-	int min-1;
-	int pos=0;
-	int minPos=0;
-	int nPosts;
-	int listaAux[N];
-	LONG_list res = create_list(N);	
-	
-	for (iU=-1;iU<=245699;iU++) { // preencher as N posições da lista
-
-		user = (struct User*)g_hash_table_lookup(com->user, GINT_TO_POINTER(iU));		
-
-		if (user!=NULL) {
-
-			nPosts=user.n_respostas + user.n_perguntas;			
-			if(min==-1) min=nPosts;  // inicializar min com o primeiro nPosts
-			else if (nPosts < min) {
-				min=nPosts; // atualizar min nas primeiras N inserções
-				minPos=pos; // atualizar posição do mínimo no array auxiliar
-			set_list(res,pos,user.id); // colocar userId na lista res
-			listaAux[pos]=nPosts; // colocar o nPosts na listaAux
-			pos++;
-		}
-		
-		if (pos==N) break;
-	}								
-	
-	for (;iU<=245699;iU++) { // preencher a lista com os N user com mais posts
-
-		user = (struct User*)g_hash_table_lookup(com->user, GINT_TO_POINTER(iU));
-
-		if (user!=NULL) {			
-
-			nPosts = user.n_respostas + user.n_perguntas;
-			if (nPosts > min) {
-				set_list(res,minPos,user.id); // colocar na lista
-
-				min=get_min(listaAux,N); // atualiza o menos nPosts
-				minPos=get_min_pos(listaAux,N); // atualiza a posição do menor nPosts
-			}
-		}
-	}	
-	
-	free(listaAux);
-	return res;
-}		
-
-*/
-
 /* Funcao para Debugging de PostHashT */
 void printPostHT(gpointer key, gpointer value, gpointer user_data){
 	struct Post* aux = (struct Post*)value;
@@ -346,23 +269,38 @@ int main(){
   	return 0;
 } 
 
+/* INTERROGAÇÃO 2 - Protótipo:
 
-/*	PARA O NOOB DO HPEREIRA98
+struct pairlist{
+	int size;
+	LONG_pair *list;
+} *PAIR_list;
 
-void ordena (gpointer id, gpointer user, gpointer v){
-
+void insertionSort (gpointer id, gpointer u, gpointer l){
+	struct User* user = (User*) u;
+	PAIR_list lista = (PAIR_list) l;
+		
+	int numPosts[];
+	int posts = n_respostas+n_perguntas;
+	for (int i; i<lista->size; i++) {
+		
 }
 
 
-blablabla querry2(TCD com, int N){
-	int* v = malloc(sizeof(N));
-	long_list l = create;
+LONG_list top_most_active(TAD community com, int N) {
 
-	g_hash_table_foreach(com->user, ordena, v);
+	PAIR_list lista;
+	lista->size=N;
+	inicializar lista a 0's.
 
-	for(i=0; i<N; i++) set_list(l, i, v[i]);
+	LONG_list res=create_list(N);
 
-	return l;
+	g_hash_table_foreach(com->user, insertionSort, lista);
+	
+	for (int i=0;i<N;i++) 
+		set_list(res,i,get_fst_long(lista->list[i]);
+
+	return res;
 }
 
 
