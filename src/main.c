@@ -56,14 +56,14 @@ TAD_community init(){
 
 TAD_community load(TAD_community com, char* dump_path){
 	int i=0;
-	char users[10] = "Users.xml";
-	char* users_path = malloc(strlen(dump_path)+strlen(users));
+	char* users = "Users.xml";
+	char* users_path = malloc(strlen(dump_path)+strlen(users) + 1);
 	strcpy(users_path,dump_path);
 	strcat(users_path,users);
 	
 
-	char posts[10] = "Posts.xml";
-	char* posts_path = malloc(strlen(dump_path)+strlen(posts));
+	char* posts = "Posts.xml";
+	char* posts_path = malloc(strlen(dump_path)+strlen(posts) + 1);
 	strcpy(posts_path,dump_path);
 	strcat(posts_path,posts);
 	
@@ -92,7 +92,7 @@ TAD_community load(TAD_community com, char* dump_path){
    				int* idUser = malloc(sizeof(int));
    				struct User* new = g_new(struct User, 1);//forma de fazer malloc
    				
-   				new->display_name = malloc(strlen((const char*)name));
+   				new->display_name = malloc(strlen((const char*)name) + 1);
    				strcpy(new->display_name,(const char*)name);
 
    				sscanf((const char*)id, "%d", idUser); 
@@ -145,7 +145,7 @@ TAD_community load(TAD_community com, char* dump_path){
 	   				struct Post* new = g_new(struct Post, 1);printf("6\n");
 	   				
 	   				// Titulo
-	   				new->titulo = malloc(strlen((const char*)titulo));printf("7\n");
+	   				new->titulo = malloc(strlen((const char*)titulo) + 1);printf("7\n");
 	   				strcpy(new->titulo,(const char*)titulo);printf("8\n");
 
 	   				// Owner ID
@@ -316,7 +316,7 @@ int main(){
 	
 	load(teste, path);
 /* Funcao para Debugging de UserHashT*/
-	g_hash_table_foreach(teste->user,(GHFunc)printUserHT,"%d %d %s\n");
+	//g_hash_table_foreach(teste->user,(GHFunc)printUserHT,"%d %d %s\n");
 	testeAcessoUserHT(teste,4980640);
 /* Funcao para Debugging de PostHashT */
 	//g_hash_table_foreach(teste->post,(GHFunc)printPostHT,"%d %d %d %s\n"); 
@@ -330,3 +330,25 @@ int main(){
   	
   	return 0;
 } 
+
+
+/*	PARA O NOOB DO HPEREIRA98
+
+void ordena (gpointer id, gpointer user, gpointer v){
+
+}
+
+
+blablabla querry2(TCD com, int N){
+	int* v = malloc(sizeof(N));
+	long_list l = create;
+
+	g_hash_table_foreach(com->user, ordena, v);
+
+	for(i=0; i<N; i++) set_list(l, i, v[i]);
+
+	return l;
+}
+
+
+*/
