@@ -46,7 +46,7 @@ struct TCD_community{
 TAD_community init(){
 	struct TCD_community* new = malloc(sizeof(struct TCD_community));
   	GHashTable* newUserHash = g_hash_table_new(g_int_hash, g_int_equal);
-  	GHashTable* newPostHash = g_hash_table_new(g_direct_hash, g_direct_equal);
+  	GHashTable* newPostHash = g_hash_table_new(g_int_hash, g_int_equal);
 
   	new->user = newUserHash;
   	new->post = newPostHash;
@@ -159,7 +159,7 @@ TAD_community load(TAD_community com, char* dump_path){
 	   				/*Debugging*/ printf("A inserir %d\n", i);
 
 	   				// Inserir conforme o Post ID
-	   				g_hash_table_insert(com->post, (gpointer*)idPost, new);
+	   				g_hash_table_insert(com->post, idPost, new);
 	   				
 	   				/*Debugging*/ printf("Inserido %d\n", i);
 	   				i++;
@@ -187,24 +187,24 @@ STR_pair info_from_post(TAD_community com, int id){
 	/* Debugging */ printf("A executar info_from_post\n");
 
 	struct Post* post = malloc(sizeof(struct Post));
-	post = (struct Post*)g_hash_table_lookup(com->post, GINT_TO_POINTER(id));
+	post = (struct Post*)g_hash_table_lookup(com->post, &id);
 	
 	/* Debugging */ printf("Alocou memória para a estrutura Post\n");
 
-	//gint user_id = (gint)post->owner_id; // O PROBLEMA ESTÁ AQUI
+	gint user_id = (gint)post->owner_id; // O PROBLEMA ESTÁ AQUI
 
 	/* Debugging */ printf("Atribuiu o valor a user_id\n");
 
 	struct User* user = malloc(sizeof(struct User));
-	user = (struct User*)g_hash_table_lookup(com->user, GINT_TO_POINTER(17)); // substituir por 17 o user_id
+	user = (struct User*)g_hash_table_lookup(com->user, &user_id); // substituir por 17 o user_id
 
 	/* Debugging */ printf("Alocou memória para a estrutura User\n");
 
-	/* Debugging */ printf("%s - %s", post->titulo, user->display_name); // não chega aqui caso esteja 17
+	///* Debugging */ printf("%s - %s", post->titulo, user->display_name); // não chega aqui caso esteja 17
 
 	STR_pair new = create_str_pair(post->titulo, user->display_name);
 
-	/* Debugging */ printf("%s %s\n", get_fst_str(new), get_fst_str(new));
+	///* Debugging */ printf("%s %s\n", get_fst_str(new), get_fst_str(new));
 	
 	return new;
 }
@@ -323,9 +323,9 @@ int main(){
 
 	/*GList* new = g_hash_table_get_keys(teste->user);
 	g_list_foreach(new,print,NULL);*/
-	//STR_pair new ;
-	//new = info_from_post(teste,9);printf("dd\n");
-	//printf("%s %s\n",get_fst_str(new),get_fst_str(new));
+	STR_pair new ;
+	new = info_from_post(teste,9);
+	printf("%s \n%s\n",get_fst_str(new),get_snd_str(new));
    	//printf("Tamanho hash: %d\n",g_hash_table_size(teste->user));
   	
   	return 0;
