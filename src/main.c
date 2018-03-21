@@ -34,6 +34,8 @@ struct Post{
 	int id;
 	char* titulo;
 	int owner_id;
+	int type_id;
+	int parent_id;
 };
 
 
@@ -138,10 +140,13 @@ TAD_community load(TAD_community com, char* dump_path){
 	   			xmlChar* post_id = xmlGetProp(cur, (const xmlChar *)"Id");printf("1\n");
 	   			xmlChar* user_id = xmlGetProp(cur, (const xmlChar *)"OwnerUserId");printf("2\n");
 	   			xmlChar* titulo = xmlGetProp(cur, (const xmlChar *)"Title");printf("3\n");
+	   			xmlChar* parent_id = xmlGetProp(cur, (const xmlChar *)"ParentId");
 
 	   			if(post_id != NULL){printf("4\n");
 	   				int* idOwner = malloc(sizeof(int));printf("4\n");
 	   				int* idPost = malloc(sizeof(int));printf("5\n");
+	   				int* idParent = malloc(sizeof(int));
+	   				int* idType = malloc(sizeof(int));
 	   				struct Post* new = g_new(struct Post, 1);printf("6\n");
 	   				
 	   				// Titulo
@@ -155,6 +160,17 @@ TAD_community load(TAD_community com, char* dump_path){
 	   				// Post ID
 					sscanf((const char*)post_id, "%d", idPost); 
 	   				new->id = *idPost;
+
+	   				// Type ID
+	   				sscanf((const char*)post_type_id, "%d", idType); 
+	   				new->type_id = *idType;
+
+	   				// Parent ID
+	   				if(parent_id) {
+	   					sscanf((const char*)parent_id, "%d", idParent); 
+	   					new->parent_id = *idParent;
+	   				}
+	   				else new->parent_id = 0;
 
 	   				/*Debugging*/ printf("A inserir %d\n", i);
 
@@ -190,21 +206,17 @@ STR_pair info_from_post(TAD_community com, int id){
 	post = (struct Post*)g_hash_table_lookup(com->post, &id);
 	
 	/* Debugging */ printf("Alocou memória para a estrutura Post\n");
-
-	gint user_id = (gint)post->owner_id; // O PROBLEMA ESTÁ AQUI
-
-	/* Debugging */ printf("Atribuiu o valor a user_id\n");
+	/* Debugging */ printf("%d\n", post->parent_id); // ERRO AO ACEDER A POST->PARENT_ID
+	if(post->parent_id != 0){
+		post = (struct Post*)g_hash_table_lookup(com->post, &post->parent_id);
+	}
 
 	struct User* user = malloc(sizeof(struct User));
-	user = (struct User*)g_hash_table_lookup(com->user, &user_id); // substituir por 17 o user_id
+	user = (struct User*)g_hash_table_lookup(com->user, &post->owner_id); 
 
 	/* Debugging */ printf("Alocou memória para a estrutura User\n");
 
-	///* Debugging */ printf("%s - %s", post->titulo, user->display_name); // não chega aqui caso esteja 17
-
 	STR_pair new = create_str_pair(post->titulo, user->display_name);
-
-	///* Debugging */ printf("%s %s\n", get_fst_str(new), get_fst_str(new));
 	
 	return new;
 }
@@ -317,7 +329,7 @@ int main(){
 	load(teste, path);
 /* Funcao para Debugging de UserHashT*/
 	//g_hash_table_foreach(teste->user,(GHFunc)printUserHT,"%d %d %s\n");
-	testeAcessoUserHT(teste,4980640);
+	//testeAcessoUserHT(teste,4980640);
 /* Funcao para Debugging de PostHashT */
 	//g_hash_table_foreach(teste->post,(GHFunc)printPostHT,"%d %d %d %s\n"); 
 
@@ -325,7 +337,10 @@ int main(){
 	g_list_foreach(new,print,NULL);*/
 	STR_pair new ;
 	new = info_from_post(teste,9);
-	printf("%s \n%s\n",get_fst_str(new),get_snd_str(new));
+	printf("\nPERGUNTA:\n%s \n%s\n\n",get_fst_str(new),get_snd_str(new));
+
+	new = info_from_post(teste,7);
+	printf("\nRESPOSTA À PERGUNTA:\n%s \n%s\n\n",get_fst_str(new),get_snd_str(new));
    	//printf("Tamanho hash: %d\n",g_hash_table_size(teste->user));
   	
   	return 0;
