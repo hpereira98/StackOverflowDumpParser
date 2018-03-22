@@ -34,6 +34,7 @@ struct Post{
 	int id;
 	char* titulo;
 	int owner_id;
+	char* owner_display_name;
 	int type_id;
 	int parent_id;
 };
@@ -87,7 +88,7 @@ TAD_community load(TAD_community com, char* dump_path){
 	else{		
 		cur = cur->xmlChildrenNode;
 		while(cur){
-   			xmlChar* id = xmlGetProp(cur, (const xmlChar *)"AccountId");
+   			xmlChar* id = xmlGetProp(cur, (const xmlChar *)"Id");
    			xmlChar* name = xmlGetProp(cur, (const xmlChar *)"DisplayName");
 
    			if(id != NULL){
@@ -129,63 +130,71 @@ TAD_community load(TAD_community com, char* dump_path){
 	else{		
 		cur = cur->xmlChildrenNode;
 		while(cur){
-			xmlChar* post_type_id = xmlGetProp(cur, (const xmlChar *)"PostTypeId");
+			xmlChar* post_type_id = xmlGetProp(cur, (const xmlChar *)"PostTypeId");		
+			if(post_type_id!=NULL){
 
-			/*Debugging*/ printf("Verificou o PostTypeId = %s\n", (char*)post_type_id); // está a dar null e para o programa. Porque??
-			
-			if(post_type_id!=NULL && strcmp((char*)post_type_id, "1") == 0){
-
-				/*Debugging*/ printf("Comparou o PostTypeId\n");
-	   			
-	   			xmlChar* post_id = xmlGetProp(cur, (const xmlChar *)"Id");printf("1\n");
-	   			xmlChar* user_id = xmlGetProp(cur, (const xmlChar *)"OwnerUserId");printf("2\n");
-	   			xmlChar* titulo = xmlGetProp(cur, (const xmlChar *)"Title");printf("3\n");
+	   			xmlChar* post_id = xmlGetProp(cur, (const xmlChar *)"Id");
+	   			xmlChar* user_id = xmlGetProp(cur, (const xmlChar *)"OwnerUserId");
+	   			xmlChar* user_display_name = xmlGetProp(cur, (const xmlChar *)"OwnerDisplayName");
+	   			xmlChar* titulo = xmlGetProp(cur, (const xmlChar *)"Title");
 	   			xmlChar* parent_id = xmlGetProp(cur, (const xmlChar *)"ParentId");
 
-	   			if(post_id != NULL){printf("4\n");
-	   				int* idOwner = malloc(sizeof(int));printf("4\n");
-	   				int* idPost = malloc(sizeof(int));printf("5\n");
-	   				int* idParent = malloc(sizeof(int));
-	   				int* idType = malloc(sizeof(int));
-	   				struct Post* new = g_new(struct Post, 1);printf("6\n");
+	   		
+
+	   			int* idOwner = malloc(sizeof(int));
+	   			int* idPost = malloc(sizeof(int));
+	   			int* idParent = malloc(sizeof(int));
+	   			int* idType = malloc(sizeof(int));
+	   			struct Post* new = g_new(struct Post, 1);
 	   				
-	   				// Titulo
-	   				new->titulo = malloc(strlen((const char*)titulo) + 1);printf("7\n");
-	   				strcpy(new->titulo,(const char*)titulo);printf("8\n");
-
-	   				// Owner ID
-	   				printf("Ola\n");if(user_id)sscanf((const char*)user_id, "%d", idOwner);else(printf("nao tem owner(?)\n")); printf("9\n");
-	   				new->owner_id = *idOwner;printf("10\n");
-
-	   				// Post ID
-					sscanf((const char*)post_id, "%d", idPost); 
-	   				new->id = *idPost;
-
-	   				// Type ID
-	   				sscanf((const char*)post_type_id, "%d", idType); 
-	   				new->type_id = *idType;
-
-	   				// Parent ID
-	   				if(parent_id) {
-	   					sscanf((const char*)parent_id, "%d", idParent); 
-	   					new->parent_id = *idParent;
-	   				}
-	   				else new->parent_id = 0;
-
-	   				/*Debugging*/ printf("A inserir %d\n", i);
-
-	   				// Inserir conforme o Post ID
-	   				g_hash_table_insert(com->post, idPost, new);
-	   				
-	   				/*Debugging*/ printf("Inserido %d\n", i);
-	   				i++;
-
+	   			// Titulo
+	   			if(titulo){
+	   				new->titulo = malloc(strlen((const char*)titulo) + 1);
+	   				strcpy(new->titulo,(const char*)titulo);
 	   			}
+	   			else new->titulo="";
+
+	   			// Owner ID
+	   			if(user_id){
+	   				sscanf((const char*)user_id, "%d", idOwner);
+	   				new->owner_id = *idOwner;
+	   			} 
+	   			else new->owner_id = -2;
+
+	   			// Post ID
+				sscanf((const char*)post_id, "%d", idPost); 
+	   			new->id = *idPost;
+
+	   			// Type ID
+	   			sscanf((const char*)post_type_id, "%d", idType); 
+	   			new->type_id = *idType;
+
+	   			// Parent ID
+	   			if(parent_id) {
+	   				sscanf((const char*)parent_id, "%d", idParent); 
+	   				new->parent_id = *idParent;
+	   			}
+	   			else new->parent_id = -2;
+
+	   			// Owner Display Name
+	   			if(user_display_name){
+	   				new->owner_display_name = malloc(strlen((const char*)user_display_name) + 1);
+	   				strcpy(new->owner_display_name,(const char*)user_display_name);
+	   			}
+	   			else new->owner_display_name = "";
+
+	   			// Inserir conforme o Post ID
+	   			g_hash_table_insert(com->post, idPost, new);
+	   				
+	   			/*Debugging*/ //printf("Inserido %d\n", i);
+	   			i++;
+
+	   			
 				xmlFree(post_id);
 				xmlFree(user_id);
 				xmlFree(titulo);
+				xmlFree(parent_id);
 			}
-			/*Debugging*/ else printf("Verificou o PostTypeId e não é do tipo 1\n");
 			xmlFree(post_type_id);
 			cur = cur->next;
 		}
@@ -199,33 +208,40 @@ TAD_community load(TAD_community com, char* dump_path){
 
 
 STR_pair info_from_post(TAD_community com, int id){
-	
-	/* Debugging */ printf("A executar info_from_post\n");
+	STR_pair new = create_str_pair(NULL, NULL);
 
 	struct Post* post = malloc(sizeof(struct Post));
 	post = (struct Post*)g_hash_table_lookup(com->post, &id);
 	
-	/* Debugging */ printf("Alocou memória para a estrutura Post\n");
-	/* Debugging */ printf("%d\n", post->parent_id); // ERRO AO ACEDER A POST->PARENT_ID
-	if(post->parent_id != 0){
-		post = (struct Post*)g_hash_table_lookup(com->post, &post->parent_id);
+	if (!post) printf("Post not found...\n");
+	else { 
+		if(post->parent_id != -2){ //caso seja uma resposta...
+			post = (struct Post*)g_hash_table_lookup(com->post, &post->parent_id);
+		}
+
+		if(*(post->owner_display_name)=='\0'){
+			struct User* user = malloc(sizeof(struct User));
+			user = (struct User*)g_hash_table_lookup(com->user, &post->owner_id); 
+			new = create_str_pair(post->titulo, user->display_name);
+		}
+		else new = create_str_pair(post->titulo, post->owner_display_name);
 	}
-
-	struct User* user = malloc(sizeof(struct User));
-	user = (struct User*)g_hash_table_lookup(com->user, &post->owner_id); 
-
-	/* Debugging */ printf("Alocou memória para a estrutura User\n");
-
-	STR_pair new = create_str_pair(post->titulo, user->display_name);
-	
 	return new;
 }
 
 /* Funcao para Debugging de PostHashT */
 void printPostHT(gpointer key, gpointer value, gpointer user_data){
 	struct Post* aux = (struct Post*)value;
+	//printf("Alocou memoria para post\n");
 	int* keyId = (int* )key;
-	printf(user_data,*keyId, aux->id, aux->owner_id,aux->titulo);
+	printf("%d ",*keyId);
+	printf("%d ",aux->id);
+	printf("%d ",aux->type_id);
+	printf("%d ",aux->owner_id);
+	printf("%s ",aux->owner_display_name);
+	printf("%d ",aux->parent_id);
+	printf("%s\n",aux->titulo);
+	free(aux);
 }
 
 /* Funcao para Debugging de UserHashT */
@@ -254,17 +270,16 @@ int main(){
 	//g_hash_table_foreach(teste->user,(GHFunc)printUserHT,"%d %d %s\n");
 	//testeAcessoUserHT(teste,4980640);
 /* Funcao para Debugging de PostHashT */
-	//g_hash_table_foreach(teste->post,(GHFunc)printPostHT,"%d %d %d %s\n"); 
+	//g_hash_table_foreach(teste->post,(GHFunc)printPostHT,NULL); 
 
-	/*GList* new = g_hash_table_get_keys(teste->user);
-	g_list_foreach(new,print,NULL);*/
+
 	STR_pair new ;
-	new = info_from_post(teste,9);
+	new = info_from_post(teste,199);// 199 nao tem owner id apenas owner display name
 	printf("\nPERGUNTA:\n%s \n%s\n\n",get_fst_str(new),get_snd_str(new));
 
 	new = info_from_post(teste,7);
 	printf("\nRESPOSTA À PERGUNTA:\n%s \n%s\n\n",get_fst_str(new),get_snd_str(new));
-   	//printf("Tamanho hash: %d\n",g_hash_table_size(teste->user));
+   	printf("Tamanho hash: %d\n",g_hash_table_size(teste->user));
   	
   	return 0;
 } 
