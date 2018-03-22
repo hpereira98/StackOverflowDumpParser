@@ -5,7 +5,7 @@
 #include <gmodule.h>
 #include <glib.h>
 #include <string.h>
-
+#include "my_date.h"
 
 /*NOTAS:
 &#xA - \n codificado
@@ -46,23 +46,6 @@ struct TCD_community{
 	GHashTable* post;	
 };
 
-
-Date atribuiData(char* date){ // "AAAA-MM-DD"
-	char* ano_str = malloc(5);
-	char* mes_str = malloc(3);
-	char* dia_str = malloc(3);
-	int ano, mes, dia;
-
-	strncpy(ano_str, date, 4);
-	strncpy(mes_str, date+5, 2);
-	strncpy(dia_str, date+8, 2);
-
-	ano = atoi(ano_str);
-	mes = atoi(mes_str);
-	dia = atoi(dia_str);
-
-	return (createDate(dia, mes, ano));
-}
 
 
 TAD_community init(){
