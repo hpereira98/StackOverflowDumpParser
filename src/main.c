@@ -37,6 +37,7 @@ struct Post{
 	char* owner_display_name;
 	int type_id;
 	int parent_id;
+	Date data;
 };
 
 
@@ -44,6 +45,24 @@ struct TCD_community{
 	GHashTable* user;
 	GHashTable* post;	
 };
+
+
+Date atribuiData(char* date){ // "AAAA-MM-DD"
+	char* ano_str = malloc(5);
+	char* mes_str = malloc(3);
+	char* dia_str = malloc(3);
+	int ano, mes, dia;
+
+	strncpy(ano_str, date, 4);
+	strncpy(mes_str, date+5, 2);
+	strncpy(dia_str, date+8, 2);
+
+	ano = atoi(ano_str);
+	mes = atoi(mes_str);
+	dia = atoi(dia_str);
+
+	return (createDate(dia, mes, ano));
+}
 
 
 TAD_community init(){
@@ -138,7 +157,7 @@ TAD_community load(TAD_community com, char* dump_path){
 	   			xmlChar* user_display_name = xmlGetProp(cur, (const xmlChar *)"OwnerDisplayName");
 	   			xmlChar* titulo = xmlGetProp(cur, (const xmlChar *)"Title");
 	   			xmlChar* parent_id = xmlGetProp(cur, (const xmlChar *)"ParentId");
-
+				xmlChar* data = xmlGetProp(cur, (const xmlChar *)"CreationDate");
 	   		
 
 	   			int* idOwner = malloc(sizeof(int));
@@ -183,6 +202,10 @@ TAD_community load(TAD_community com, char* dump_path){
 	   			}
 	   			else new->owner_display_name = "";
 
+	   			// Data
+	   			new->data = atribuiData((char*) data);
+
+
 	   			// Inserir conforme o Post ID
 	   			g_hash_table_insert(com->post, idPost, new);
 	   				
@@ -222,10 +245,13 @@ STR_pair info_from_post(TAD_community com, int id){
 		if(*(post->owner_display_name)=='\0'){
 			struct User* user = malloc(sizeof(struct User));
 			user = (struct User*)g_hash_table_lookup(com->user, &post->owner_id); 
-			new = create_str_pair(post->titulo, user->display_name);
+			new = create_str_pair(post->titulo, user->display_name); // não estamos a alocar 2 vezes memoria assim? usar sets??
 		}
 		else new = create_str_pair(post->titulo, post->owner_display_name);
 	}
+
+	printf("Data: %d-%d-%d", get_year(post->data), get_month(post->data), get_day(post->data));
+
 	return new;
 }
 
