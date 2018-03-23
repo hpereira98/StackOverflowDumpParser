@@ -38,6 +38,7 @@ struct Post{
 	int type_id;
 	int parent_id;
 	Date data;
+	char* tags;
 };
 
 
@@ -141,6 +142,7 @@ TAD_community load(TAD_community com, char* dump_path){
 	   			xmlChar* titulo = xmlGetProp(cur, (const xmlChar *)"Title");
 	   			xmlChar* parent_id = xmlGetProp(cur, (const xmlChar *)"ParentId");
 				xmlChar* data = xmlGetProp(cur, (const xmlChar *)"CreationDate");
+				xmlChar* tags = xmlGetProp(cur, (const xmlChar *)"Tags");
 	   		
 
 	   			int* idOwner = malloc(sizeof(int));
@@ -188,6 +190,11 @@ TAD_community load(TAD_community com, char* dump_path){
 	   			// Data
 	   			new->data = atribuiData((char*) data);
 
+	   			// Tags     /*  Tags="<tag>;<tag>;"  */
+	   			if(tags){
+
+	   			}
+	   			//else new->tags = {""};
 
 	   			// Inserir conforme o Post ID
 	   			g_hash_table_insert(com->post, idPost, new);
@@ -212,6 +219,7 @@ TAD_community load(TAD_community com, char* dump_path){
 }
 
 
+// QUERY 1
 
 STR_pair info_from_post(TAD_community com, int id){
 	STR_pair new = create_str_pair(NULL, NULL);
@@ -237,6 +245,59 @@ STR_pair info_from_post(TAD_community com, int id){
 
 	return new;
 }
+
+
+// QUERY 4
+
+void adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer token_pointer){
+	void* token = (void*)token_pointer;
+	struct Post* post = (struct Post*) post_pointer;
+	char* tag = malloc(strlen((char*)(token+1) + 1)); strcpy(tag, (char*)(token+1));
+	Date* begin = (Date*)token+2;
+	Date* end = (Date*)token+3; // porque Date* ?
+	GTree* tree = (GTree*) token;
+
+	if(strcmp(post->tags, tag) == 0){ // arrays de tags - mudar
+		if(comparaDatas(*begin, post->data) == 1 && comparaDatas(post->data, *end) == -1){
+			g_tree_insert(tree, (gpointer)post->data, post);	// g_tree_insert (GTree *tree, gpointer key, gpointer value);			
+		}
+	}
+}
+
+
+void addToLongList(gpointer key_pointer, gpointer post_pointer, gpointer lista_pointer){
+	struct Post* post = (struct Post*) post_pointer;
+	int* ocupados = (int*) (lista_pointer+1);
+	LONG_list lista = lista_pointer;
+
+	set_list(lista, *ocupados, post->id);
+	(*ocupados)++;
+}
+
+
+LONG_list questions_with_tag(TAD_community com, char* tag, Date begin, Date end){
+
+	GTree* tree = g_tree_new((GCompareFunc)comparaDatas);
+	void* token[4] = {(void*)tree, (void*)tag, (void*)begin, (void*)end};
+
+	// Constroi a tree com os posts com a tag e dentro da data
+	g_hash_table_foreach(com->post, (GHFunc)adicionaComTag, (gpointer)token);
+
+	gint tam = g_tree_nnodes(tree); 
+
+	LONG_list r = create_list(tam);
+	int* i = 0;
+	void* lista[2] = {(void*)r, (void*)i};
+
+	// Constroi a lista resultado (r)
+	g_tree_foreach(tree, (GTraverseFunc)addToLongList, (gpointer)lista);
+
+
+	return r;
+}
+
+
+
 
 /* Funcao para Debugging de PostHashT */
 void printPostHT(gpointer key, gpointer value, gpointer user_data){
@@ -269,6 +330,7 @@ void testeAcessoUserHT(TAD_community com, int id){
 	if(user) printf("%d %s\n",user->id,user->display_name);
 	 else printf("user not found\n");
 }
+
 
 int main(){
 	struct TCD_community* teste = init();
