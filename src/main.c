@@ -359,17 +359,21 @@ int main(){
 
 struct pairlist{
 	int size;
-	LONG_pair *list;
+	LONG_pair *list; // lista de "(numero de posts, id do user)"
 } *PAIR_list;
 
 void insertionSort (gpointer id, gpointer u, gpointer l){
 	struct User* user = (User*) u;
-	PAIR_list lista = (PAIR_list) l;
+	PAIR_list* lista = (PAIR_list) l;
 		
-	int numPosts[];
 	int posts = n_respostas+n_perguntas;
-	for (int i; i<lista->size; i++) {
-		
+	for (int i; i<lista->size; i++)
+		if (posts>=get_fst_long(lista->list[i]) {
+			for (j=i;j<lista->size;j++) lista->list[j+1]=lista->list[j];
+			set_fst_long(lista->list[i],posts);
+			set_snd_long(lista->list[i],user->id);
+			break;
+		}		
 }
 
 
@@ -377,14 +381,15 @@ LONG_list top_most_active(TAD community com, int N) {
 
 	PAIR_list lista;
 	lista->size=N;
-	inicializar lista a 0's.
+	lista->list=malloc(sizeof(struct long_pair)*N);
+	for (int i=0;i<N;i++) set_fst_long(lista->list[i],0); // inicializar primeiro elem dos pares a 0
 
 	LONG_list res=create_list(N);
 
 	g_hash_table_foreach(com->user, insertionSort, lista);
 	
 	for (int i=0;i<N;i++) 
-		set_list(res,i,get_fst_long(lista->list[i]);
+		set_list(res,i,get_snd_long(lista->list[i]);
 
 	return res;
 }
