@@ -5,6 +5,7 @@
 #include <gmodule.h>
 #include <glib.h>
 #include <string.h>
+#include <time.h>
 #include "my_date.h"
 
 /*NOTAS:
@@ -58,23 +59,6 @@ TAD_community init(){
   	new->post = newPostHash;
 
   	return new;
-}
-
-
-char* postTags(xmlChar* tags){
-	GString* aux = g_string_new("");
-	int i = 0;
-
-	while(tags[i] != '\0'){
-		i++; // avança '<'
-		for(i=i; tags[i]!='>'; i++){
-			aux = g_string_append_c(aux, (gchar)tags[i]);
-		}
-		i+=2; // avanca '>' e ';'
-		aux = g_string_append_c(aux, (gchar)'/');
-	}
-
-	return (char*)aux;
 }
 
 
@@ -141,8 +125,6 @@ TAD_community load(TAD_community com, char* dump_path){
 		printf("Document not parsed successfully\n");
 	}
 
-	/*Debugging*/ printf("Abriu Posts.xml\n");
-
 	cur = xmlDocGetRootElement(doc_posts);
 	if(!cur){
 		printf("Empty Document\n");
@@ -160,7 +142,7 @@ TAD_community load(TAD_community com, char* dump_path){
 	   			xmlChar* titulo = xmlGetProp(cur, (const xmlChar *)"Title");
 	   			xmlChar* parent_id = xmlGetProp(cur, (const xmlChar *)"ParentId");
 				xmlChar* data = xmlGetProp(cur, (const xmlChar *)"CreationDate");
-				xmlChar* tags = xmlGetProp(cur, (const xmlChar *)"Tags"); 	if(tags) printf("%s\n", (const char*)tags);
+				xmlChar* tags = xmlGetProp(cur, (const xmlChar *)"Tags");
 
 
 	   			int* idOwner = malloc(sizeof(int));
@@ -277,12 +259,12 @@ void posts_count(gpointer key, gpointer post_pointer, gpointer info){
 	Date begin = ((Date*)(info))[0];
 	Date end = ((Date*)(info))[1];
 
-	int numQuestions = ((int**)(info))[2];
-	int numAnswers = ((int**)(info))[3];
+	int* numQuestions = ((int**)(info))[2];
+	int* numAnswers = ((int**)(info))[3];
 	
 	if(comparaDatas(post_date,begin)==1 && comparaDatas(end,post_date)==1){
-		if(post->type_id==1) (numQuestions)++;
-			else (numAnswers)++;
+		if(post->type_id==1) (*numQuestions)++;
+			else (*numAnswers)++;
 	}
 }
 
@@ -304,27 +286,26 @@ LONG_pair total_posts(TAD_community com, Date begin, Date end){
 
 // QUERY 4
 
-void adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer token_pointer){ // token = {tree, tag, inicio, fim}
-	void* token = (void*)token_pointer;
+void adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer info){ // info = {tree, tag, inicio, fim}
 	struct Post* post = (struct Post*) post_pointer;
-	char* tag = malloc(strlen((char*)(token+1) + 1)); strcpy(tag, (char*)(token+1));
-	Date* begin = (Date*)(token+2);
-	Date* end = (Date*)(token+3); // porque Date* ?
-	GTree* tree = (GTree*) token;
+	char* tag = malloc(strlen(((char**)info)[1] + 1)); strcpy(tag, ((char**)info)[1]);
+	Date begin = ((Date*)(info))[2];
+	Date end = ((Date*)(info))[3]; 
+	GTree* tree = ((GTree**)(info))[0]; 
 
 	if(strstr(post->tags, tag) != NULL){ // str contains
-		if(comparaDatas(*begin, post->data) == 1 && comparaDatas(post->data, *end) == -1){
+		if(comparaDatas(begin, post->data) == 1 && comparaDatas(post->data, end) == -1){
 			g_tree_insert(tree, (gpointer)post->data, post);	// g_tree_insert (GTree *tree, gpointer key, gpointer value);			
 		}
 	}
+
 }
 
 
-void addToLongList(gpointer key_pointer, gpointer post_pointer, gpointer token_pointer){ // token = {lista, ocupados}
+void addToLongList(gpointer key_pointer, gpointer post_pointer, gpointer info){ // info = {lista, ocupados}
 	struct Post* post = (struct Post*) post_pointer;
-	void* token = (void*)token_pointer;
-	int* ocupados = (int*)(token+1);
-	LONG_list lista = (LONG_list)token;
+	int* ocupados = ((int**)(info))[1]; 
+	LONG_list lista = ((LONG_list*)(info))[0]; 
 
 	set_list(lista, *ocupados, post->id);
 	(*ocupados)++;
@@ -334,16 +315,17 @@ void addToLongList(gpointer key_pointer, gpointer post_pointer, gpointer token_p
 LONG_list questions_with_tag(TAD_community com, char* tag, Date begin, Date end){ 
 
 	GTree* tree = g_tree_new((GCompareFunc)comparaDatas);
-	void* token[4] = {(void*)tree, (void*)tag, (void*)begin, (void*)end};
+	void* info[4] = {(void*)tree, (void*)tag, (void*)begin, (void*)end};
 
 	// Constroi a tree com os posts com a tag e dentro da data
-	g_hash_table_foreach(com->post, (GHFunc)adicionaComTag, (gpointer)token);
+	g_hash_table_foreach(com->post, (GHFunc)adicionaComTag, (gpointer)info);
 
 	gint tam = g_tree_nnodes(tree); 
 
 	LONG_list r = create_list(tam);
-	int* i = 0;
-	void* lista[2] = {(void*)r, (void*)i};
+	int* i = malloc(sizeof(int));
+	*i = 0;
+	void* lista[2] = {r, i};
 
 	// Constroi a lista resultado (r)
 	g_tree_foreach(tree, (GTraverseFunc)addToLongList, (gpointer)lista);
@@ -393,10 +375,35 @@ int main(){
 	char* path = "../../dumpexemplo/android/";
 	Date inicio = createDate(12,9,2010);
 	Date fim = createDate(14,9,2010);
-	load(teste, path);
-	LONG_pair new1 = total_posts(teste,inicio,fim);
-	printf("%d %d\n",get_fst_long(new1),get_snd_long(new1));
+	clock_t begin;
+	clock_t end;
 
+	begin = clock();
+	load(teste, path);
+	end = clock();
+
+	printf("Tempo '0 - load' = %f\n", (double)(end-begin)/CLOCKS_PER_SEC);
+
+	clock_t begin1 = clock();
+	STR_pair new = info_from_post(teste,199);
+	clock_t end1 = clock();
+
+	printf("Tempo '1 - info_from_post' = %f\n", (double)(end1-begin1)/CLOCKS_PER_SEC);
+	
+	clock_t begin3 = clock();
+	LONG_pair new1 = total_posts(teste,inicio,fim);
+	//printf("%ld %ld\n",get_fst_long(new1),get_snd_long(new1));
+	clock_t end3 = clock();
+
+	printf("Tempo '3 - total_posts' = %f\n", (double)(end3-begin3)/CLOCKS_PER_SEC);
+
+	clock_t begin4 = clock();
+	LONG_list new2 = questions_with_tag(teste, "android", inicio, fim);
+	clock_t end4 = clock();
+
+	printf("Tempo '4 - questions_with_tag' = %f\n", (double)(end4-begin4)/CLOCKS_PER_SEC);
+
+	
 
 /* Funcao para Debugging de UserHashT*/
 	//g_hash_table_foreach(teste->user,(GHFunc)printUserHT,"%d %d %s\n");
@@ -405,13 +412,14 @@ int main(){
 	//g_hash_table_foreach(teste->post,(GHFunc)printPostHT,NULL); 
 
 
-	STR_pair new ;
+	/*STR_pair new ;
 	new = info_from_post(teste,199);// 199 nao tem owner id apenas owner display name
-	printf("\nPERGUNTA:\n%s \n%s\n\n",get_fst_str(new),get_snd_str(new));
+	printf("\nPERGUNTA:\n%s \n%s\n\n",get_fst_str(new),get_snd_str(new));*/
 
+	/*
 	new = info_from_post(teste,7);
 	printf("\nRESPOSTA À PERGUNTA:\n%s \n%s\n\n",get_fst_str(new),get_snd_str(new));
-   	printf("Tamanho hash: %d\n",g_hash_table_size(teste->user));
+   	printf("Tamanho hash: %d\n",g_hash_table_size(teste->user)); */
   	
   	return 0;
 } 
