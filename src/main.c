@@ -292,22 +292,24 @@ void adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer info){
 	Date begin = ((Date*)(info))[2];
 	Date end = ((Date*)(info))[3]; 
 	GTree* tree = ((GTree**)(info))[0]; 
+	int* id = &(post->id);
 
-	if(strstr(post->tags, tag) != NULL){ // str contains
-		if(comparaDatas(begin, post->data) == 1 && comparaDatas(post->data, end) == -1){
-			g_tree_insert(tree, (gpointer)post->data, post);	// g_tree_insert (GTree *tree, gpointer key, gpointer value);			
+	if(comparaDatas(begin, post->data) == 1 && comparaDatas(post->data, end) == -1){  
+		if(strstr(post->tags, tag) != NULL){ // str contains
+			g_tree_insert(tree, (gpointer)post->data, (gpointer)id);	// será que é necessária a estrutura post ou basta o id?			
 		}
 	}
 
 }
 
 
-void addToLongList(gpointer key_pointer, gpointer post_pointer, gpointer info){ // info = {lista, ocupados}
-	struct Post* post = (struct Post*) post_pointer;
+void addToLongList(gpointer key_pointer, gpointer id_pointer, gpointer info){ // info = {lista, ocupados}
+	//struct Post* post = (struct Post*) post_pointer;
+	int* id = (int*) id_pointer;
 	int* ocupados = ((int**)(info))[1]; 
 	LONG_list lista = ((LONG_list*)(info))[0]; 
 
-	set_list(lista, *ocupados, post->id);
+	set_list(lista, *ocupados, *id);
 	(*ocupados)++;
 }
 
@@ -318,19 +320,28 @@ LONG_list questions_with_tag(TAD_community com, char* tag, Date begin, Date end)
 	void* info[4] = {(void*)tree, (void*)tag, (void*)begin, (void*)end};
 
 	// Constroi a tree com os posts com a tag e dentro da data
+	/* Debugging */ clock_t begin1 = clock();
 	g_hash_table_foreach(com->post, (GHFunc)adicionaComTag, (gpointer)info);
+	/* Debugging */ clock_t end1 = clock();
 
+	/* Debugging */ clock_t begin3 = clock();
 	gint tam = g_tree_nnodes(tree); 
 
 	LONG_list r = create_list(tam);
+	/* Debugging */ clock_t end3 = clock();
 	int* i = malloc(sizeof(int));
 	*i = 0;
 	void* lista[2] = {r, i};
 
 	// Constroi a lista resultado (r)
+	/* Debugging */ clock_t begin2 = clock();
 	g_tree_foreach(tree, (GTraverseFunc)addToLongList, (gpointer)lista);
+	/* Debugging */ clock_t end2 = clock();
 
-
+	/* Debugging */ printf("Tempo de construir a arvore = %f\n", (double)(end1-begin1)/CLOCKS_PER_SEC);
+	/* Debugging */ printf("Tempo de percorrer a arvore e criar a lista = %f\n", (double)(end3-begin3)/CLOCKS_PER_SEC);
+	/* Debugging */ printf("Tempo de construir a lista = %f\n", (double)(end2-begin2)/CLOCKS_PER_SEC);
+	
 	return r;
 }
 
@@ -375,12 +386,10 @@ int main(){
 	char* path = "../../dumpexemplo/android/";
 	Date inicio = createDate(12,9,2010);
 	Date fim = createDate(14,9,2010);
-	clock_t begin;
-	clock_t end;
 
-	begin = clock();
+	clock_t begin = clock();
 	load(teste, path);
-	end = clock();
+	clock_t end = clock();
 
 	printf("Tempo '0 - load' = %f\n", (double)(end-begin)/CLOCKS_PER_SEC);
 
@@ -398,7 +407,7 @@ int main(){
 	printf("Tempo '3 - total_posts' = %f\n", (double)(end3-begin3)/CLOCKS_PER_SEC);
 
 	clock_t begin4 = clock();
-	LONG_list new2 = questions_with_tag(teste, "android", inicio, fim);
+	LONG_list new2 = questions_with_tag(teste, "android", inicio, fim); printf("%ld\n", get_list(new2, 0));
 	clock_t end4 = clock();
 
 	printf("Tempo '4 - questions_with_tag' = %f\n", (double)(end4-begin4)/CLOCKS_PER_SEC);
