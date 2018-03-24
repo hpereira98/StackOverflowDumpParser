@@ -262,9 +262,43 @@ STR_pair info_from_post(TAD_community com, int id){
 		else new = create_str_pair(post->titulo, post->owner_display_name);
 	}
 
-	printf("Data: %d-%d-%d", get_year(post->data), get_month(post->data), get_day(post->data));
+	
 
 	return new;
+}
+
+// QUERY 3
+
+void posts_count(gpointer key, gpointer post_pointer, gpointer info){
+	
+	struct Post* post = (struct Post*) post_pointer;
+	Date post_date = post->data;
+
+	Date begin = ((Date*)(info))[0];
+	Date end = ((Date*)(info))[1];
+
+	int numQuestions = ((int**)(info))[2];
+	int numAnswers = ((int**)(info))[3];
+	
+	if(comparaDatas(post_date,begin)==1 && comparaDatas(end,post_date)==1){
+		if(post->type_id==1) (numQuestions)++;
+			else (numAnswers)++;
+	}
+}
+
+
+LONG_pair total_posts(TAD_community com, Date begin, Date end){
+
+	int *numQuestions = malloc(sizeof(int));
+	int *numAnswers = malloc(sizeof(int));
+	*numQuestions = *numAnswers = 0;
+
+	void* info[4] = {begin, end, numQuestions, numAnswers};
+	
+	g_hash_table_foreach(com->post,posts_count,info);
+	LONG_pair totalPost= create_long_pair(*numQuestions,*numAnswers);
+
+	return totalPost;
 }
 
 
@@ -357,8 +391,13 @@ void testeAcessoUserHT(TAD_community com, int id){
 int main(){
 	struct TCD_community* teste = init();
 	char* path = "../../dumpexemplo/android/";
-	
+	Date inicio = createDate(12,9,2010);
+	Date fim = createDate(14,9,2010);
 	load(teste, path);
+	LONG_pair new1 = total_posts(teste,inicio,fim);
+	printf("%d %d\n",get_fst_long(new1),get_snd_long(new1));
+
+
 /* Funcao para Debugging de UserHashT*/
 	//g_hash_table_foreach(teste->user,(GHFunc)printUserHT,"%d %d %s\n");
 	//testeAcessoUserHT(teste,4980640);
@@ -381,17 +420,21 @@ int main(){
 
 struct pairlist{
 	int size;
-	LONG_pair *list;
+	LONG_pair *list; // lista de "(numero de posts, id do user)"
 } *PAIR_list;
 
 void insertionSort (gpointer id, gpointer u, gpointer l){
 	struct User* user = (User*) u;
-	PAIR_list lista = (PAIR_list) l;
+	PAIR_list* lista = (PAIR_list) l;
 		
-	int numPosts[];
 	int posts = n_respostas+n_perguntas;
-	for (int i; i<lista->size; i++) {
-		
+	for (int i; i<lista->size; i++)
+		if (posts>=get_fst_long(lista->list[i]) {
+			for (j=i;j<lista->size;j++) lista->list[j+1]=lista->list[j];
+			set_fst_long(lista->list[i],posts);
+			set_snd_long(lista->list[i],user->id);
+			break;
+		}		
 }
 
 
@@ -399,14 +442,15 @@ LONG_list top_most_active(TAD community com, int N) {
 
 	PAIR_list lista;
 	lista->size=N;
-	inicializar lista a 0's.
+	lista->list=malloc(sizeof(struct long_pair)*N);
+	for (int i=0;i<N;i++) set_fst_long(lista->list[i],0); // inicializar primeiro elem dos pares a 0
 
 	LONG_list res=create_list(N);
 
 	g_hash_table_foreach(com->user, insertionSort, lista);
 	
 	for (int i=0;i<N;i++) 
-		set_list(res,i,get_fst_long(lista->list[i]);
+		set_list(res,i,get_snd_long(lista->list[i]);
 
 	return res;
 }
