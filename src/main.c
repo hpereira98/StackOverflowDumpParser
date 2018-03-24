@@ -60,6 +60,24 @@ TAD_community init(){
   	return new;
 }
 
+
+char* postTags(xmlChar* tags){
+	GString* aux = g_string_new("");
+	int i = 0;
+
+	while(tags[i] != '\0'){
+		i++; // avança '<'
+		for(i=i; tags[i]!='>'; i++){
+			aux = g_string_append_c(aux, (gchar)tags[i]);
+		}
+		i+=2; // avanca '>' e ';'
+		aux = g_string_append_c(aux, (gchar)'/');
+	}
+
+	return (char*)aux;
+}
+
+
 TAD_community load(TAD_community com, char* dump_path){
 	int i=0;
 	char* users = "Users.xml";
@@ -142,8 +160,8 @@ TAD_community load(TAD_community com, char* dump_path){
 	   			xmlChar* titulo = xmlGetProp(cur, (const xmlChar *)"Title");
 	   			xmlChar* parent_id = xmlGetProp(cur, (const xmlChar *)"ParentId");
 				xmlChar* data = xmlGetProp(cur, (const xmlChar *)"CreationDate");
-				xmlChar* tags = xmlGetProp(cur, (const xmlChar *)"Tags");
-	   		
+				xmlChar* tags = xmlGetProp(cur, (const xmlChar *)"Tags"); 	if(tags) printf("%s\n", (const char*)tags);
+
 
 	   			int* idOwner = malloc(sizeof(int));
 	   			int* idPost = malloc(sizeof(int));
@@ -190,11 +208,14 @@ TAD_community load(TAD_community com, char* dump_path){
 	   			// Data
 	   			new->data = atribuiData((char*) data);
 
-	   			// Tags     /*  Tags="<tag>;<tag>;"  */
+	   			
+	   			// Tags   = "<tag>;<tag>;"  
 	   			if(tags){
-
+	   				new->tags = malloc(strlen((const char*)tags) + 1);
+	   				strcpy(new->tags, (const char*)tags);
 	   			}
-	   			//else new->tags = {""};
+	   			else new->tags = "";
+				
 
 	   			// Inserir conforme o Post ID
 	   			g_hash_table_insert(com->post, idPost, new);
@@ -249,15 +270,15 @@ STR_pair info_from_post(TAD_community com, int id){
 
 // QUERY 4
 
-void adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer token_pointer){
+void adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer token_pointer){ // token = {tree, tag, inicio, fim}
 	void* token = (void*)token_pointer;
 	struct Post* post = (struct Post*) post_pointer;
 	char* tag = malloc(strlen((char*)(token+1) + 1)); strcpy(tag, (char*)(token+1));
-	Date* begin = (Date*)token+2;
-	Date* end = (Date*)token+3; // porque Date* ?
+	Date* begin = (Date*)(token+2);
+	Date* end = (Date*)(token+3); // porque Date* ?
 	GTree* tree = (GTree*) token;
 
-	if(strcmp(post->tags, tag) == 0){ // arrays de tags - mudar
+	if(strstr(post->tags, tag) != NULL){ // str contains
 		if(comparaDatas(*begin, post->data) == 1 && comparaDatas(post->data, *end) == -1){
 			g_tree_insert(tree, (gpointer)post->data, post);	// g_tree_insert (GTree *tree, gpointer key, gpointer value);			
 		}
@@ -265,17 +286,18 @@ void adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer token_
 }
 
 
-void addToLongList(gpointer key_pointer, gpointer post_pointer, gpointer lista_pointer){
+void addToLongList(gpointer key_pointer, gpointer post_pointer, gpointer token_pointer){ // token = {lista, ocupados}
 	struct Post* post = (struct Post*) post_pointer;
-	int* ocupados = (int*) (lista_pointer+1);
-	LONG_list lista = lista_pointer;
+	void* token = (void*)token_pointer;
+	int* ocupados = (int*)(token+1);
+	LONG_list lista = (LONG_list)token;
 
 	set_list(lista, *ocupados, post->id);
 	(*ocupados)++;
 }
 
 
-LONG_list questions_with_tag(TAD_community com, char* tag, Date begin, Date end){
+LONG_list questions_with_tag(TAD_community com, char* tag, Date begin, Date end){ 
 
 	GTree* tree = g_tree_new((GCompareFunc)comparaDatas);
 	void* token[4] = {(void*)tree, (void*)tag, (void*)begin, (void*)end};
