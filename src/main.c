@@ -108,13 +108,13 @@ TAD_community load(TAD_community com, char* dump_path){
 
    				// ID
    				sscanf((const char*)id, "%d", idUser); 
-<<<<<<< HEAD
+
    				new->id = *idUser;						
 
 				new->n_respostas=0;
 				new->n_perguntas=0;			 
    				
-=======
+
    				new->id = *idUser;
 				
 				// Nº perguntas/respostas
@@ -129,7 +129,6 @@ TAD_community load(TAD_community com, char* dump_path){
 				else new->short_bio = "";
 			 
    				// Inserir conforme o ID
->>>>>>> 04272f170bb2d4c13b47afc65c538371f4e3c317
    				g_hash_table_insert(com->user, idUser, new); i++;
 				
    			}
@@ -286,14 +285,25 @@ STR_pair info_from_post(TAD_community com, int id){
 
 void insertionSort (gpointer id, gpointer u, gpointer info){
 	struct User* user = (struct User*) u;
-	GArray *id1 = ((GArray**)info)[0];
-	GArray *num_posts1 = ((GArray**)info)[1];
+	int *ids = ((int**)info)[0];
+	int *nposts = ((int**)info)[1];
+	int *tam = ((int**)info)[2];
+	int i,j;
 	if (user!=NULL) {
 		int num=(user->n_respostas)+(user->n_perguntas);
-		g_array_append_val(id1,user->id);
-		g_array_append_val(num_posts1,num);
+		for (i=0;i<(*tam);i++) {
+			if (num>nposts[i]) {
+				for (j=(*tam);j>i;j--){
+					ids[j]=ids[j-1];
+					nposts[j]=nposts[j-1];
+				}
+				ids[i]=user->id;
+				nposts[i]=num;
+				break;			
+			}
+		}
 	}
-	
+	// DEBUGGING: for (int i=0;i<(*tam);i++) printf("id[%d]: %d, num[%d]: %d\n",i,ids[i],i,nposts[i]);
 }
 
 
@@ -301,18 +311,24 @@ LONG_list top_most_active(TAD_community com, int N) {
 	
 	LONG_list res = create_list(N);	
 	
-	GArray *id = g_array_new(FALSE,FALSE,sizeof(int));
-	GArray *num_posts = g_array_new(FALSE,FALSE,sizeof(int));	
+	int *size=malloc(sizeof(int));
+	*size=N;
+	int id[N];
+	int num_posts[N];
+	for (int i=0;i<N;i++) {
+		id[i]=0; num_posts[i]=0;
+	}
 	
-	void* info[2] = {id,num_posts};
+	void* info[3] = {id,num_posts,size};
 
 	g_hash_table_foreach(com->user, insertionSort, info);
+
 	
-	for (gint i=0; i<id->len;i++) printf("id: %d, num: %d\n",g_array_index(id,int,i),g_array_index(num_posts,int,i));
-	for (gint i=0;i<N;i++)
-		set_list(res, (int)i, g_array_index(num_posts,int,i));
+	for (int i=0;i<N;i++)
+		set_list(res,i,(long)id[i]);
 
 	return res;
+
 }
 
 // QUERY 3
@@ -490,7 +506,6 @@ int main(){
 	load(teste, path);
 	clock_t end = clock();
 
-
 	printf("Tempo '0 - load' = %f\n", (double)(end-begin)/CLOCKS_PER_SEC);
 
 	clock_t begin1 = clock();
@@ -512,11 +527,13 @@ int main(){
 
 	printf("Tempo '4 - questions_with_tag' = %f\n", (double)(end4-begin4)/CLOCKS_PER_SEC);
 
-	//g_hash_table_foreach(teste->user,(GHFunc)ver_num,"UserId:%d, Nº Perguntas:%d, Nº Respostas:%d\n");
-
 	LONG_list new3 = top_most_active(teste,10);
 	for (int it=0;it<10;it++) 
 		printf("%dº: %li\n",(it+1),get_list(new3,it));
+
+/* Funcao para Debugging da Q3:
+g_hash_table_foreach(teste->user,(GHFunc)ver_num,"UserId:%d, Nº Perguntas:%d, Nº Respostas:%d\n");
+*/
 
 /* Funcao para Debugging de UserHashT*/
 	//g_hash_table_foreach(teste->user,(GHFunc)printUserHT,"%d %d %s\n");
