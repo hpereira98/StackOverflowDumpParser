@@ -108,13 +108,6 @@ TAD_community load(TAD_community com, char* dump_path){
 
    				// ID
    				sscanf((const char*)id, "%d", idUser); 
-
-   				new->id = *idUser;						
-
-				new->n_respostas=0;
-				new->n_perguntas=0;			 
-   				
-
    				new->id = *idUser;
 				
 				// Nº perguntas/respostas
@@ -303,7 +296,7 @@ void insertionSort (gpointer id, gpointer u, gpointer info){
 			}
 		}
 	}
-	// DEBUGGING: for (int i=0;i<(*tam);i++) printf("id[%d]: %d, num[%d]: %d\n",i,ids[i],i,nposts[i]);
+	//for (int i=0;i<(*tam);i++) printf("id[%d]: %d, num[%d]: %d\n",i,ids[i],i,nposts[i]);
 }
 
 
@@ -311,15 +304,14 @@ LONG_list top_most_active(TAD_community com, int N) {
 	
 	LONG_list res = create_list(N);	
 	
-	int *size=malloc(sizeof(int));
-	*size=N;
+	int size = N;
 	int id[N];
 	int num_posts[N];
 	for (int i=0;i<N;i++) {
 		id[i]=0; num_posts[i]=0;
 	}
 	
-	void* info[3] = {id,num_posts,size};
+	void* info[3] = {id,num_posts,&size};
 
 	g_hash_table_foreach(com->user, insertionSort, info);
 
@@ -528,8 +520,14 @@ int main(){
 	printf("Tempo '4 - questions_with_tag' = %f\n", (double)(end4-begin4)/CLOCKS_PER_SEC);
 
 	LONG_list new3 = top_most_active(teste,10);
-	for (int it=0;it<10;it++) 
-		printf("%dº: %li\n",(it+1),get_list(new3,it));
+	for (int it=0;it<10;it++) {
+		printf("%dº: %li ",(it+1),get_list(new3,it));
+		int *aux = malloc(sizeof(int));
+		*aux = get_list(new3,it);
+		struct User* user = g_hash_table_lookup(teste->user,aux);
+		if(user) printf("%d\n",user->n_perguntas+user->n_respostas);
+	}	
+	
 
 /* Funcao para Debugging da Q3:
 g_hash_table_foreach(teste->user,(GHFunc)ver_num,"UserId:%d, Nº Perguntas:%d, Nº Respostas:%d\n");
