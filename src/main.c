@@ -23,8 +23,8 @@ struct User{
 	int id;
 	char* display_name;
 	//int rep;
-	//int n_perguntas;
-	//int n_respostas;
+	int n_perguntas;
+	int n_respostas;
 	//Date data_posts[];
 	//Date data_respostas[];
 	//char* títulos[];
@@ -104,7 +104,10 @@ TAD_community load(TAD_community com, char* dump_path){
    				strcpy(new->display_name,(const char*)name);
 
    				sscanf((const char*)id, "%d", idUser); 
-   				new->id = *idUser;			 
+   				new->id = *idUser;
+				
+				new->n_perguntas=0;
+				new->n_respostas=0;			 
    				
    				g_hash_table_insert(com->user, idUser, new); i++;
 				
@@ -190,6 +193,14 @@ TAD_community load(TAD_community com, char* dump_path){
 	   			// Data
 	   			new->data = atribuiData((char*) data);
 
+				// Count questions and answers
+				
+				struct User* user = malloc(sizeof(struct User));
+				user = (struct User*)g_hash_table_lookup(com->user, idOwner);
+				if (*post_type_id == 1) (user->n_perguntas)++;
+				else if (*post_type_id == 2) (user->n_respostas)++;
+				g_hash_table_replace(com->user, idOwner, user);
+				
 	   			
 	   			// Tags   = "<tag>;<tag>;"  
 	   			if(tags){
@@ -247,6 +258,46 @@ STR_pair info_from_post(TAD_community com, int id){
 	
 
 	return new;
+}
+
+// QUERY 2
+
+struct PAIR_list{
+	int size;
+	LONG_pair *list; // lista de "(numero de posts, id do user)"
+};
+
+void insertionSort (gpointer id, gpointer u, gpointer l){
+	struct User* user = (struct User*) u;
+	struct PAIR_list* lista = malloc(sizeof(struct PAIR_list*));
+	lista=(struct PAIR_list*) l;
+		
+	int posts = user->n_respostas+user->n_perguntas;
+	for (int i; i<lista->size; i++)
+		if (posts>=get_fst_long(lista->list[i])) {
+			for (int j=i;j<lista->size;j++) lista->list[j+1]=lista->list[j];
+			set_fst_long(lista->list[i],posts);
+			set_snd_long(lista->list[i],user->id);
+			break;
+		}		
+}
+
+
+LONG_list top_most_active(TAD_community com, int N) {
+
+	struct PAIR_list* lista = malloc(sizeof(struct PAIR_list*)*N);
+	lista->size=N;
+	lista->list=malloc(sizeof(struct long_pair*)*N);
+	for (int i=0;i<N;i++) set_fst_long(lista->list[i],0); // inicializar primeiro elem dos pares a 0
+
+	LONG_list res=create_list(N);
+
+	g_hash_table_foreach(com->user, insertionSort, lista);
+	
+	for (int i=0;i<N;i++) 
+		set_list(res,i,get_snd_long(lista->list[i]));
+
+	return res;
 }
 
 // QUERY 3
@@ -433,44 +484,4 @@ int main(){
   	return 0;
 } 
 
-/* INTERROGAÇÃO 2 - Protótipo:
 
-struct pairlist{
-	int size;
-	LONG_pair *list; // lista de "(numero de posts, id do user)"
-} *PAIR_list;
-
-void insertionSort (gpointer id, gpointer u, gpointer l){
-	struct User* user = (User*) u;
-	PAIR_list* lista = (PAIR_list) l;
-		
-	int posts = n_respostas+n_perguntas;
-	for (int i; i<lista->size; i++)
-		if (posts>=get_fst_long(lista->list[i]) {
-			for (j=i;j<lista->size;j++) lista->list[j+1]=lista->list[j];
-			set_fst_long(lista->list[i],posts);
-			set_snd_long(lista->list[i],user->id);
-			break;
-		}		
-}
-
-
-LONG_list top_most_active(TAD community com, int N) {
-
-	PAIR_list lista;
-	lista->size=N;
-	lista->list=malloc(sizeof(struct long_pair)*N);
-	for (int i=0;i<N;i++) set_fst_long(lista->list[i],0); // inicializar primeiro elem dos pares a 0
-
-	LONG_list res=create_list(N);
-
-	g_hash_table_foreach(com->user, insertionSort, lista);
-	
-	for (int i=0;i<N;i++) 
-		set_list(res,i,get_snd_long(lista->list[i]);
-
-	return res;
-}
-
-
-*/
