@@ -26,11 +26,11 @@ int comparaDatas(Date a, Date b){ // se a primeira for mais pequena que a segund
 	if(get_year(a) > get_year(b)) return 1;
 	if(get_year(a) < get_year(b)) return -1;
 
-	// Compara o mês
+	// Compara o mês - se chegaram aqui é proque o ano é o mesmo
 	if(get_month(a) > get_month(b)) return 1;
 	if(get_month(a) < get_month(b)) return -1;
 
-	// Compara o dia
+	// Compara o dia - se chegaram aqui é porque o ano e o mês são os mesmos
 	if(get_day(a) > get_day(b)) return 1;
 	if(get_day(a) < get_day(b)) return -1;
 

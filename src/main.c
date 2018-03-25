@@ -28,7 +28,7 @@ struct User{
 	//Date data_posts[];
 	//Date data_respostas[];
 	//char* títulos[];
-	//char* short_bio[];
+	char* short_bio;
 };
 
 struct Post{
@@ -63,7 +63,7 @@ TAD_community init(){
 
 
 TAD_community load(TAD_community com, char* dump_path){
-	int i=0;
+	int i = 0;
 	char* users = "Users.xml";
 	char* users_path = malloc(strlen(dump_path)+strlen(users) + 1);
 	strcpy(users_path,dump_path);
@@ -95,20 +95,32 @@ TAD_community load(TAD_community com, char* dump_path){
 		while(cur){
    			xmlChar* id = xmlGetProp(cur, (const xmlChar *)"Id");
    			xmlChar* name = xmlGetProp(cur, (const xmlChar *)"DisplayName");
+			xmlChar* bio = xmlGetProp(cur, (const xmlChar *)"AboutMe");
 
    			if(id != NULL){
    				int* idUser = malloc(sizeof(int));
    				struct User* new = g_new(struct User, 1);//forma de fazer malloc
    				
+   				// Nome
    				new->display_name = malloc(strlen((const char*)name) + 1);
    				strcpy(new->display_name,(const char*)name);
 
+   				// ID
    				sscanf((const char*)id, "%d", idUser); 
    				new->id = *idUser;
 				
+				// Nº perguntas/respostas
 				new->n_perguntas=0;
-				new->n_respostas=0;			 
-   				
+				new->n_respostas=0;
+
+				// Bio
+				if(bio){
+					new->short_bio = malloc(strlen((const char*)bio) + 1);
+					strcpy(new->short_bio, (const char*)bio);
+				}
+				else new->short_bio = "";
+			 
+   				// Inserir conforme o ID
    				g_hash_table_insert(com->user, idUser, new); i++;
 				
    			}
@@ -202,7 +214,7 @@ TAD_community load(TAD_community com, char* dump_path){
 				g_hash_table_replace(com->user, idOwner, user);
 				
 	   			
-	   			// Tags   = "<tag>;<tag>;"  
+	   			// Tags   = "<tag><tag>"  
 	   			if(tags){
 	   				new->tags = malloc(strlen((const char*)tags) + 1);
 	   				strcpy(new->tags, (const char*)tags);
@@ -408,6 +420,32 @@ LONG_list questions_with_tag(TAD_community com, char* tag, Date begin, Date end)
 	
 	return r;
 }
+
+
+// QUERY 5
+
+/*
+	criar variavel int[10] last_10_post_id -> no parser dos posts: - ir buscar o user do autor do post e last_10_post_id
+																   - ir buscar a data dum post do array e comparar com a data do post que estamos a introduzir
+																   - introduzir no array o id puxando o resto para a frente
+
+
+	Dentro da função -> - criar array auxiliar
+						- percorrer todos os posts da hash
+						- inserir ordenadamente quando o post for do user em questao
+
+
+*/
+USER get_user_info(TAD_community com, long id){
+	//struct User* user = malloc(sizeof(struct User));
+	
+	//user = (struct User*)g_hash_table_lookup(com->user, &id);
+
+
+	// return create_user(user->bio, user->last_10_post_id);
+
+}
+
 
 
 
