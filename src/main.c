@@ -276,25 +276,31 @@ STR_pair info_from_post(TAD_community com, int id){
 
 // QUERY 2
 
-void insertionSort (gpointer id, gpointer u, gpointer info){
-	struct User* user = (struct User*) u;
-	int *ids = ((int**)info)[0];
-	int *nposts = ((int**)info)[1];
-	int *tam = ((int**)info)[2];
-	int i,j;
+void insertionSort (gpointer key, gpointer user_pointer, gpointer info){
+	struct User* user = (struct User*) user_pointer;
+	int *idArray = ((int**)info)[0];
+	int *countArray = ((int**)info)[1];
+	int *size = ((int**)info)[2];
+	int *ocupados = ((int**)info)[3];
+	int i,j,total;
+
 	if (user!=NULL) {
-		int num=(user->n_respostas)+(user->n_perguntas);
-		for (i=0;i<(*tam);i++) {
-			if (num>nposts[i]) {
-				for (j=(*tam);j>i;j--){
-					ids[j]=ids[j-1];
-					nposts[j]=nposts[j-1];
+		total = user->n_respostas + user->n_perguntas;
+		// insere no arry caso nao esteja ainda cheio, ou se estiver, total maior que o menor elemento do array
+		if( (*ocupados != *size) || (*ocupados == *size && total > countArray[*size]))
+
+			for (i=0;i<(*size);i++) 
+				if (total>countArray[i]) {
+					for (j=(*size);j>i;j--){
+						idArray[j]=idArray[j-1];
+						countArray[j]=countArray[j-1];
+					}
+					idArray[i]=user->id;
+					countArray[i]=total;
+					(*ocupados)++;
+					break;			
 				}
-				ids[i]=user->id;
-				nposts[i]=num;
-				break;			
-			}
-		}
+			
 	}
 	//for (int i=0;i<(*tam);i++) printf("id[%d]: %d, num[%d]: %d\n",i,ids[i],i,nposts[i]);
 }
@@ -305,13 +311,15 @@ LONG_list top_most_active(TAD_community com, int N) {
 	LONG_list res = create_list(N);	
 	
 	int size = N;
+	int ocupados = 0;
 	int id[N];
 	int num_posts[N];
+
 	for (int i=0;i<N;i++) {
 		id[i]=0; num_posts[i]=0;
 	}
 	
-	void* info[3] = {id,num_posts,&size};
+	void* info[4] = {id,num_posts,&size,&ocupados};
 
 	g_hash_table_foreach(com->user, insertionSort, info);
 
@@ -519,8 +527,8 @@ int main(){
 
 	printf("Tempo '4 - questions_with_tag' = %f\n", (double)(end4-begin4)/CLOCKS_PER_SEC);
 
-	LONG_list new3 = top_most_active(teste,10);
-	for (int it=0;it<10;it++) {
+	LONG_list new3 = top_most_active(teste,100);
+	for (int it=0;it<100;it++) {
 		printf("%dº: %li ",(it+1),get_list(new3,it));
 		int *aux = malloc(sizeof(int));
 		*aux = get_list(new3,it);
