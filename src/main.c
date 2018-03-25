@@ -98,16 +98,17 @@ TAD_community load(TAD_community com, char* dump_path){
 
    			if(id != NULL){
    				int* idUser = malloc(sizeof(int));
+				
    				struct User* new = g_new(struct User, 1);//forma de fazer malloc
    				
    				new->display_name = malloc(strlen((const char*)name) + 1);
    				strcpy(new->display_name,(const char*)name);
 
    				sscanf((const char*)id, "%d", idUser); 
-   				new->id = *idUser;
-				
-				new->n_perguntas=0;
-				new->n_respostas=0;			 
+   				new->id = *idUser;						
+
+				new->n_respostas=0;
+				new->n_perguntas=0;			 
    				
    				g_hash_table_insert(com->user, idUser, new); i++;
 				
@@ -197,10 +198,11 @@ TAD_community load(TAD_community com, char* dump_path){
 				
 				struct User* user = malloc(sizeof(struct User));
 				user = (struct User*)g_hash_table_lookup(com->user, idOwner);
-				if (*post_type_id == 1) (user->n_perguntas)++;
-				else if (*post_type_id == 2) (user->n_respostas)++;
-				g_hash_table_replace(com->user, idOwner, user);
-				
+				if (user!=NULL) {
+					if (atoi((const char*)post_type_id) == 1) (user->n_perguntas)++;
+					else if (atoi((const char*)post_type_id) == 2) (user->n_respostas)++;
+				}
+								
 	   			
 	   			// Tags   = "<tag>;<tag>;"  
 	   			if(tags){
@@ -262,40 +264,33 @@ STR_pair info_from_post(TAD_community com, int id){
 
 // QUERY 2
 
-struct PAIR_list{
-	int size;
-	LONG_pair *list; // lista de "(numero de posts, id do user)"
-};
-
-void insertionSort (gpointer id, gpointer u, gpointer l){
+void insertionSort (gpointer id, gpointer u, gpointer info){
 	struct User* user = (struct User*) u;
-	struct PAIR_list* lista = malloc(sizeof(struct PAIR_list*));
-	lista=(struct PAIR_list*) l;
-		
-	int posts = user->n_respostas+user->n_perguntas;
-	for (int i; i<lista->size; i++)
-		if (posts>=get_fst_long(lista->list[i])) {
-			for (int j=i;j<lista->size;j++) lista->list[j+1]=lista->list[j];
-			set_fst_long(lista->list[i],posts);
-			set_snd_long(lista->list[i],user->id);
-			break;
-		}		
+	GArray *id1 = ((GArray**)info)[0];
+	GArray *num_posts1 = ((GArray**)info)[1];
+	if (user!=NULL) {
+		int num=(user->n_respostas)+(user->n_perguntas);
+		g_array_append_val(id1,user->id);
+		g_array_append_val(num_posts1,num);
+	}
+	
 }
 
 
 LONG_list top_most_active(TAD_community com, int N) {
-
-	struct PAIR_list* lista = malloc(sizeof(struct PAIR_list*)*N);
-	lista->size=N;
-	lista->list=malloc(sizeof(struct long_pair*)*N);
-	for (int i=0;i<N;i++) set_fst_long(lista->list[i],0); // inicializar primeiro elem dos pares a 0
-
-	LONG_list res=create_list(N);
-
-	g_hash_table_foreach(com->user, insertionSort, lista);
 	
-	for (int i=0;i<N;i++) 
-		set_list(res,i,get_snd_long(lista->list[i]));
+	LONG_list res = create_list(N);	
+	
+	GArray *id = g_array_new(FALSE,FALSE,sizeof(int));
+	GArray *num_posts = g_array_new(FALSE,FALSE,sizeof(int));	
+	
+	void* info[2] = {id,num_posts};
+
+	g_hash_table_foreach(com->user, insertionSort, info);
+	
+	for (gint i=0; i<id->len;i++) printf("id: %d, num: %d\n",g_array_index(id,int,i),g_array_index(num_posts,int,i));
+	for (gint i=0;i<N;i++)
+		set_list(res, (int)i, g_array_index(num_posts,int,i));
 
 	return res;
 }
@@ -339,30 +334,17 @@ LONG_pair total_posts(TAD_community com, Date begin, Date end){
 
 void adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer info){ // info = {tree, tag, inicio, fim}
 	struct Post* post = (struct Post*) post_pointer;
-
-	char* aux = malloc(strlen(((char**)info)[1] + 1)); strcpy(aux, "<");
-	char* tag = malloc(strlen(((char**)info)[1] + 1));
-	strcpy(tag, ((char**)info)[1]);
-	strcat(aux, tag); strcat(aux, ">");
-
-	Date begin = ((Date*)(info))[2]; /* Debugging */ printf("%d-%d-%d\n", get_day(begin), get_month(begin), get_year(begin));
-	Date end = ((Date*)(info))[3]; /* Debugging */ printf("%d-%d-%d\n", get_day(end), get_month(end), get_year(end));
+	char* tag = malloc(strlen(((char**)info)[1] + 1)); strcpy(tag, ((char**)info)[1]);
+	Date begin = ((Date*)(info))[2];
+	Date end = ((Date*)(info))[3]; 
 	GTree* tree = ((GTree**)(info))[0]; 
 	int* id = &(post->id);
 
-	
-	/* Debugging */printf("%d-%d-%d\n", get_day(post->data), get_month(post->data), get_year(post->data)); printf("%s\n", post->tags);
-
-	if(comparaDatas(begin, post->data) == -1 && comparaDatas(post->data, end) == -1){ 
-		/* Debugging */ printf("Passou na comparação das datas\n");
-		if(strstr(post->tags, aux) != NULL){
-			/* Debugging */ printf("Passou na comparação das tags\n");
-			g_tree_insert(tree, (gpointer)post->data, (gpointer)id);	// será que é necessária a estrutura post ou basta o id?		
-			/* Debugging */ printf("Adicionado à árvore\n");	
+	if(comparaDatas(begin, post->data) == 1 && comparaDatas(post->data, end) == -1){  
+		if(strstr(post->tags, tag) != NULL){ // str contains
+			g_tree_insert(tree, (gpointer)post->data, (gpointer)id);	// será que é necessária a estrutura post ou basta o id?			
 		}
-		/* Debugging */ else printf("Não passou na comparação das tags\n");
 	}
-	/* Debugging */ else printf("Não passou na comparação\n");
 
 }
 
@@ -378,7 +360,7 @@ void addToLongList(gpointer key_pointer, gpointer id_pointer, gpointer info){ //
 }
 
 
-LONG_list questions_with_tag(TAD_community com, char* tag, Date begin, Date end){ // perguntar se a tag é <tag> ou apenas tag -> simplifica adiciona com tag
+LONG_list questions_with_tag(TAD_community com, char* tag, Date begin, Date end){ 
 
 	GTree* tree = g_tree_new((GCompareFunc)comparaDatas);
 	void* info[4] = {(void*)tree, (void*)tag, (void*)begin, (void*)end};
@@ -444,6 +426,13 @@ void testeAcessoUserHT(TAD_community com, int id){
 	 else printf("user not found\n");
 }
 
+// Função para verificar contagem do nº posts
+void ver_num (gpointer key, gpointer value, gpointer user_data){
+	struct User* aux = (struct User*)value;
+	int* keyId = (int* )key;
+	printf(user_data,*keyId, aux->n_respostas,aux->n_perguntas);
+}
+
 
 int main(){
 	struct TCD_community* teste = init();
@@ -454,6 +443,7 @@ int main(){
 	clock_t begin = clock();
 	load(teste, path);
 	clock_t end = clock();
+
 
 	printf("Tempo '0 - load' = %f\n", (double)(end-begin)/CLOCKS_PER_SEC);
 
@@ -471,12 +461,16 @@ int main(){
 	printf("Tempo '3 - total_posts' = %f\n", (double)(end3-begin3)/CLOCKS_PER_SEC);
 
 	clock_t begin4 = clock();
-	LONG_list new2 = questions_with_tag(teste, "sms", inicio, fim); printf("%ld\n", get_list(new2, 0));
+	LONG_list new2 = questions_with_tag(teste, "android", inicio, fim); printf("%ld\n", get_list(new2, 0));
 	clock_t end4 = clock();
 
 	printf("Tempo '4 - questions_with_tag' = %f\n", (double)(end4-begin4)/CLOCKS_PER_SEC);
 
-	
+	//g_hash_table_foreach(teste->user,(GHFunc)ver_num,"UserId:%d, Nº Perguntas:%d, Nº Respostas:%d\n");
+
+	LONG_list new3 = top_most_active(teste,10);
+	for (int it=0;it<10;it++) 
+		printf("%dº: %li\n",(it+1),get_list(new3,it));
 
 /* Funcao para Debugging de UserHashT*/
 	//g_hash_table_foreach(teste->user,(GHFunc)printUserHT,"%d %d %s\n");
