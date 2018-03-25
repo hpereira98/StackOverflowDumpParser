@@ -288,17 +288,30 @@ LONG_pair total_posts(TAD_community com, Date begin, Date end){
 
 void adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer info){ // info = {tree, tag, inicio, fim}
 	struct Post* post = (struct Post*) post_pointer;
-	char* tag = malloc(strlen(((char**)info)[1] + 1)); strcpy(tag, ((char**)info)[1]);
-	Date begin = ((Date*)(info))[2];
-	Date end = ((Date*)(info))[3]; 
+
+	char* aux = malloc(strlen(((char**)info)[1] + 1)); strcpy(aux, "<");
+	char* tag = malloc(strlen(((char**)info)[1] + 1));
+	strcpy(tag, ((char**)info)[1]);
+	strcat(aux, tag); strcat(aux, ">");
+
+	Date begin = ((Date*)(info))[2]; /* Debugging */ printf("%d-%d-%d\n", get_day(begin), get_month(begin), get_year(begin));
+	Date end = ((Date*)(info))[3]; /* Debugging */ printf("%d-%d-%d\n", get_day(end), get_month(end), get_year(end));
 	GTree* tree = ((GTree**)(info))[0]; 
 	int* id = &(post->id);
 
-	if(comparaDatas(begin, post->data) == 1 && comparaDatas(post->data, end) == -1){  
-		if(strstr(post->tags, tag) != NULL){ // str contains
-			g_tree_insert(tree, (gpointer)post->data, (gpointer)id);	// será que é necessária a estrutura post ou basta o id?			
+	
+	/* Debugging */printf("%d-%d-%d\n", get_day(post->data), get_month(post->data), get_year(post->data)); printf("%s\n", post->tags);
+
+	if(comparaDatas(begin, post->data) == -1 && comparaDatas(post->data, end) == -1){ 
+		/* Debugging */ printf("Passou na comparação das datas\n");
+		if(strstr(post->tags, aux) != NULL){
+			/* Debugging */ printf("Passou na comparação das tags\n");
+			g_tree_insert(tree, (gpointer)post->data, (gpointer)id);	// será que é necessária a estrutura post ou basta o id?		
+			/* Debugging */ printf("Adicionado à árvore\n");	
 		}
+		/* Debugging */ else printf("Não passou na comparação das tags\n");
 	}
+	/* Debugging */ else printf("Não passou na comparação\n");
 
 }
 
@@ -314,7 +327,7 @@ void addToLongList(gpointer key_pointer, gpointer id_pointer, gpointer info){ //
 }
 
 
-LONG_list questions_with_tag(TAD_community com, char* tag, Date begin, Date end){ 
+LONG_list questions_with_tag(TAD_community com, char* tag, Date begin, Date end){ // perguntar se a tag é <tag> ou apenas tag -> simplifica adiciona com tag
 
 	GTree* tree = g_tree_new((GCompareFunc)comparaDatas);
 	void* info[4] = {(void*)tree, (void*)tag, (void*)begin, (void*)end};
@@ -407,7 +420,7 @@ int main(){
 	printf("Tempo '3 - total_posts' = %f\n", (double)(end3-begin3)/CLOCKS_PER_SEC);
 
 	clock_t begin4 = clock();
-	LONG_list new2 = questions_with_tag(teste, "android", inicio, fim); printf("%ld\n", get_list(new2, 0));
+	LONG_list new2 = questions_with_tag(teste, "sms", inicio, fim); printf("%ld\n", get_list(new2, 0));
 	clock_t end4 = clock();
 
 	printf("Tempo '4 - questions_with_tag' = %f\n", (double)(end4-begin4)/CLOCKS_PER_SEC);
