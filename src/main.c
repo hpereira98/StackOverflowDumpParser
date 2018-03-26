@@ -20,15 +20,16 @@
 
 
 struct User{
-	int id;
-	char* display_name;
-	//int rep;
-	int n_perguntas;
-	int n_respostas;
+	int id; // user id
+	char* display_name; // username
+	int rep; // reputação
+	int n_perguntas; // número de perguntas
+	int n_respostas; // número de respostas
+	int n_posts; // número total de posts
 	//Date data_posts[];
 	//Date data_respostas[];
 	//char* títulos[];
-	char* short_bio;
+	char* short_bio; // descrição do user
 };
 
 struct Post{
@@ -96,11 +97,13 @@ TAD_community load(TAD_community com, char* dump_path){
 		cur = cur->xmlChildrenNode;
 		while(cur){
    			xmlChar* id = xmlGetProp(cur, (const xmlChar *)"Id");
+   			xmlChar* rep = xmlGetProp(cur, (const xmlChar *)"Reputation");
    			xmlChar* name = xmlGetProp(cur, (const xmlChar *)"DisplayName");
 			xmlChar* bio = xmlGetProp(cur, (const xmlChar *)"AboutMe");
 
    			if(id != NULL){
    				int* idUser = malloc(sizeof(int));
+   				int* repUser = malloc(sizeof(int));
 				
    				struct User* new = g_new(struct User, 1);//forma de fazer malloc
    				
@@ -111,10 +114,16 @@ TAD_community load(TAD_community com, char* dump_path){
    				// ID
    				sscanf((const char*)id, "%d", idUser); 
    				new->id = *idUser;
+
+   				// Reputação
+
+   				sscanf((const char*)rep,"%d", repUser);
+   				new->reputacao = *repUser;
 				
 				// Nº perguntas/respostas
 				new->n_perguntas=0;
 				new->n_respostas=0;
+				new->n_posts=0;
 
 				// Bio
 				if(bio){
@@ -215,6 +224,7 @@ TAD_community load(TAD_community com, char* dump_path){
 				if (user!=NULL) {
 					if (*idType == 1) (user->n_perguntas)++;
 					else if (*idType == 2) (user->n_respostas)++;
+					(user->n_posts)++;
 				}
 								
 	   			
@@ -322,16 +332,14 @@ STR_pair info_from_post(TAD_community com, int id){
 void insertionSort (gpointer key, gpointer user_pointer, gpointer info){
 	struct User* user = (struct User*) user_pointer;
 
-	int total,pos;
+	int pos;
 	int *idArray = ((int**)info)[0];
 	int *countArray = ((int**)info)[1];
 	int size = *((int**)info)[2];
 	int *ocupados = ((int**)info)[3];
-	
-	total = user->n_respostas + user->n_perguntas;
 
-	// insere no array caso nao esteja ainda cheio, ou se estiver, total maior que o menor elemento do array
-	if( (*ocupados < size) || ( (*ocupados == size) && (total > countArray[(size)-1]) ) ){
+	// insere no array caso nao esteja ainda cheio, ou se estiver, n_posts maior que o menor elemento do array
+	if( (*ocupados < size) || ( (*ocupados == size) && ( (user->n_posts) > countArray[(size)-1]) ) ){
 
 		pos = insert(countArray,total,size);
 		insereId(idArray,user->id,pos,size);
