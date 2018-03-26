@@ -40,6 +40,7 @@ struct Post{
 	int parent_id;
 	Date data;
 	char* tags;
+	int score;
 };
 
 
@@ -159,12 +160,14 @@ TAD_community load(TAD_community com, char* dump_path){
 	   			xmlChar* parent_id = xmlGetProp(cur, (const xmlChar *)"ParentId");
 				xmlChar* data = xmlGetProp(cur, (const xmlChar *)"CreationDate");
 				xmlChar* tags = xmlGetProp(cur, (const xmlChar *)"Tags");
+				xmlChar* score_xml = xmlGetProp(cur, (const xmlChar *)"Score");
 
 
 	   			int* idOwner = malloc(sizeof(int));
 	   			int* idPost = malloc(sizeof(int));
 	   			int* idParent = malloc(sizeof(int));
 	   			int* idType = malloc(sizeof(int));
+	   			int* score = malloc(sizeof(int));
 	   			struct Post* new = g_new(struct Post, 1);
 	   				
 	   			// Titulo
@@ -222,7 +225,10 @@ TAD_community load(TAD_community com, char* dump_path){
 	   				strcpy(new->tags, (const char*)tags);
 	   			}
 	   			else new->tags = "";
-				
+
+	   			// Score
+				sscanf((const char*)score_xml, "%d", score); 
+	   			new->score = *score;
 
 	   			// Inserir conforme o Post ID
 	   			g_hash_table_insert(com->post, idPost, new);
@@ -378,7 +384,7 @@ void adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer info){
 
 	if(comparaDatas(begin, post->data) == 1 && comparaDatas(post->data, end) == -1){  
 		if(strstr(post->tags, tag) != NULL){ // str contains
-			g_tree_insert(tree, (gpointer)post->data, (gpointer)id);	// será que é necessária a estrutura post ou basta o id?			
+			g_tree_insert(tree, (gpointer)post->data, (gpointer)id);			
 		}
 	}
 
@@ -442,7 +448,7 @@ LONG_list questions_with_tag(TAD_community com, char* tag, Date begin, Date end)
 
 
 */
-USER get_user_info(TAD_community com, long id){
+/*USER get_user_info(TAD_community com, long id){
 	//struct User* user = malloc(sizeof(struct User));
 	
 	//user = (struct User*)g_hash_table_lookup(com->user, &id);
@@ -451,9 +457,62 @@ USER get_user_info(TAD_community com, long id){
 	// return create_user(user->bio, user->last_10_post_id);
 
 }
+*/
 
 
+// QUERY 6
 
+void insereId(int* v, int x, int i, int n){
+
+	for(n=n-1; n>i; n--){
+		v[n] = v[n-1];
+	}
+
+	v[i] = x;
+}
+
+void func(gpointer key_pointer, gpointer post_pointer, gpointer info){
+	struct Post* post = (struct Post*) post_pointer;
+	int* ids = ((int**)info)[0];
+	Date begin = ((Date*)info)[1];
+	Date end = ((Date*)info)[2];
+	int *ocupados = ((int**)info)[3];
+	int* score = ((int**)info)[4];
+	int *size = ((int**)info)[5];
+
+	if(comparaDatas(begin, post->data) == -1 && comparaDatas(post->data, end) == -1){
+		if( (*ocupados+1 != *size) || (*ocupados+1 == *size && post->score > score[*ocupados]) ){ // neste momento já sei que vai ser inserido
+			int pos = insert(score, post->score, *size);
+			if(pos != -1){
+				insereId(ids, post->id, pos, *size);
+				if(*ocupados < *size - 1) (*ocupados)++;
+			}
+		}
+	}
+
+}
+
+
+LONG_list most_voted_answers(TAD_community com, int N, Date begin, Date end){
+	int* ids = malloc(sizeof(int)*N);
+	int* score = malloc(sizeof(int)*N);
+	int *ocupados = 0;
+	int i;
+
+	for(i = 0; i<N; i++){
+		ids[i] = 0;
+		score[i] = 0;
+	}
+
+	void* info[6] = {(void*)ids, (void*)begin, (void*)end, (void*)ocupados, (void*)score, (void*)&N};
+
+	g_hash_table_foreach(com->post, func, info);
+
+	LONG_list r = create_list(N);	
+	for(i = 0; i<N; i++) set_list(r, i, ids[i]);
+
+	return r;
+}
 
 
 /* Funcao para Debugging de PostHashT */
