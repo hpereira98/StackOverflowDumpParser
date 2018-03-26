@@ -487,21 +487,15 @@ void ordenaScores(gpointer key_pointer, gpointer post_pointer, gpointer info){ /
 
 	if(post->type_id == 2){
 		int pos;
-		int* ids = ((int**)info)[0]; /* Debugging */ printf("IDS ALOCADOS\n");
-		Date begin = ((Date*)info)[1]; /* Debugging */ printf("BEGIN ALOCADO\n");
-		Date end = ((Date*)info)[2]; /* Debugging */ printf("END ALOCADO\n");
-		int *ocupados = ((int**)info)[3]; /* Debugging */ printf("OCUPADOS ALOCADOS\n");
-		int* score = ((int**)info)[4]; /* Debugging */ printf("SCORE ALOCADO\n");
-		int size = *((int**)info)[5]; /* Debugging */ printf("SIZE ALOCADO\n");
-
-		/* Debugging */ printf("Datas para comparação:\n");
-		/* Debugging */ printf("%d-%d-%d\n", get_day(begin), get_month(begin), get_year(begin));
-		/* Debugging */ printf("%d-%d-%d\n", get_day(post->data), get_month(post->data), get_year(post->data));
-		/* Debugging */ printf("%d-%d-%d\n", get_day(end), get_month(end), get_year(end));
+		int* ids = ((int**)info)[0]; 
+		Date begin = ((Date*)info)[1]; 
+		Date end = ((Date*)info)[2]; 
+		int *ocupados = ((int**)info)[3]; 
+		int* score = ((int**)info)[4]; 
+		int size = *((int**)info)[5]; 
 
 		if(comparaDatas(begin, post->data) == -1 && comparaDatas(post->data, end) == -1){
-			/* Debugging */ printf("DATAS COMPARADAS\n");
-			if( (*ocupados != size) || (ocupados == size && post->score > score[size-1]) ){ // neste momento já sei que vai ser inserido
+			if( (*ocupados != size) || (*ocupados == size && post->score > score[size-1]) ){ // neste momento já sei que vai ser inserido
 				pos = insert(score, post->score, size);
 				insereId(ids, post->id, pos, size);
 				if(*ocupados < size) (*ocupados)++;
@@ -515,12 +509,12 @@ void ordenaScores(gpointer key_pointer, gpointer post_pointer, gpointer info){ /
 LONG_list most_voted_answers(TAD_community com, int N, Date begin, Date end){
 	int* ids = malloc(sizeof(int)*N);
 	int* score = malloc(sizeof(int)*N);
-	int *ocupados = 0;
+	int* ocupados = malloc(sizeof(int)); *ocupados=0;
 	int i;
 
 	for(i = 0; i<N; i++){
-		ids[i] = 0;
-		score[i] = 0;
+		ids[i] = -2;
+		score[i] = -2;
 	}
 
 	void* info[6] = {(void*)ids, (void*)begin, (void*)end, (void*)ocupados, (void*)score, (void*)&N};
@@ -533,21 +527,36 @@ LONG_list most_voted_answers(TAD_community com, int N, Date begin, Date end){
 	return r;
 }
 // QUERY 8
+void printPostHT(struct Post* aux){
+	if(aux!=NULL){
+	printf("%d ",aux->id);
+	printf("%d ",aux->type_id);
+	printf("%d ",aux->owner_id);
+	printf("%s ",aux->owner_display_name);
+	printf("%d ",aux->parent_id);
+	printf("%s\n",aux->titulo);
+	free(aux);
+	} 
+	else printf("null\n");
+}
 
 void insertByDate(struct Post* posts[],struct Post* post, int N, int* used){ //resultado: data mais recente para mais antiga
 	int i = 0;
-	int pos = -1;
+	int pos = 0;
+	
 
 	for(i = 0; i < *used && pos==-1; i++){
+		//printf("A comparar %d %d %d com %d %d %d\n",get_day(post->data),get_month(post->data),get_year(post->data),get_day(posts[i]->data),get_month(posts[i]->data),get_year(posts[i]->data));
 		if(comparaDatas(post->data,(posts[i])->data)==1) 
+
 			pos = i;
-			if(*used < N) (*used)++;
+		
 	}
 
 	for(i = N-1; i>pos; i--){
 		posts[i] = posts[i-1];
 	}
-
+	if(*used < N) (*used)++;
 	posts[pos] = post;	
 
 }
@@ -559,15 +568,28 @@ void word_lookup(gpointer key_pointer, gpointer post_pointer, gpointer info){
 
 	if(post->type_id==1){
 
-		struct Post** postArray = ((struct Post***)info)[0];
-		char* word = ((char**)info)[1]; 
-		int size = *((int**)info)[2];
-		int* ocupados = ((int**)info)[3];
-		struct Post* last = postArray[size-1];
+		
+		char* titulo = malloc(strlen(post->titulo)+1);
+		strcpy(titulo, post->titulo);
 
-		if(strstr(post->titulo,word)&&(*ocupados < size||((*ocupados == size)&&(comparaDatas(post->data,last->data)==1)))){
-			insertByDate(postArray,post,size,ocupados); 
+		char* word = malloc(strlen(((char**)info)[1])+1);
+		strcpy(word,((char**)info)[1]);
+
+		struct Post** postArray = ((struct Post***)info)[0];
+	
+		int size = *((int**)info)[2];
+		
+		int* ocupados = ((int**)info)[3];
+		printf("%d\n",*ocupados);
+		struct Post* last = postArray[size-1];
+	
+		printPostHT(post);
+		printPostHT(last);
+		if(strstr(titulo,word)!=NULL && ((*ocupados<size) || ((*ocupados == size) && (comparaDatas(post->data,last->data)==1)))){
+			 insertByDate(postArray,post,size,ocupados);
 		}
+		
+
 	}
 }
 
@@ -579,10 +601,14 @@ LONG_list contains_word(TAD_community com, char* word, int N){
 
 	void* info[4] ={postArray,word,&N,ocupados};
 
+	
 	g_hash_table_foreach(com->post, word_lookup, info);
 
 	LONG_list r = create_list(N);	
-	for(i = 0; i<N; i++) set_list(r, i, (postArray[i])->id);
+	for(i = 0; i<N; i++) 
+		if(postArray[i]!=NULL) {set_list(r, i, (postArray[i])->id);}
+		else set_list(r,i,-2);
+
 
 	return r;	
 }
@@ -617,16 +643,16 @@ void ordenaNRespostas(gpointer key_pointer, gpointer post_pointer, gpointer info
 LONG_list most_answered_questions(TAD_community com, int N, Date begin, Date end){
 	int* ids = malloc(sizeof(int)*N);
 	int* n_respostas = malloc(sizeof(int)*N);
-	int *ocupados = 0;
+	int *ocupados = malloc(sizeof(int)); *ocupados=0;
 	int i;
 
 	for(i = 0; i<N; i++){
-		ids[i] = 0;
-		n_respostas[i] = 0;
+		ids[i] = -2;
+		n_respostas[i] = -2;
 	}
 
 	void* info[6] = {(void*)ids, (void*)begin, (void*)end, (void*)ocupados, (void*)n_respostas, (void*)&N};
-
+	
 	g_hash_table_foreach(com->post, ordenaNRespostas, info);
 
 	LONG_list r = create_list(N);	
@@ -638,19 +664,7 @@ LONG_list most_answered_questions(TAD_community com, int N, Date begin, Date end
 
 
 /* Funcao para Debugging de PostHashT */
-void printPostHT(gpointer key, gpointer value, gpointer user_data){
-	struct Post* aux = (struct Post*)value;
-	//printf("Alocou memoria para post\n");
-	int* keyId = (int* )key;
-	printf("%d ",*keyId);
-	printf("%d ",aux->id);
-	printf("%d ",aux->type_id);
-	printf("%d ",aux->owner_id);
-	printf("%s ",aux->owner_display_name);
-	printf("%d ",aux->parent_id);
-	printf("%s\n",aux->titulo);
-	free(aux);
-}
+
 
 /* Funcao para Debugging de UserHashT */
 void printUserHT(gpointer key, gpointer value, gpointer user_data){
@@ -722,20 +736,22 @@ int main(){
 	printf("Tempo '4 - questions_with_tag' = %f\n", (double)(end4-begin4)/CLOCKS_PER_SEC);
 
 	clock_t begin6 = clock();
-	LONG_list new4 = most_voted_answers(teste, 20, begin, end);
+	LONG_list new4 = most_voted_answers(teste, 30, inicio, fim);
+	for(int i=0;i<20;i++) printf("%d\n",get_list(new4,i));
 	clock_t end6 = clock();
 
 	printf("Tempo '6 - most_voted_answers' = %f\n", (double)(end6-begin6)/CLOCKS_PER_SEC);
 
 	clock_t begin7 = clock();
-	LONG_list new5 = most_answered_questions(teste, 20, begin, end);
+	//LONG_list new5 = most_answered_questions(teste, 20, begin, end);
 	clock_t end7 = clock();
 
 	printf("Tempo '7 - most_answered_questions' = %f\n", (double)(end7-begin7)/CLOCKS_PER_SEC);
 
 
-	// QUERY 8 TESTE LONG_list new8 = contains_word(teste,"supports",10);
-	//QUERY 8 TESTE for(int aux=0;aux<10;aux++) printf("%d",get_list(new8,aux));
+	//LONG_list new8 = contains_word(teste,"entering adb",10);
+	//for(int aux=0;aux<10;aux++) printf("%d ",get_list(new8,aux));
+	//	printf("\n");
 	
 
 /* Funcao para Debugging da Q3:
