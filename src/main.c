@@ -47,6 +47,7 @@ struct Post{
 	int score;
 	int n_comments;
 	int n_upvotes;
+	int n_downvotes;
 	int n_respostas;
 };
 
@@ -256,6 +257,9 @@ TAD_community load(TAD_community com, char* dump_path){
 	   			// Nº Upvotes
 	   			new->n_upvotes=0;
 
+	   			// Nº Downvotes
+	   			new->n_downvotes=0;
+
 	   			// Nº Comments
 	   			sscanf((const char*)comments,"%d", n_comms);
 	   			new->n_comments = *n_comms;
@@ -288,7 +292,7 @@ TAD_community load(TAD_community com, char* dump_path){
 	}
 	printf("Posts: %d\n", i);
 	xmlFreeDoc(doc_posts);
-
+	printf("GOT HERE\n");
 	// VOTES
 
 	i = 0;
@@ -306,23 +310,26 @@ TAD_community load(TAD_community com, char* dump_path){
 	else{		
 		cur = cur->xmlChildrenNode;
 		while(cur){
+
 			xmlChar* id_post = xmlGetProp(cur, (const xmlChar *)"PostId");
 			xmlChar* vote_type = xmlGetProp(cur, (const xmlChar *)"VoteTypeId");
 
+			if(id_post && vote_type){
 			
-			int* postID = malloc(sizeof(int));
-			int* votetype = malloc(sizeof(int));
+				int* postID = malloc(sizeof(int));
+				int* votetype = malloc(sizeof(int));
 
-			sscanf((const char*)id_post, "%d", postID);
-			sscanf((const char*)vote_type,"%d", votetype);
+				sscanf((const char*)id_post, "%d", postID);
+				sscanf((const char*)vote_type,"%d", votetype);
 
-			struct Post* post = (struct Post*)g_hash_table_lookup(com->post, postID);
+				struct Post* post = (struct Post*)g_hash_table_lookup(com->post, postID);
 
-			if (*votetype == 2) (post->n_upvotes)++;
+				if (post && *votetype == 2) (post->n_upvotes)++;
+				else if (post && *votetype == 3) (post->n_downvotes)++;
 
-			
+			}
 			xmlFree(id_post);
-			xmlFree(votetype);
+			xmlFree(vote_type);
 			cur = cur->next;
 		}
 	}
@@ -772,7 +779,7 @@ LONG_list better_answer(TAD_community com, int id) {
 
 	LONG_list r = create_list(1);
 	set_list(r,0,*answerId);
-	printf("ols\n");
+
 	return r;
 }
 
@@ -867,8 +874,8 @@ int main(){
 	//LONG_list new8 = contains_word(teste,"entering adb",10);
 	//for(int aux=0;aux<10;aux++) printf("%d ",get_list(new8,aux));
 	//	printf("\n");
-	printf("ola1\n");
-	LONG_list new10 = better_answer(teste,5);
+	
+	LONG_list new10 = better_answer(teste,76);
 	printf("%d\n", get_list(new10,0));
 
 /* Funcao para Debugging da Q3:
