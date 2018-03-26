@@ -37,11 +37,14 @@ struct Post{
 	char* titulo;
 	int owner_id;
 	char* owner_display_name;
+	int owner_rep;
 	int type_id;
 	int parent_id;
 	Date data;
 	char* tags;
 	int score;
+	int n_comments;
+	int n_upvotes;
 	int n_respostas;
 };
 
@@ -77,8 +80,12 @@ TAD_community load(TAD_community com, char* dump_path){
 	char* posts_path = malloc(strlen(dump_path)+strlen(posts) + 1);
 	strcpy(posts_path,dump_path);
 	strcat(posts_path,posts);
-	
 
+	char* votes = "Votes.xml";
+	char* votes_path = malloc(strlen(dump_path)+strlen(votes)+1);
+	strcpy(votes_path,dump_path);
+	strcat(votes_path,votes);
+	
 
 
 	// USERS
@@ -171,6 +178,7 @@ TAD_community load(TAD_community com, char* dump_path){
 				xmlChar* data = xmlGetProp(cur, (const xmlChar *)"CreationDate");
 				xmlChar* tags = xmlGetProp(cur, (const xmlChar *)"Tags");
 				xmlChar* score_xml = xmlGetProp(cur, (const xmlChar *)"Score");
+				xmlChar* comments = xmlGetProp(cur, (const xmlChar *)"CommentCount");
 
 
 	   			int* idOwner = malloc(sizeof(int));
@@ -178,6 +186,8 @@ TAD_community load(TAD_community com, char* dump_path){
 	   			int* idParent = malloc(sizeof(int));
 	   			int* idType = malloc(sizeof(int));
 	   			int* score = malloc(sizeof(int));
+	   			int* n_comms = malloc(sizeof(int));
+
 	   			struct Post* new = g_new(struct Post, 1);
 	   				
 	   			// Titulo
@@ -193,6 +203,11 @@ TAD_community load(TAD_community com, char* dump_path){
 	   				new->owner_id = *idOwner;
 	   			} 
 	   			else new->owner_id = -2;
+
+	   			// Owner Reputation
+	   			struct User* user = (struct User*)g_hash_table_lookup(com->user,idOwner);
+	   			if (user!=NULL)
+	   				new->owner_rep=user->rep;
 
 	   			// Post ID
 				sscanf((const char*)post_id, "%d", idPost); 
@@ -239,6 +254,14 @@ TAD_community load(TAD_community com, char* dump_path){
 				sscanf((const char*)score_xml, "%d", score); 
 	   			new->score = *score;
 
+	   			// Nº Upvotes
+
+	   			new->n_upvotes=0;
+
+	   			// Nº Comments
+	   			sscanf((const char*)comments,"%d", n_comms);
+	   			new->n_comments = *n_comms;
+
 	   			// Nº Respostas
 	   			if(new->type_id == 1){
 	   				xmlChar* answercount = xmlGetProp(cur, (const xmlChar *)"AnswerCount");
@@ -267,7 +290,48 @@ TAD_community load(TAD_community com, char* dump_path){
 	}
 	printf("Posts: %d\n", i);
 	xmlFreeDoc(doc_posts);
-	
+
+	// VOTES
+
+	i = 0;
+
+	xmlDocPtr doc_votes = xmlParseFile(votes_path);
+	if(!doc_votes){
+		printf("Document not parsed successfully\n");
+	}
+
+	cur = xmlDocGetRootElement(doc_votes);
+	if(!cur){
+		printf("Empty Document\n");
+		xmlFreeDoc(doc_votes);
+	}
+	else{		
+		cur = cur->xmlChildrenNode;
+		while(cur){
+			xmlChar* id_post = xmlGetProp(cur, (const xmlChar *)"PostId");
+			xmlChar* vote_type = xmlGetProp(cur, (const xmlChar *)"VoteTypeId");
+
+			if(post_type_id!=NULL){
+				int* postID = malloc(sizeof(int));
+				int* votetype = malloc(sizeof(int));
+
+				sscanf((const char*)id_post, "%d", postID);
+				sscanf((const char*)vote_type,"%d", votetype);
+
+				struct Post* post = (struct Post*)g_hash_table_lookup(com->post, postID);
+
+				if (*votetype == 2) (post->n_upvotes)++;
+
+			}
+			xmlFree(id_post);
+			xmlFree(votetype);
+			cur = cur->next;
+		}
+	}
+
+	printf("Votes: %d\n", i);
+	xmlFreeDoc(doc_votes);
+
 	return(com);		
 }
 // FUNCAO AUXILIAR DE INSERCAO, DEPOIS REMOVER DO main
@@ -643,6 +707,47 @@ LONG_list most_answered_questions(TAD_community com, int N, Date begin, Date end
 	return r;
 }
 
+// QUERY 9
+
+// QUERY 10
+
+int answer_score (int score, int rep, int favs, int comments) {
+	return ( (score*0.45)+(rep*0.25)+(favs*0.2)+(comments*0.1));
+}
+
+void bestAnswer (gpointer key_pointer, gpointer post_pointer, gpointer info) {
+	struct Post* post = (struct Post*)post_pointer;
+	int *parentId = ((int**)info)[0];
+	int *max = ((int**)info)[1];
+	int *answerId = ((int**)info)[2];
+	int score;
+
+	if (post->type_id == 2 && post->parent_id == *parentId) {
+		score=answer_score(post->score, post->owner_rep, post->n_upvotes, post->n_comments);
+		if (score>(*max)) {
+			*max=score;
+			*answerId=post->id;
+		}
+	}
+}
+
+LONG_list better_answer(TAD_community com, int id) {
+
+	int* parentId = malloc(sizeof(int));
+	*parentId=id;
+
+	int *max = malloc(sizeof(int));
+	*max=0;
+	int *answerId = malloc(sizeof(int));
+
+	void* info[3] = {(void*)parentId, (void*)max, (void*)answerId};
+
+	g_hash_table_foreach(com->post, bestAnswer, info);
+
+	LONG_list r = create_list(1);
+	set_list(r,0,*id);
+	return r;
+}
 
 
 /* Funcao para Debugging de PostHashT */
