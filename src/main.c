@@ -208,11 +208,10 @@ TAD_community load(TAD_community com, char* dump_path){
 
 				// Count questions and answers
 				
-				struct User* user = malloc(sizeof(struct User));
-				user = (struct User*)g_hash_table_lookup(com->user, idOwner);
+				struct User* user = (struct User*)g_hash_table_lookup(com->user, idOwner);
 				if (user!=NULL) {
-					if (atoi((const char*)post_type_id) == 1) (user->n_perguntas)++;
-					else if (atoi((const char*)post_type_id) == 2) (user->n_respostas)++;
+					if (*idType == 1) (user->n_perguntas)++;
+					else if (*idType == 2) (user->n_respostas)++;
 				}
 								
 	   			
@@ -245,7 +244,34 @@ TAD_community load(TAD_community com, char* dump_path){
 	
 	return(com);		
 }
+// FUNCAO AUXILIAR DE INSERCAO, DEPOIS REMOVER DO main
 
+int insert(int* array, int elem, int size){
+	int i = 0;
+	int pos = -1;
+
+	for(i = 0; i<size && pos==-1; i++){
+		if(array[i]<elem) pos = i;
+	}
+	for(i = size-1; i>pos; i--){
+		array[i] = array[i-1];
+	}
+
+	array[pos] = elem;
+	printf("inseriu em %d\n",pos );
+	for(int j = 0; j<20;j++)
+		printf("%d ",array[j] ); printf("E\n");
+	return pos;
+}
+
+void insereId(int* v, int x, int i, int n){
+
+	for(n=n-1; n>i; n--){
+		v[n] = v[n-1];
+	}
+
+	v[i] = x;
+}
 
 // QUERY 1
 
@@ -282,27 +308,18 @@ void insertionSort (gpointer key, gpointer user_pointer, gpointer info){
 	int *countArray = ((int**)info)[1];
 	int *size = ((int**)info)[2];
 	int *ocupados = ((int**)info)[3];
-	int i,j,total;
+	int total,pos;
 
 	if (user!=NULL) {
 		total = user->n_respostas + user->n_perguntas;
 		// insere no arry caso nao esteja ainda cheio, ou se estiver, total maior que o menor elemento do array
-		if( (*ocupados != *size) || (*ocupados == *size && total > countArray[*size]))
-
-			for (i=0;i<(*size);i++) 
-				if (total>countArray[i]) {
-					for (j=(*size);j>i;j--){
-						idArray[j]=idArray[j-1];
-						countArray[j]=countArray[j-1];
-					}
-					idArray[i]=user->id;
-					countArray[i]=total;
-					(*ocupados)++;
-					break;			
-				}
-			
+		if( (*ocupados < *size) || ( (*ocupados == *size) && (total > countArray[(*size)-1]) ) ){
+				printf("ocupados %d size %d\n", *ocupados, *size);
+				pos = insert(countArray,total,*size);
+				insereId(idArray,user->id,pos,*size);
+				if(*ocupados < (*size)) (*ocupados)++;			
+		}
 	}
-	//for (int i=0;i<(*tam);i++) printf("id[%d]: %d, num[%d]: %d\n",i,ids[i],i,nposts[i]);
 }
 
 
@@ -310,20 +327,19 @@ LONG_list top_most_active(TAD_community com, int N) {
 	
 	LONG_list res = create_list(N);	
 	
-	int size = N;
-	int ocupados = 0;
+	int *size = malloc(sizeof(int)); *size=N;
+	int *ocupados = malloc(sizeof(int)); *ocupados=0;
 	int id[N];
 	int num_posts[N];
 
 	for (int i=0;i<N;i++) {
-		id[i]=0; num_posts[i]=0;
+		id[i] = num_posts[i]=-1;
 	}
 	
-	void* info[4] = {id,num_posts,&size,&ocupados};
+	void* info[4] = {id,num_posts,size,ocupados};
 
 	g_hash_table_foreach(com->user, insertionSort, info);
 
-	
 	for (int i=0;i<N;i++)
 		set_list(res,i,(long)id[i]);
 
@@ -360,7 +376,7 @@ LONG_pair total_posts(TAD_community com, Date begin, Date end){
 	void* info[4] = {begin, end, numQuestions, numAnswers};
 	
 	g_hash_table_foreach(com->post,posts_count,info);
-	LONG_pair totalPost= create_long_pair(*numQuestions,*numAnswers);
+	LONG_pair totalPost = create_long_pair(*numQuestions,*numAnswers);
 
 	return totalPost;
 }
@@ -526,15 +542,16 @@ int main(){
 	clock_t end4 = clock();
 
 	printf("Tempo '4 - questions_with_tag' = %f\n", (double)(end4-begin4)/CLOCKS_PER_SEC);
-
-	LONG_list new3 = top_most_active(teste,100);
-	for (int it=0;it<100;it++) {
+	
+	LONG_list new3 = top_most_active(teste,200);
+	for (int it=0;it<200;it++) {
 		printf("%dº: %li ",(it+1),get_list(new3,it));
 		int *aux = malloc(sizeof(int));
 		*aux = get_list(new3,it);
 		struct User* user = g_hash_table_lookup(teste->user,aux);
 		if(user) printf("%d\n",user->n_perguntas+user->n_respostas);
-	}	
+	}
+	
 	
 
 /* Funcao para Debugging da Q3:
