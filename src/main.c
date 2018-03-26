@@ -522,6 +522,60 @@ LONG_list most_voted_answers(TAD_community com, int N, Date begin, Date end){
 
 	return r;
 }
+// QUERY 8
+
+void insertByDate(struct Post* posts[],struct Post* post, int N, int* used){ //resultado: data mais recente para mais antiga
+	int i = 0;
+	int pos = -1;
+
+	for(i = 0; i < *used && pos==-1; i++){
+		if(comparaDatas(post->data,(posts[i])->data)==1) 
+			pos = i;
+			if(*used < N) (*used)++;
+	}
+
+	for(i = N-1; i>pos; i--){
+		posts[i] = posts[i-1];
+	}
+
+	posts[pos] = post;	
+
+}
+
+
+
+void word_lookup(gpointer key_pointer, gpointer post_pointer, gpointer info){
+	struct Post* post = (struct Post*)post_pointer;
+
+	if(post->type_id==1){
+
+		struct Post** postArray = ((struct Post***)info)[0];
+		char* word = ((char**)info)[1]; 
+		int size = *((int**)info)[2];
+		int* ocupados = ((int**)info)[3];
+		struct Post* last = postArray[size-1];
+
+		if(strstr(post->titulo,word)&&(*ocupados < size||((*ocupados == size)&&(comparaDatas(post->data,last->data)==1)))){
+			insertByDate(postArray,post,size,ocupados); 
+		}
+	}
+}
+
+LONG_list contains_word(TAD_community com, char* word, int N){
+	struct Post* postArray[N]; int i;
+
+	for(i=0;i<N;i++) postArray[i]=NULL;
+	int* ocupados = malloc(sizeof(int)); *ocupados=0;
+
+	void* info[4] ={postArray,word,&N,ocupados};
+
+	g_hash_table_foreach(com->post, word_lookup, info);
+
+	LONG_list r = create_list(N);	
+	for(i = 0; i<N; i++) set_list(r, i, (postArray[i])->id);
+
+	return r;	
+}
 
 
 /* Funcao para Debugging de PostHashT */
@@ -608,7 +662,8 @@ int main(){
 
 	printf("Tempo '2 - top_most_active' = %f\n", (double)(end5-begin5)/CLOCKS_PER_SEC);
 
-	
+	// QUERY 8 TESTE LONG_list new8 = contains_word(teste,"supports",10);
+	//QUERY 8 TESTE for(int aux=0;aux<10;aux++) printf("%d",get_list(new8,aux));
 	
 
 /* Funcao para Debugging da Q3:
