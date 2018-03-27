@@ -31,6 +31,7 @@ struct User{
 	//Date data_respostas[];
 	//char* títulos[];
 	char* short_bio; // descrição do user
+	GArray* userPosts;
 
 };
 
@@ -130,9 +131,9 @@ TAD_community load(TAD_community com, char* dump_path){
    				new->reputacao = *repUser;
 				
 				// Nº perguntas/respostas
-				new->n_perguntas=0;
-				new->n_respostas=0;
-				new->n_posts=0;
+				new->n_perguntas = 0;
+				new->n_respostas = 0;
+				new->n_posts = 0;
 
 				// Bio
 				if(bio){
@@ -140,6 +141,9 @@ TAD_community load(TAD_community com, char* dump_path){
 					strcpy(new->short_bio, (const char*)bio);
 				}
 				else new->short_bio = "";
+
+				// User's Posts 
+				new->userPosts = g_array_new (FALSE,TRUE,1);//(elemento no fim a 0,inicilizar a 0,tamnho em bytes dos elems)
 			 
    				// Inserir conforme o ID
    				g_hash_table_insert(com->user, idUser, new); i++;
@@ -216,6 +220,11 @@ TAD_community load(TAD_community com, char* dump_path){
 					if (*idType == 1) (user->n_perguntas)++;
 					else if (*idType == 2) (user->n_respostas)++;
 					(user->n_posts)++;
+				}
+
+				// Add Post to User
+				if (user!=NULL){
+					g_array_append_val(user->userPosts,new);
 				}
 
 	   			// Post ID
@@ -529,32 +538,33 @@ LONG_list questions_with_tag(TAD_community com, char* tag, Date begin, Date end)
 	return r;
 }
 
+// QUERY 5 ainda com erros
 
-// QUERY 5
-
-/*
-	criar variavel int[10] last_10_post_id -> no parser dos posts: - ir buscar o user do autor do post e last_10_post_id
-																   - ir buscar a data dum post do array e comparar com a data do post que estamos a introduzir
-																   - introduzir no array o id puxando o resto para a frente
-
-
-	Dentro da função -> - criar array auxiliar
-						- percorrer todos os posts da hash
-						- inserir ordenadamente quando o post for do user em questao
-
-
-*/
-/*USER get_user_info(TAD_community com, long id){
-	//struct User* user = malloc(sizeof(struct User));
-	
-	//user = (struct User*)g_hash_table_lookup(com->user, &id);
-
-
-	// return create_user(user->bio, user->last_10_post_id);
-
+int ordena(gconstpointer a,gconstpointer b){
+	int* a1 = (int*)a; int* b2 = (int*)b;
+	if(*a1 == 0) return 1;
+	if(*b2 == 0) return -1; 
+	struct Post* post1 = (struct Post*)a;
+	struct Post* post2 = (struct Post*)b;
+	return comparaDatas(post1->data,post2->data) *(-1);
 }
-*/
 
+USER get_user_info(TAD_community com, long id){
+	struct User* user = (struct User*)g_hash_table_lookup(com->user,&id);
+	int i; long posts[10];
+	USER res = NULL;
+	if(user!=NULL){
+		g_array_sort (user->userPosts,ordena);
+		for(i=0;i<10;i++){
+				struct Post* post = g_array_index(user->userPosts,struct Post*,i);
+				if(post!=NULL)
+					posts[i] = (long)post->id;
+				else posts[i] = -2;
+		}
+		res = create_user(user->short_bio,posts);
+	}
+	return res;
+}	
 
 // QUERY 6
 
@@ -890,7 +900,8 @@ int main(){
 	//LONG_list new8 = contains_word(teste,"entering adb",10);
 	//for(int aux=0;aux<10;aux++) printf("%ld ",get_list(new8,aux));
 	//	printf("\n");
-	
+
+
 
 	clock_t begin8 = clock();
 	LONG_list new10 = better_answer(teste,76);
@@ -898,6 +909,7 @@ int main(){
 	clock_t end8 = clock();
 
 	printf("Tempo '10 - better_answer' = %f\n", (double)(end8-begin8)/CLOCKS_PER_SEC);
+
 
 /* Funcao para Debugging da Q3:
 g_hash_table_foreach(teste->user,(GHFunc)ver_num,"UserId:%d, Nº Perguntas:%d, Nº Respostas:%d\n");
