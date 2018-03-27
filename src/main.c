@@ -50,6 +50,7 @@ struct Post{
 	int n_upvotes;
 	int n_downvotes;
 	int n_respostas;
+	int accepted_answer; // testar q10 - POR EM COMENTARIO QUANDO NAO FOR NECESSARIO
 };
 
 
@@ -185,6 +186,7 @@ TAD_community load(TAD_community com, char* dump_path){
 				xmlChar* tags = xmlGetProp(cur, (const xmlChar *)"Tags");
 				xmlChar* score_xml = xmlGetProp(cur, (const xmlChar *)"Score");
 				xmlChar* comments = xmlGetProp(cur, (const xmlChar *)"CommentCount");
+				xmlChar* answer = xmlGetProp(cur, (const xmlChar *)"AcceptedAnswerId");
 
 
 	   			int* idOwner = malloc(sizeof(int));
@@ -193,6 +195,7 @@ TAD_community load(TAD_community com, char* dump_path){
 	   			int* idType = malloc(sizeof(int));
 	   			int* score = malloc(sizeof(int));
 	   			int* n_comms = malloc(sizeof(int));
+	   			int* a_answer = malloc(sizeof(int));
 
 	   			struct Post* new = g_new(struct Post, 1);
 	   				
@@ -282,6 +285,13 @@ TAD_community load(TAD_community com, char* dump_path){
 	   				new->n_respostas = *awnsers;
 	   			}
 	   			else new->n_respostas = -1;
+
+	   			// Accepted answer - debugging q10 : COLOCAR EM COMENTÁRIO QUANDO NÃO FOR NECESSÁRIO!! 
+
+	   			if (new->type_id==2) {
+	   				sscanf((const char*)answer,"%d", a_answer);
+	   				new->accepted_answer = *a_answer;
+	   			}
 
 	   			// Inserir conforme o Post ID
 	   			g_hash_table_insert(com->post, idPost, new);
@@ -836,6 +846,12 @@ void ver_num (gpointer key, gpointer value, gpointer user_data){
 	printf(user_data,*keyId, aux->n_respostas,aux->n_perguntas);
 }
 
+// Função para seleção da melhor resposta
+void ver_melhor_resposta (gpointer key, gpointer post, gpointer user_data){
+	struct Post* aux = (struct Post*)post;
+	int* keyId = (int* )key;
+	if (aux->type_id==1) printf(user_data,*keyId, aux->accepted_answer);
+}
 
 int main(){
 	struct TCD_community* teste = init();
@@ -904,14 +920,16 @@ int main(){
 
 
 	clock_t begin8 = clock();
-	LONG_list new10 = better_answer(teste,76);
-	//printf("%ld\n", get_list(new10,0));
+	LONG_list new10 = better_answer(teste,76); //escolher id para teste e verificar pelos prints em baixo
 	clock_t end8 = clock();
+
+	/* Função para Debugging da Q10 */
+	g_hash_table_foreach(teste->post,(GHFunc)ver_melhor_resposta,"Post:%d,Best Answer:%d\n");
 
 	printf("Tempo '10 - better_answer' = %f\n", (double)(end8-begin8)/CLOCKS_PER_SEC);
 
 
-/* Funcao para Debugging da Q3:
+/* Funcao para Debugging da Q2:
 g_hash_table_foreach(teste->user,(GHFunc)ver_num,"UserId:%d, Nº Perguntas:%d, Nº Respostas:%d\n");
 */
 
