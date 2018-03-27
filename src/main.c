@@ -569,12 +569,14 @@ void ordenaScores(gpointer key_pointer, gpointer post_pointer, gpointer info){ /
 		Date begin = ((Date*)info)[1]; 
 		Date end = ((Date*)info)[2]; 
 		int *ocupados = ((int**)info)[3]; 
-		int* score = ((int**)info)[4]; 
-		int size = *((int**)info)[5]; 
+		int* arrayScore = ((int**)info)[4]; 
+		int size = *((int**)info)[5];
+
+		int score = (post->n_upvotes)-(post->n_downvotes);
 
 		if(comparaDatas(begin, post->data) == -1 && comparaDatas(post->data, end) == -1){
-			if( (*ocupados != size) || (*ocupados == size && post->score > score[size-1]) ){ // neste momento já sei que vai ser inserido
-				pos = insert(score, post->score, size);
+			if( (*ocupados != size) || (*ocupados == size && score > arrayScore[size-1]) ){ // neste momento já sei que vai ser inserido
+				pos = insert(arrayScore, score, size);
 				insereId(ids, post->id, pos, size);
 				if(*ocupados < size) (*ocupados)++;
 			}
@@ -586,16 +588,16 @@ void ordenaScores(gpointer key_pointer, gpointer post_pointer, gpointer info){ /
 
 LONG_list most_voted_answers(TAD_community com, int N, Date begin, Date end){
 	int* ids = malloc(sizeof(int)*N);
-	int* score = malloc(sizeof(int)*N);
+	int* arrayScore = malloc(sizeof(int)*N);
 	int* ocupados = malloc(sizeof(int)); *ocupados=0;
 	int i;
 
 	for(i = 0; i<N; i++){
 		ids[i] = -2;
-		score[i] = -2;
+		arrayScore[i] = -2;
 	}
 
-	void* info[6] = {(void*)ids, (void*)begin, (void*)end, (void*)ocupados, (void*)score, (void*)&N};
+	void* info[6] = {(void*)ids, (void*)begin, (void*)end, (void*)ocupados, (void*)arrayScore, (void*)&N};
 
 	g_hash_table_foreach(com->post, ordenaScores, info);
 
@@ -604,7 +606,56 @@ LONG_list most_voted_answers(TAD_community com, int N, Date begin, Date end){
 
 	return r;
 }
+
+// QUERY 7
+
+void ordenaNRespostas(gpointer key_pointer, gpointer post_pointer, gpointer info){ // if(post->type_id == 1) {toda a função}
+	struct Post* post = (struct Post*) post_pointer;
+
+	if(post->type_id == 1){
+		int pos;
+		int* ids = ((int**)info)[0];
+		Date begin = ((Date*)info)[1];
+		Date end = ((Date*)info)[2];
+		int *ocupados = ((int**)info)[3];
+		int* n_respostas = ((int**)info)[4];
+		int size = *((int**)info)[5];
+
+		if(comparaDatas(begin, post->data) == -1 && comparaDatas(post->data, end) == -1){
+			if( (*ocupados != size) || (*ocupados == size && post->n_respostas > n_respostas[size-1]) ){ // neste momento já sei que vai ser inserido
+				pos = insert(n_respostas, post->n_respostas, size);
+				insereId(ids, post->id, pos, size);
+				if(*ocupados < size) (*ocupados)++;
+			}
+		}
+	}
+
+}
+
+LONG_list most_answered_questions(TAD_community com, int N, Date begin, Date end){
+	int* ids = malloc(sizeof(int)*N);
+	int* n_respostas = malloc(sizeof(int)*N);
+	int *ocupados = malloc(sizeof(int)); *ocupados=0;
+	int i;
+
+	for(i = 0; i<N; i++){
+		ids[i] = -2;
+		n_respostas[i] = -2;
+	}
+
+	void* info[6] = {(void*)ids, (void*)begin, (void*)end, (void*)ocupados, (void*)n_respostas, (void*)&N};
+	
+	g_hash_table_foreach(com->post, ordenaNRespostas, info);
+
+	LONG_list r = create_list(N);	
+	for(i = 0; i<N; i++) set_list(r, i, ids[i]);
+
+	return r;
+}
+
+
 // QUERY 8
+
 void printPostHT(struct Post* aux){
 	if(aux!=NULL){
 	printf("%d ",aux->id);
@@ -692,53 +743,6 @@ LONG_list contains_word(TAD_community com, char* word, int N){
 }
 
 
-
-// Query 7
-
-void ordenaNRespostas(gpointer key_pointer, gpointer post_pointer, gpointer info){ // if(post->type_id == 1) {toda a função}
-	struct Post* post = (struct Post*) post_pointer;
-
-	if(post->type_id == 1){
-		int pos;
-		int* ids = ((int**)info)[0];
-		Date begin = ((Date*)info)[1];
-		Date end = ((Date*)info)[2];
-		int *ocupados = ((int**)info)[3];
-		int* n_respostas = ((int**)info)[4];
-		int size = *((int**)info)[5];
-
-		if(comparaDatas(begin, post->data) == -1 && comparaDatas(post->data, end) == -1){
-			if( (*ocupados != size) || (*ocupados == size && post->n_respostas > n_respostas[size-1]) ){ // neste momento já sei que vai ser inserido
-				pos = insert(n_respostas, post->n_respostas, size);
-				insereId(ids, post->id, pos, size);
-				if(*ocupados < size) (*ocupados)++;
-			}
-		}
-	}
-
-}
-
-LONG_list most_answered_questions(TAD_community com, int N, Date begin, Date end){
-	int* ids = malloc(sizeof(int)*N);
-	int* n_respostas = malloc(sizeof(int)*N);
-	int *ocupados = malloc(sizeof(int)); *ocupados=0;
-	int i;
-
-	for(i = 0; i<N; i++){
-		ids[i] = -2;
-		n_respostas[i] = -2;
-	}
-
-	void* info[6] = {(void*)ids, (void*)begin, (void*)end, (void*)ocupados, (void*)n_respostas, (void*)&N};
-	
-	g_hash_table_foreach(com->post, ordenaNRespostas, info);
-
-	LONG_list r = create_list(N);	
-	for(i = 0; i<N; i++) set_list(r, i, ids[i]);
-
-	return r;
-}
-
 // QUERY 9
 
 // QUERY 10
@@ -755,7 +759,7 @@ void bestAnswer (gpointer key_pointer, gpointer post_pointer, gpointer info) {
 	double score;
 
 	if (post->type_id == 2 && post->parent_id == *parentId) {
-		score=answer_score(post->score, post->owner_rep, post->n_upvotes, post->n_comments);
+		score=answer_score(post->score, post->owner_rep, (post->n_upvotes)-(post->n_downvotes), post->n_comments);
 		if (score>(*max)) {
 			*max=score;
 			*answerId=post->id;
@@ -763,7 +767,7 @@ void bestAnswer (gpointer key_pointer, gpointer post_pointer, gpointer info) {
 	}
 }
 
-LONG_list better_answer(TAD_community com, int id) {
+long better_answer(TAD_community com, int id) {
 
 	int* parentId = malloc(sizeof(int));
 	*parentId=id;
@@ -777,10 +781,7 @@ LONG_list better_answer(TAD_community com, int id) {
 
 	g_hash_table_foreach(com->post, bestAnswer, info);
 
-	LONG_list r = create_list(1);
-	set_list(r,0,*answerId);
-
-	return r;
+	return (long)*answerId;
 }
 
 
