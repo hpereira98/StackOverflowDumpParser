@@ -763,17 +763,58 @@ LONG_list contains_word(TAD_community com, char* word, int N){
 
 // QUERY 9
 
-LONG_list both_participated(TAD_community com, long id1, long id2, int N){
+/*
 
-	/*
-		percorrer hash posts para ver o id das perguntas onde aparece o id1 e adicionar a um array
-		percorrer hash posts para ver o id das perguntas onde aparece o id2 e adicionar apenas as que estão no outro array
+void isId (gpointer key_pointer, gpointer post_pointer, gpointer info) { // VERIFICAR SE ID1 PARTICIPA NA PERGUNTA
+	struct Post* post = (struct Post*)post_pointer;
+	int* ids = ((int**)info)[0]; // array fstId
+	int* id1 = ((int**)info)[2];
 
-		ordenar o ultimo array por datas - pouco eficiente porque precisa do lookup e assim??
-	
-	*/
-
+	if (post->type_id==1 && post->owner_id==id1) { 
+		//adicionar id1 a ids[];
+	}
+	else if (post->type_id==2 && post->owner_id==id1) {
+		//adicionar post->parent_id a ids[];
+	}
 }
+
+void isSndId (gpointer key_pointer, gpointer post_pointer, gpointer info) { // VERIFICAR SE ID2 PARTICIPA NAS PERGUNTAS OD ID1 PARTICIPA
+	struct Post* post = (struct Post*)post_pointer;
+	int* isFst = ((int**)info)[0];
+	int* ids = ((int**)info)[1]; // array bothIds
+	int* id2 = ((int**)info)[3]; // id2
+
+	if (post->type_id==1 && post->owner_id==id2) {
+		//for(int i;i<SIZE;i++) { if(isFst[i] == post->owner_id) {adicionar id2 a ids[];break;} }
+	}
+	else if (post->type_id==2 && post->owner_id==id2) {
+		//for(int i;i<SIZE;i++) { if(isFst[i] == post->owner_id) {adicionar post->parent_id a ids[];break;} }
+	}
+}
+
+LONG_list both_participated(TAD_community com, long id1, long id2, int N){
+	int* isFstId = ... // FAZER ARRAY DINÂMICO
+	int* bothIds = ... // FAZER ARRAY DINÂMICO
+	int* fstId = malloc(sizeof(int));
+	*fstId = id1;
+	int* sndId = malloc(sizeof(int));
+	*sndId = id2;
+
+	void* info[] = {(void*)isFstId,(void*)bothIds,(void*)fstId,(void*)sndId};
+
+	g_hash_table_foreach(com->post,isId,info); // colocar num array o id das perguntas em q id1 participa
+	g_hash_table_foreach(com->post,isSndId,info); // colocar num array o id das perguntas em q id1 e id2 participam
+
+	// FALTA ORDENAR E INSERIR NOS ARRAYS
+
+		//1) percorrer hash posts para ver o id das perguntas onde aparece o id1 e adicionar a um array
+
+		//2) percorrer hash posts para ver o id das perguntas onde aparece o id2 e adicionar apenas as que estão no outro array
+
+		//3) ordenar o ultimo array por datas - pouco eficiente porque precisa do lookup e assim??
+	
+}
+*/
 
 
 // QUERY 10
@@ -817,6 +858,10 @@ LONG_list better_answer(TAD_community com, int id) {
 
 	return r;
 }
+
+// QUERY 11
+
+
 
 
 /* Funcao para Debugging de PostHashT */
