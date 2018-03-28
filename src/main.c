@@ -6,7 +6,6 @@
 #include <glib.h>
 #include <string.h>
 #include <time.h>
-#include "my_date.h"
 
 /*NOTAS:
 &#xA - \n codificado
@@ -74,49 +73,6 @@ TAD_community init(){
 
 
 
-// FUNCAO AUXILIAR DE INSERCAO, DEPOIS REMOVER DO main
-
-
-
-
-
-
-
-
-/* Funcao para Debugging de PostHashT */
-
-
-/* Funcao para Debugging de UserHashT */
-void printUserHT(gpointer key, gpointer value, gpointer user_data){
-	struct User* aux = (struct User*)value;
-	int* keyId = (int* )key;
-	printf(user_data,*keyId, aux->id, aux->display_name);
-}
-
-/* Funcao para verificar procura na UserHashT */ 
-void testeAcessoUserHT(TAD_community com, int id){
-	int* aux = malloc(sizeof(int));
-	*aux=id;
-	struct User* user = malloc(sizeof(struct User));
-	user = (struct User*)g_hash_table_lookup(com->user, aux);
-	if(user) printf("%d %s\n",user->id,user->display_name);
-	 else printf("user not found\n");
-}
-
-// Função para verificar contagem do nº posts
-void ver_num (gpointer key, gpointer value, gpointer user_data){
-	struct User* aux = (struct User*)value;
-	int* keyId = (int* )key;
-	printf(user_data,*keyId, aux->n_respostas,aux->n_perguntas);
-}
-
-// Função para seleção da melhor resposta
-void ver_melhor_resposta (gpointer key, gpointer post, gpointer user_data){
-	struct Post* aux = (struct Post*)post;
-	int* keyId = (int* )key;
-	if (aux->type_id==1) printf(user_data,*keyId, aux->accepted_answer);
-}
-
 int main(){
 	struct TCD_community* teste = init();
 	char* path = "../../dumpexemplo/android/";
@@ -182,7 +138,7 @@ int main(){
 	printf("\n");
 
 	clock_t begin9 = clock();
-	LONG_list new9 = both_participated(teste,76,77, 10); // ids aleatórios
+	//LONG_list new9 = both_participated(teste,76,77, 10); // ids aleatórios
 	clock_t end9 = clock();
 
 	printf("Tempo '9 - both_participated' = %f\n", (double)(end9-begin9)/CLOCKS_PER_SEC);

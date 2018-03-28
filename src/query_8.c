@@ -1,3 +1,6 @@
+#include "query_8.h"
+
+
 void printPostHT(struct Post* aux){
 	if(aux!=NULL){
 	printf("%d ",aux->id);
@@ -10,14 +13,14 @@ void printPostHT(struct Post* aux){
 	else printf("null\n");
 }
 
-void printPostHT(struct Post* aux){ //resultado: data mais recente para mais antiga
+void insertByDate(struct Post* posts[],struct Post* post, int N, int* used){ //resultado: data mais recente para mais antiga
 	int i = 0;
 	int pos = 0;
 	
-	printf("%d",*used);
+	//printf("%d",*used);
 	for(i = 0; i < *used && pos==0; i++){
-		printf("A comparar %d %d %d com %d %d %d\n",get_day(post->data),get_month(post->data),get_year(post->data),get_day(posts[i]->data),get_month(posts[i]->data),get_year(posts[i]->data));
-		printf("%d\n",comparaDatas(post->data,(posts[i])->data));
+		//printf("A comparar %d %d %d com %d %d %d\n",get_day(post->data),get_month(post->data),get_year(post->data),get_day(posts[i]->data),get_month(posts[i]->data),get_year(posts[i]->data));
+		//printf("%d\n",comparaDatas(post->data,(posts[i])->data));
 		if(comparaDatas(post->data,(posts[i])->data)==1)
 			break;		
 	}
@@ -32,7 +35,6 @@ void printPostHT(struct Post* aux){ //resultado: data mais recente para mais ant
 	posts[pos] = post;	
 
 }
-
 
 
 void word_lookup(gpointer key_pointer, gpointer post_pointer, gpointer info){
@@ -52,13 +54,13 @@ void word_lookup(gpointer key_pointer, gpointer post_pointer, gpointer info){
 		int* ocupados = ((int**)info)[3];
 	
 		struct Post* last = postArray[size-1];// null ou endereço de um post
-		printf("%d\n",*ocupados);
-		printPostHT(post);
+		//printf("%d\n",*ocupados);
+		//printPostHT(post);
 
 		if(strstr(titulo,word)!=NULL && ((*ocupados<size) || ((*ocupados == size) && (comparaDatas(post->data,last->data)==1)))){
 			 insertByDate(postArray,post,size,ocupados);
-			 printf("inseriu %dº\n",++i);
-			 for(int aux=0;aux<10;aux++) if(postArray[aux]!=NULL)printf("%d\n",((struct Post*)(postArray[aux]))->id );
+			 //printf("inseriu %dº\n",++i);
+			 //for(int aux=0;aux<10;aux++) if(postArray[aux]!=NULL)printf("%d\n",((struct Post*)(postArray[aux]))->id );
 		}
 	}
 }

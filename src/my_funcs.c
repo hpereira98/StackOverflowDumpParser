@@ -1,7 +1,4 @@
 #include "my_funcs.h"
-#include <string.h>
-#include <stdlib.h>
- 
 
 
 // Datas
@@ -89,6 +86,8 @@ void insereId(int* v, int x, int i, int n){
 
 	v[i] = x;
 }
+
+
 
 
 

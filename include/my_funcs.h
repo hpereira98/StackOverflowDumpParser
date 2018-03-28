@@ -2,11 +2,16 @@
 #define __MYFUNCS_H__
 
 #include "date.h"
+#include <string.h>
+#include <stdlib.h>
+#include "interface.h"
 
 //tirar estes depois
 #include <glib.h>
 #include "structs.h"
 #include <stdio.h>
+
+
 
 
 Date atribuiData(char* date);
