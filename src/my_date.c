@@ -1,7 +1,7 @@
 #include "my_date.h"
 #include <string.h>
 #include <stdlib.h>
-
+ 
 
 Date atribuiData(char* date){ // "AAAA-MM-DD"
 	char* ano_str = malloc(5);
