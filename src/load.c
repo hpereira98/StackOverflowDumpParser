@@ -82,7 +82,7 @@ TAD_community load(TAD_community com, char* dump_path){
 				else new->short_bio = "";
 
 				// User's Posts 
-				new->userPosts = g_array_new (FALSE,TRUE,1);//(elemento no fim a 0,inicilizar a 0,tamnho em bytes dos elems)
+				new->userPosts = g_array_new (FALSE,TRUE,sizeof(struct Post*));//(elemento no fim a 0,inicilizar a 0,tamnho em bytes dos elems)
 			 
    				// Inserir conforme o ID
    				g_hash_table_insert(com->user, idUser, new); i++;
@@ -161,14 +161,13 @@ TAD_community load(TAD_community com, char* dump_path){
 					(user->n_posts)++;
 				}
 
-				// Add Post to User
-				if (user!=NULL){
-					g_array_append_val(user->userPosts,new);
-				}
+				
 
 	   			// Post ID
 				sscanf((const char*)post_id, "%d", idPost); 
 	   			new->id = *idPost;
+
+	   			
 
 	   			// Type ID
 	   			sscanf((const char*)post_type_id, "%d", idType); 
@@ -221,6 +220,11 @@ TAD_community load(TAD_community com, char* dump_path){
 	   				new->n_respostas = *awnsers;
 	   			}
 	   			else new->n_respostas = -1;
+
+	   			// Add Post to User
+				if (user!=NULL){
+					g_array_append_val(user->userPosts,new);
+				}
 
 	   			// Accepted answer - debugging q10 : COLOCAR EM COMENTÁRIO QUANDO NÃO FOR NECESSÁRIO!! 
 	   			/*

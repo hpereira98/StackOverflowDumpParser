@@ -1,5 +1,7 @@
 #include <interface.h>
 #include <time.h>
+#include <structs.h>
+#include <query_5.h>
 
 /*NOTAS:
 &#xA - \n codificado
@@ -11,8 +13,11 @@
 */
 
 
-
-
+int compare_ints(gpointer a, gpointer b) {
+ 		int* x = (int*)a;
+ 		int* y = (int*)b;
+ 		return (-1) * (*x - *y);
+	}
 
 
 int main(){
@@ -28,13 +33,13 @@ int main(){
 	printf("Tempo '0 - load' = %f\n", (double)(end-begin)/CLOCKS_PER_SEC);
 
 	clock_t begin1 = clock();
-	STR_pair new = info_from_post(teste,199);
+	STR_pair new1 = info_from_post(teste,199);
 	clock_t end1 = clock();
 
 	printf("Tempo '1 - info_from_post' = %f\n", (double)(end1-begin1)/CLOCKS_PER_SEC);
 	
-	clock_t begin5 = clock();
-	LONG_list new3 = top_most_active(teste,500);
+	clock_t begin2 = clock();
+	LONG_list new2 = top_most_active(teste,500);
 	/*for (int it=0;it<500;it++) {
 		printf("%dº: %li ",(it+1),get_list(new3,it));
 		int *aux = malloc(sizeof(int));
@@ -42,32 +47,41 @@ int main(){
 		struct User* user = g_hash_table_lookup(teste->user,aux);
 		if(user) printf("%d\n",user->n_perguntas+user->n_respostas);
 	}*/
-	clock_t end5 = clock();
+	clock_t end2 = clock();
 
-	printf("Tempo '2 - top_most_active' = %f\n", (double)(end5-begin5)/CLOCKS_PER_SEC);
+	printf("Tempo '2 - top_most_active' = %f\n", (double)(end2-begin2)/CLOCKS_PER_SEC);
 
 	clock_t begin3 = clock();
-	LONG_pair new1 = total_posts(teste,inicio,fim);
+	LONG_pair new3 = total_posts(teste,inicio,fim);
 	//printf("%ld %ld\n",get_fst_long(new1),get_snd_long(new1));
 	clock_t end3 = clock();
 
 	printf("Tempo '3 - total_posts' = %f\n", (double)(end3-begin3)/CLOCKS_PER_SEC);
 
 	clock_t begin4 = clock();
-	LONG_list new2 = questions_with_tag(teste, "android", inicio, fim);
+	LONG_list new4 = questions_with_tag(teste, "android", inicio, fim);
 	clock_t end4 = clock();
 
 	printf("Tempo '4 - questions_with_tag' = %f\n", (double)(end4-begin4)/CLOCKS_PER_SEC);
 
+
+	clock_t begin5 = clock();
+	long id = 9;
+	USER new5 = get_user_info(teste,id);
+	clock_t end5 = clock();
+
+	printf("Tempo '5 - get_user_info' = %f\n",(double)(end5-begin5)/CLOCKS_PER_SEC);
+
 	clock_t begin6 = clock();
-	LONG_list new4 = most_voted_answers(teste, 100, inicio, fim);
+	LONG_list new6 = most_voted_answers(teste, 100, inicio, fim);
 	//for(int i=0;i<100;i++) printf("%ld\n",get_list(new4, i));
 	clock_t end6 = clock();
 
 	printf("Tempo '6 - most_voted_answers' = %f\n", (double)(end6-begin6)/CLOCKS_PER_SEC);
 
+
 	clock_t begin7 = clock();
-	LONG_list new5 = most_answered_questions(teste, 100, inicio, fim);
+	LONG_list new7 = most_answered_questions(teste, 100, inicio, fim);
 	//for(int i=0;i<100;i++) printf("%ld\n",get_list(new5, i));
 	clock_t end7 = clock();
 
@@ -89,6 +103,10 @@ int main(){
 
 	printf("Tempo '9 - both_participated' = %f\n", (double)(end9-begin9)/CLOCKS_PER_SEC);
 
+
+	
+
+	
 
 	//clock_t begin8 = clock();
 	//LONG_list new10 = better_answer(teste,76); //escolher id para teste e verificar pelos prints em baixo
