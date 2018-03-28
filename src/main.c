@@ -381,6 +381,25 @@ int insert(int* array, int elem, int size){
 	return pos;
 }
 
+// para propósitos temporários (q9)
+int insertDate(Date* array, Date elem, int size){
+	int i = 0;
+	int pos = -1;
+
+	for(i = 0; i<size && pos==-1; i++){
+		if(comparaDatas(array[i],elem)==-1) pos=i;
+	}
+	for(i = size-1; i>pos; i--){
+		array[i] = array[i-1];
+	}
+
+	array[pos] = elem;
+	/*printf("inseriu em %d\n",pos );
+	for(int j = 0; j<20;j++)
+		printf("%d ",array[j] ); printf("E\n"); */
+	return pos;
+}
+
 void insereId(int* v, int x, int i, int n){
 
 	for(n=n-1; n>i; n--){
@@ -503,28 +522,31 @@ LONG_pair total_posts(TAD_community com, Date begin, Date end){
 
 void adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer info){ // info = {tree, tag, inicio, fim}
 	struct Post* post = (struct Post*) post_pointer;
-	char* tag = malloc(strlen(((char**)info)[1] + 1)); strcpy(tag, ((char**)info)[1]);
 	Date begin = ((Date*)(info))[2];
 	Date end = ((Date*)(info))[3]; 
 	GTree* tree = ((GTree**)(info))[0]; 
-	int* id = &(post->id);
+	
+	char* tag = malloc(strlen(((char**)info)[1] + 1)); strcpy(tag, "<");
+	char* aux = malloc(strlen(((char**)info)[1] + 1));
+	strcpy(aux, ((char**)info)[1]);
+	strcat(tag, aux); strcat(tag, ">");
 
 	if(comparaDatas(begin, post->data) == 1 && comparaDatas(post->data, end) == -1){  
 		if(strstr(post->tags, tag) != NULL){
-			g_tree_insert(tree, (gpointer)post->data, (gpointer)id);			
+			g_tree_insert(tree, (gpointer)post->data, (gpointer)(&(post->id) ));			
 		}
 	}
 
 }
 
 
-void addToLongList(gpointer key_pointer, gpointer id_pointer, gpointer info){ // info = {lista, ocupados}
+void addToLongList(gpointer key_pointer, gpointer id_pointer, gpointer info){ // info = {lista, i}
 	int* id = (int*) id_pointer;
-	int* ocupados = ((int**)(info))[1]; 
+	int* i = ((int**)(info))[1]; 
 	LONG_list lista = ((LONG_list*)(info))[0]; 
 
-	set_list(lista, *ocupados, *id);
-	(*ocupados)++;
+	set_list(lista, *i, *id);
+	(*i)--;
 }
 
 
@@ -541,7 +563,7 @@ LONG_list questions_with_tag(TAD_community com, char* tag, Date begin, Date end)
 	LONG_list r = create_list(tam);
 
 	int* i = malloc(sizeof(int));
-	*i = 0;
+	*i = tam-1;
 	void* lista[2] = {r, i};
 
 	// Constroi a lista resultado (r)
@@ -766,60 +788,23 @@ LONG_list contains_word(TAD_community com, char* word, int N){
 
 // QUERY 9
 
-/* PRIMEIRA MANEIRA: sem utilizar o GArray dos posts
-
-void isId (gpointer key_pointer, gpointer post_pointer, gpointer info) { // VERIFICAR SE ID1 PARTICIPA NA PERGUNTA
-	struct Post* post = (struct Post*)post_pointer;
-	int* ids = ((int**)info)[0]; // array fstId
-	int* id1 = ((int**)info)[2];
-
-	if (post->type_id==1 && post->owner_id==id1) { 
-		//adicionar id1 a ids[];
-	}
-	else if (post->type_id==2 && post->owner_id==id1) {
-		//adicionar post->parent_id a ids[];
-	}
-}
-
-void isSndId (gpointer key_pointer, gpointer post_pointer, gpointer info) { // VERIFICAR SE ID2 PARTICIPA NAS PERGUNTAS OD ID1 PARTICIPA
-	struct Post* post = (struct Post*)post_pointer;
-	int* isFst = ((int**)info)[0];
-	int* ids = ((int**)info)[1]; // array bothIds
-	int* id2 = ((int**)info)[3]; // id2
-
-	if (post->type_id==1 && post->owner_id==id2) {
-		//for(int i;i<SIZE;i++) { if(isFst[i] == post->owner_id) {adicionar id2 a ids[];break;} }
-	}
-	else if (post->type_id==2 && post->owner_id==id2) {
-		//for(int i;i<SIZE;i++) { if(isFst[i] == post->owner_id) {adicionar post->parent_id a ids[];break;} }
-	}
-}
-
-LONG_list both_participated(TAD_community com, long id1, long id2, int N){
-	int* isFstId = ... // FAZER ARRAY DINÂMICO
-	int* bothIds = ... // FAZER ARRAY DINÂMICO
-	int* fstId = malloc(sizeof(int));
-	*fstId = id1;
-	int* sndId = malloc(sizeof(int));
-	*sndId = id2;
-
-	void* info[] = {(void*)isFstId,(void*)bothIds,(void*)fstId,(void*)sndId};
-
-	g_hash_table_foreach(com->post,isId,info); // colocar num array o id das perguntas em q id1 participa
-	g_hash_table_foreach(com->post,isSndId,info); // colocar num array o id das perguntas em q id1 e id2 participam
-
-	// FALTA ORDENAR E INSERIR NOS ARRAYS
-
-		//1) percorrer hash posts para ver o id das perguntas onde aparece o id1 e adicionar a um array
-
-		//2) percorrer hash posts para ver o id das perguntas onde aparece o id2 e adicionar apenas as que estão no outro array
-
-		//3) ordenar o ultimo array por datas - pouco eficiente porque precisa do lookup e assim??
+void dateInsertionSort (int id, Date data,int *ids,Date *datas, int* ocupados,int size) {
 	
+	int pos;
+	if( (*ocupados < size) || ( (*ocupados == size) && ( comparaDatas(data,datas[(size)-1])==1 ) ) ){
+
+		pos = insertDate(datas,data,size);
+		insereId(ids,id,pos,size);
+
+		// Debugging: imprime o array dos ids e das datas
+		for (int i=0,i<*ocupados;i++)
+			printf("PostId: %d, Data: %d-%d-%d",ids[i],get_day(datas[i]),get_month(datas[i]),get_year(datas[i]));
+			
+		if(*ocupados < (size)) (*ocupados)++;	
+
+	}
 }
 
-
-// SEGUNDA MANEIRA: utilizando o GArray dos posts
 LONG_list both_participated(TAD_community com, long id1, long id2, int N){
 	
 	struct User* user1 = malloc(sizeof(struct User));
@@ -829,6 +814,13 @@ LONG_list both_participated(TAD_community com, long id1, long id2, int N){
 
 	int *ids = malloc(sizeof(int)*N);
 	Date *datas = malloc(sizeof(int)*N);
+	for (int i=0;i<N;i++) {
+		datas[i]=createDate(0,0,0);
+		ids[i]=-2;
+	}
+
+	int* ocupados;
+	*ocupados=0; // vai até N no máximo
 	
 	if (user1!=NULL && user2!=NULL) {
 		for (int i=0;i<user1->n_posts;i++) {
@@ -840,22 +832,24 @@ LONG_list both_participated(TAD_community com, long id1, long id2, int N){
 					struct Post* post2 = g_array_index(user2->userPosts,struct Post*,j);             //     dateInsertionSort NÃO DEFINIDA
 				
 					if (post2!=NULL) {
-						if (post1->type_id == 1 && post2->type_id == 2 && post2->parent_id == post1->id) dateInsertionSort(); // post1 pergunta e post2 resposta: verificar se o pai do post2 é o post1
-						else if (post1->type_id == 2 && post2->type_id == 1 && post1->parent_id == post2->id) dateInsertionSort(); // post1 resposta e post2 pergunta: verificar se o pai do post1 é o post2
-						else if (post1->type_id == 2 && pos2->type_id == 2 && post1->parent_id == post2->parent_id) dateIinsertionSort(); // post1 e post2 respostas: verificar se têm o mm pai
+						if (post1->type_id == 1 && post2->type_id == 2 && post2->parent_id == post1->id) dateInsertionSort(post1->id,post1->data,ids,datas,ocupados,N); // post1 pergunta e post2 resposta: verificar se o pai do post2 é o post1
+						else if (post1->type_id == 2 && post2->type_id == 1 && post1->parent_id == post2->id) dateInsertionSort(post2->id,post2->data,ids,datas,ocupados,N); // post1 resposta e post2 pergunta: verificar se o pai do post1 é o post2
+						else if (post1->type_id == 2 && pos2->type_id == 2 && post1->parent_id == post2->parent_id) { // post1 e post2 respostas: verificar se têm o mm pai
+							struct Post* post3 = g_hash_table_lookup(com->post,post2->parent_id);
+							dateIinsertionSort(post3->id,post3->data,ids,datas,ocupados,N);
+						}
 					}
 				}
 			}
 		}
 	}
 	
-	LONG_list r = create_list(N);
+	LONG_list r = create_list(N); // ou até ocupados -> FALAR COM O PROF
 	for (int i=0,i<N;i++) set_list(r,i,ids[i]);
 	return r;
 
 }
 
-*/
 
 // QUERY 10
 
@@ -1001,6 +995,11 @@ int main(){
 	for(int aux=0;aux<10;aux++) printf("%ld ",get_list(new8,aux));
 	printf("\n");
 
+	clock_t begin9 = clock();
+	LONG_list new9 = both_participated(teste,76,77); // ids aleatórios
+	clock_t end9 = clock();
+
+	printf("Tempo '9 - both_participated' = %f\n", (double)(end9-begin9)/CLOCKS_PER_SEC);
 
 
 	//clock_t begin8 = clock();
