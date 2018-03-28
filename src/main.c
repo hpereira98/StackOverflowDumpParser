@@ -186,7 +186,6 @@ TAD_community load(TAD_community com, char* dump_path){
 				xmlChar* tags = xmlGetProp(cur, (const xmlChar *)"Tags");
 				xmlChar* score_xml = xmlGetProp(cur, (const xmlChar *)"Score");
 				xmlChar* comments = xmlGetProp(cur, (const xmlChar *)"CommentCount");
-				xmlChar* answer = xmlGetProp(cur, (const xmlChar *)"AcceptedAnswerId");
 
 
 	   			int* idOwner = malloc(sizeof(int));
@@ -195,7 +194,6 @@ TAD_community load(TAD_community com, char* dump_path){
 	   			int* idType = malloc(sizeof(int));
 	   			int* score = malloc(sizeof(int));
 	   			int* n_comms = malloc(sizeof(int));
-	   			int* a_answer = malloc(sizeof(int));
 
 	   			struct Post* new = g_new(struct Post, 1);
 	   				
@@ -288,10 +286,14 @@ TAD_community load(TAD_community com, char* dump_path){
 
 	   			// Accepted answer - debugging q10 : COLOCAR EM COMENTÁRIO QUANDO NÃO FOR NECESSÁRIO!! 
 
-	   			if (new->type_id==2) {
+	   			if (new->type_id==1) {
+	   				xmlChar* answer = xmlGetProp(cur, (const xmlChar *)"AcceptedAnswerId");
+					int* a_answer = malloc(sizeof(int));
+
 	   				sscanf((const char*)answer,"%d", a_answer);
 	   				new->accepted_answer = *a_answer;
 	   			}
+	   			else new->accepted_answer=-2;
 
 	   			// Inserir conforme o Post ID
 	   			g_hash_table_insert(com->post, idPost, new);
@@ -763,7 +765,7 @@ LONG_list contains_word(TAD_community com, char* word, int N){
 
 // QUERY 9
 
-/*
+/* PRIMEIRA MANEIRA: sem utilizar o GArray dos posts
 
 void isId (gpointer key_pointer, gpointer post_pointer, gpointer info) { // VERIFICAR SE ID1 PARTICIPA NA PERGUNTA
 	struct Post* post = (struct Post*)post_pointer;
@@ -814,8 +816,45 @@ LONG_list both_participated(TAD_community com, long id1, long id2, int N){
 		//3) ordenar o ultimo array por datas - pouco eficiente porque precisa do lookup e assim??
 	
 }
-*/
 
+
+// SEGUNDA MANEIRA: utilizando o GArray dos posts
+LONG_list both_participated(TAD_community com, long id1, long id2, int N){
+	
+	struct User* user1 = malloc(sizeof(struct User));
+	user1 = g_hash_table_lookup(com->user,&id1); 
+	struct User* user2 = malloc(sizeof(struct User));
+	user2 = g_hash_table_lookup(com->user,&id2);
+
+	int *ids = malloc(sizeof(int)*N);
+	Date *datas = malloc(sizeof(int)*N);
+	
+	if (user1!=NULL && user2!=NULL) {
+		for (int i=0;i<user1->n_posts;i++) {
+			struct Post* post1 = g_array_index(user1->userPosts,struct Post*,i);
+
+			if (post1!=NULL) {
+				for (int j=i<user2->n_posts;i++) {
+					
+					struct Post* post2 = g_array_index(user2->userPosts,struct Post*,j);             //     dateInsertionSort NÃO DEFINIDA
+				
+					if (post2!=NULL) {
+						if (post1->type_id == 1 && post2->type_id == 2 && post2->parent_id == post1->id) dateInsertionSort(); // post1 pergunta e post2 resposta: verificar se o pai do post2 é o post1
+						else if (post1->type_id == 2 && post2->type_id == 1 && post1->parent_id == post2->id) dateInsertionSort(); // post1 resposta e post2 pergunta: verificar se o pai do post1 é o post2
+						else if (post1->type_id == 2 && pos2->type_id == 2 && post1->parent_id == post2->parent_id) dateIinsertionSort(); // post1 e post2 respostas: verificar se têm o mm pai
+					}
+				}
+			}
+		}
+	}
+	
+	LONG_list r = create_list(N);
+	for (int i=0,i<N;i++) set_list(r,i,ids[i]);
+	return r;
+
+}
+
+*/
 
 // QUERY 10
 
