@@ -1,10 +1,4 @@
-#include <date.h>
-#include <stdio.h>
 #include <interface.h>
-#include <libxml/parser.h>
-#include <gmodule.h>
-#include <glib.h>
-#include <string.h>
 #include <time.h>
 
 /*NOTAS:
@@ -18,58 +12,6 @@
 
 
 
-struct User{
-	int id; // user id
-	char* display_name; // username
-	int rep; // reputação
-	int n_perguntas; // número de perguntas
-	int n_respostas; // número de respostas
-	int n_posts; // número total de posts
-	int reputacao;
-	//Date data_posts[];
-	//Date data_respostas[];
-	//char* títulos[];
-	char* short_bio; // descrição do user
-	GArray* userPosts;
-
-};
-
-struct Post{
-	int id;
-	char* titulo;
-	int owner_id;
-	char* owner_display_name;
-	int owner_rep;
-	int type_id;
-	int parent_id;
-	Date data;
-	char* tags;
-	int score;
-	int n_comments;
-	int n_upvotes;
-	int n_downvotes;
-	int n_respostas;
-	int accepted_answer; // testar q10 - POR EM COMENTARIO QUANDO NAO FOR NECESSARIO
-};
-
-
-struct TCD_community{
-	GHashTable* user;
-	GHashTable* post;	
-};
-
-
-
-TAD_community init(){
-	struct TCD_community* new = malloc(sizeof(struct TCD_community));
-  	GHashTable* newUserHash = g_hash_table_new(g_int_hash, g_int_equal);
-  	GHashTable* newPostHash = g_hash_table_new(g_int_hash, g_int_equal);
-
-  	new->user = newUserHash;
-  	new->post = newPostHash;
-
-  	return new;
-}
 
 
 
@@ -132,10 +74,14 @@ int main(){
 	printf("Tempo '7 - most_answered_questions' = %f\n", (double)(end7-begin7)/CLOCKS_PER_SEC);
 
 
+	clock_t begin8 = clock();
+	LONG_list new8 = contains_word(teste,"a",1000);
+	//for(int aux=0;aux<10;aux++) 
+	//	printf("%ld ",get_list(new8,aux));
+	//printf("\n");
+	clock_t end8 = clock();
 
-	LONG_list new8 = contains_word(teste,"there",10);
-	for(int aux=0;aux<10;aux++) printf("%ld ",get_list(new8,aux));
-	printf("\n");
+	printf("Tempo '8 - contains_word' = %f\n", (double)(end8-begin8)/CLOCKS_PER_SEC);
 
 	clock_t begin9 = clock();
 	//LONG_list new9 = both_participated(teste,76,77, 10); // ids aleatórios

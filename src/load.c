@@ -1,5 +1,16 @@
 #include <load.h>
 
+TAD_community init(){
+	struct TCD_community* new = malloc(sizeof(struct TCD_community));
+  	GHashTable* newUserHash = g_hash_table_new(g_int_hash, g_int_equal);
+  	GHashTable* newPostHash = g_hash_table_new(g_int_hash, g_int_equal);
+
+  	new->user = newUserHash;
+  	new->post = newPostHash;
+
+  	return new;
+}
+
 TAD_community load(TAD_community com, char* dump_path){
 	int i = 0;
 	char* users = "Users.xml";

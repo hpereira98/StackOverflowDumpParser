@@ -7,6 +7,7 @@
 #include <string.h>
 
 TAD_community load(TAD_community com, char* dump_path);
+TAD_community init();
 
 
 #endif

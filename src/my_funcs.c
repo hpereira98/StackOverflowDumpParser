@@ -10,12 +10,15 @@ Date atribuiData(char* date){ // "AAAA-MM-DD"
 	int ano, mes, dia;
 
 	strncpy(ano_str, date, 4);
+	ano_str[4]='\0';
 	strncpy(mes_str, date+5, 2);
+	mes_str[2]='\0';
 	strncpy(dia_str, date+8, 2);
+	dia_str[2]='\0';
 
-	ano = atoi(ano_str);
-	mes = atoi(mes_str);
-	dia = atoi(dia_str);
+	ano=atoi(ano_str);
+	mes=atoi(mes_str);
+	dia=atoi(dia_str);
 
 	return (createDate(dia, mes, ano));
 }

@@ -19,8 +19,8 @@ void insertByDate(struct Post* posts[],struct Post* post, int N, int* used){ //r
 	
 	//printf("%d",*used);
 	for(i = 0; i < *used && pos==0; i++){
-		//printf("A comparar %d %d %d com %d %d %d\n",get_day(post->data),get_month(post->data),get_year(post->data),get_day(posts[i]->data),get_month(posts[i]->data),get_year(posts[i]->data));
-		//printf("%d\n",comparaDatas(post->data,(posts[i])->data));
+		/*Debuggin*/ //printf("A comparar %d %d %d com %d %d %d\n",get_day(post->data),get_month(post->data),get_year(post->data),get_day(posts[i]->data),get_month(posts[i]->data),get_year(posts[i]->data));
+		/*Debuggin*/ //printf("%d\n",comparaDatas(post->data,(posts[i])->data));
 		if(comparaDatas(post->data,(posts[i])->data)==1)
 			break;		
 	}
@@ -38,7 +38,8 @@ void insertByDate(struct Post* posts[],struct Post* post, int N, int* used){ //r
 
 
 void word_lookup(gpointer key_pointer, gpointer post_pointer, gpointer info){
-	struct Post* post = (struct Post*)post_pointer ; int i=0;
+	struct Post* post = (struct Post*)post_pointer ; 
+
 	if(post->type_id==1){
 		
 		char* titulo = malloc(strlen(post->titulo)+1);
@@ -54,13 +55,13 @@ void word_lookup(gpointer key_pointer, gpointer post_pointer, gpointer info){
 		int* ocupados = ((int**)info)[3];
 	
 		struct Post* last = postArray[size-1];// null ou endereço de um post
-		//printf("%d\n",*ocupados);
-		//printPostHT(post);
+		/*Debuggin*/ //printf("%d\n",*ocupados);
+		/*Debuggin*/ //printPostHT(post);
 
 		if(strstr(titulo,word)!=NULL && ((*ocupados<size) || ((*ocupados == size) && (comparaDatas(post->data,last->data)==1)))){
 			 insertByDate(postArray,post,size,ocupados);
-			 //printf("inseriu %dº\n",++i);
-			 //for(int aux=0;aux<10;aux++) if(postArray[aux]!=NULL)printf("%d\n",((struct Post*)(postArray[aux]))->id );
+			/*Debuggin*/ //printf("inseriu %dº\n",++i);
+			/*Debuggin*/ //for(int aux=0;aux<10;aux++) if(postArray[aux]!=NULL)printf("%d\n",((struct Post*)(postArray[aux]))->id );
 		}
 	}
 }
@@ -70,19 +71,22 @@ LONG_list contains_word(TAD_community com, char* word, int N){
 
 	for(i=0;i<N;i++) postArray[i]=NULL;
 
-	int* ocupados = malloc(sizeof(int)); *ocupados=0;
+	int* used = malloc(sizeof(int)); *used=0;
 
-	void* info[4] ={postArray,word,&N,ocupados};
+	void* info[4] ={postArray,word,&N,used};
 
 	g_hash_table_foreach(com->post, word_lookup, info);
+	/*Debuggin*//*
+	for(i=0; i< *used;i++){
+		struct Post* post = postArray[i];
+		printf("%d %d %d\n",get_day(post->data),get_month(post->data),get_year(post->data));
+	}
+	*/
+	LONG_list r = create_list(*used);
 
-	LONG_list r = create_list(N);
-
-	for(i = 0; i<N; i++) 
-		if(postArray[i]!=NULL) 
+	for(i = 0; i < *used; i++) 
 			set_list(r, i, (postArray[i])->id);
-		else 
-			set_list(r,i,-2);
+		
 
 
 	return r;	
