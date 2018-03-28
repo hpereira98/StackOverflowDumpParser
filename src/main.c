@@ -787,7 +787,7 @@ LONG_list contains_word(TAD_community com, char* word, int N){
 
 // QUERY 9
 
-void dateInsertionSort (int id, Date data,int* ids,int *datas, int* ocupados,int size) {
+void dateInsertionSort (int id, Date data,int *ids,Date *datas, int* ocupados,int size) {
 	
 	int pos;
 	if( (*ocupados < size) || ( (*ocupados == size) && ( comparaDatas(data,datas[(size)-1])==1 ) ) ){
@@ -995,6 +995,11 @@ int main(){
 	//for(int aux=0;aux<10;aux++) printf("%ld ",get_list(new8,aux));
 	//	printf("\n");
 
+	clock_t begin9 = clock();
+	LONG_list new9 = both_participated(teste,76,77); // ids aleatórios
+	clock_t end9 = clock();
+
+	printf("Tempo '9 - both_participated' = %f\n", (double)(end9-begin9)/CLOCKS_PER_SEC);
 
 
 	clock_t begin8 = clock();
