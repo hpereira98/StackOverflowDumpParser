@@ -285,7 +285,7 @@ TAD_community load(TAD_community com, char* dump_path){
 	   			else new->n_respostas = -1;
 
 	   			// Accepted answer - debugging q10 : COLOCAR EM COMENTÁRIO QUANDO NÃO FOR NECESSÁRIO!! 
-
+	   			/*
 	   			if (new->type_id==1) {
 	   				xmlChar* answer = xmlGetProp(cur, (const xmlChar *)"AcceptedAnswerId");
 					int* a_answer = malloc(sizeof(int));
@@ -294,10 +294,10 @@ TAD_community load(TAD_community com, char* dump_path){
 	   				new->accepted_answer = *a_answer;
 	   			}
 	   			else new->accepted_answer=-2;
-
+	   			*/
 	   			// Inserir conforme o Post ID
 	   			g_hash_table_insert(com->post, idPost, new);
-	   				
+	   			
 	   			/*Debugging*/ //printf("Inserido %d\n", i);
 	   			i++;
 
@@ -393,7 +393,7 @@ void insereId(int* v, int x, int i, int n){
 
 // QUERY 1
 
-STR_pair info_from_post(TAD_community com, int id){
+STR_pair info_from_post(TAD_community com, long id){
 	STR_pair new = create_str_pair(NULL, NULL);
 
 	struct Post* post = malloc(sizeof(struct Post));
@@ -684,7 +684,6 @@ void printPostHT(struct Post* aux){
 	printf("%s ",aux->owner_display_name);
 	printf("%d ",aux->parent_id);
 	printf("%s\n",aux->titulo);
-	free(aux);
 	} 
 	else printf("null\n");
 }
@@ -693,18 +692,20 @@ void insertByDate(struct Post* posts[],struct Post* post, int N, int* used){ //r
 	int i = 0;
 	int pos = 0;
 	
-
-	for(i = 0; i < *used && pos==-1; i++){
-		//printf("A comparar %d %d %d com %d %d %d\n",get_day(post->data),get_month(post->data),get_year(post->data),get_day(posts[i]->data),get_month(posts[i]->data),get_year(posts[i]->data));
-		if(comparaDatas(post->data,(posts[i])->data)==1) 
-
-			pos = i;
-		
+	printf("%d",*used);
+	for(i = 0; i < *used && pos==0; i++){
+		printf("A comparar %d %d %d com %d %d %d\n",get_day(post->data),get_month(post->data),get_year(post->data),get_day(posts[i]->data),get_month(posts[i]->data),get_year(posts[i]->data));
+		printf("%d\n",comparaDatas(post->data,(posts[i])->data));
+		if(comparaDatas(post->data,(posts[i])->data)==1)
+			break;		
 	}
+
+	pos = i;
 
 	for(i = N-1; i>pos; i--){
 		posts[i] = posts[i-1];
 	}
+
 	if(*used < N) (*used)++;
 	posts[pos] = post;	
 
@@ -713,10 +714,8 @@ void insertByDate(struct Post* posts[],struct Post* post, int N, int* used){ //r
 
 
 void word_lookup(gpointer key_pointer, gpointer post_pointer, gpointer info){
-	struct Post* post = (struct Post*)post_pointer;
-
+	struct Post* post = (struct Post*)post_pointer ; int i=0;
 	if(post->type_id==1){
-
 		
 		char* titulo = malloc(strlen(post->titulo)+1);
 		strcpy(titulo, post->titulo);
@@ -729,16 +728,16 @@ void word_lookup(gpointer key_pointer, gpointer post_pointer, gpointer info){
 		int size = *((int**)info)[2];
 		
 		int* ocupados = ((int**)info)[3];
-		printf("%d\n",*ocupados);
-		struct Post* last = postArray[size-1];
 	
+		struct Post* last = postArray[size-1];// null ou endereço de um post
+		printf("%d\n",*ocupados);
 		printPostHT(post);
-		printPostHT(last);
+
 		if(strstr(titulo,word)!=NULL && ((*ocupados<size) || ((*ocupados == size) && (comparaDatas(post->data,last->data)==1)))){
 			 insertByDate(postArray,post,size,ocupados);
+			 printf("inseriu %dº\n",++i);
+			 for(int aux=0;aux<10;aux++) if(postArray[aux]!=NULL)printf("%d\n",((struct Post*)(postArray[aux]))->id );
 		}
-		
-
 	}
 }
 
@@ -746,22 +745,24 @@ LONG_list contains_word(TAD_community com, char* word, int N){
 	struct Post* postArray[N]; int i;
 
 	for(i=0;i<N;i++) postArray[i]=NULL;
+
 	int* ocupados = malloc(sizeof(int)); *ocupados=0;
 
 	void* info[4] ={postArray,word,&N,ocupados};
 
-	
 	g_hash_table_foreach(com->post, word_lookup, info);
 
-	LONG_list r = create_list(N);	
+	LONG_list r = create_list(N);
+
 	for(i = 0; i<N; i++) 
-		if(postArray[i]!=NULL) {set_list(r, i, (postArray[i])->id);}
-		else set_list(r,i,-2);
+		if(postArray[i]!=NULL) 
+			set_list(r, i, (postArray[i])->id);
+		else 
+			set_list(r,i,-2);
 
 
 	return r;	
 }
-
 
 // QUERY 9
 
@@ -878,7 +879,7 @@ void bestAnswer (gpointer key_pointer, gpointer post_pointer, gpointer info) {
 	}
 }
 
-LONG_list better_answer(TAD_community com, int id) {
+long better_answer(TAD_community com, long id) {
 
 	int* parentId = malloc(sizeof(int));
 	*parentId=id;
@@ -892,10 +893,9 @@ LONG_list better_answer(TAD_community com, int id) {
 
 	g_hash_table_foreach(com->post, bestAnswer, info);
 
-	LONG_list r = create_list(1);
-	set_list(r, 0, *answerId);
 
-	return r;
+
+	return (long)*answerId;
 }
 
 // QUERY 11
@@ -997,20 +997,20 @@ int main(){
 
 
 
-	//LONG_list new8 = contains_word(teste,"entering adb",10);
-	//for(int aux=0;aux<10;aux++) printf("%ld ",get_list(new8,aux));
-	//	printf("\n");
+	LONG_list new8 = contains_word(teste,"there",10);
+	for(int aux=0;aux<10;aux++) printf("%ld ",get_list(new8,aux));
+	printf("\n");
 
 
 
-	clock_t begin8 = clock();
-	LONG_list new10 = better_answer(teste,76); //escolher id para teste e verificar pelos prints em baixo
-	clock_t end8 = clock();
+	//clock_t begin8 = clock();
+	//LONG_list new10 = better_answer(teste,76); //escolher id para teste e verificar pelos prints em baixo
+	//clock_t end8 = clock();
 
 	/* Função para Debugging da Q10 */
-	g_hash_table_foreach(teste->post,(GHFunc)ver_melhor_resposta,"Post:%d,Best Answer:%d\n");
+	//g_hash_table_foreach(teste->post,(GHFunc)ver_melhor_resposta,"Post:%d,Best Answer:%d\n");
 
-	printf("Tempo '10 - better_answer' = %f\n", (double)(end8-begin8)/CLOCKS_PER_SEC);
+	//printf("Tempo '10 - better_answer' = %f\n", (double)(end8-begin8)/CLOCKS_PER_SEC);
 
 
 /* Funcao para Debugging da Q2:
