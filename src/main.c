@@ -503,28 +503,31 @@ LONG_pair total_posts(TAD_community com, Date begin, Date end){
 
 void adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer info){ // info = {tree, tag, inicio, fim}
 	struct Post* post = (struct Post*) post_pointer;
-	char* tag = malloc(strlen(((char**)info)[1] + 1)); strcpy(tag, ((char**)info)[1]);
 	Date begin = ((Date*)(info))[2];
 	Date end = ((Date*)(info))[3]; 
 	GTree* tree = ((GTree**)(info))[0]; 
-	int* id = &(post->id);
+	
+	char* tag = malloc(strlen(((char**)info)[1] + 1)); strcpy(tag, "<");
+	char* aux = malloc(strlen(((char**)info)[1] + 1));
+	strcpy(aux, ((char**)info)[1]);
+	strcat(tag, aux); strcat(tag, ">");
 
 	if(comparaDatas(begin, post->data) == 1 && comparaDatas(post->data, end) == -1){  
 		if(strstr(post->tags, tag) != NULL){
-			g_tree_insert(tree, (gpointer)post->data, (gpointer)id);			
+			g_tree_insert(tree, (gpointer)post->data, (gpointer)(&(post->id) ));			
 		}
 	}
 
 }
 
 
-void addToLongList(gpointer key_pointer, gpointer id_pointer, gpointer info){ // info = {lista, ocupados}
+void addToLongList(gpointer key_pointer, gpointer id_pointer, gpointer info){ // info = {lista, i}
 	int* id = (int*) id_pointer;
-	int* ocupados = ((int**)(info))[1]; 
+	int* i = ((int**)(info))[1]; 
 	LONG_list lista = ((LONG_list*)(info))[0]; 
 
-	set_list(lista, *ocupados, *id);
-	(*ocupados)++;
+	set_list(lista, *i, *id);
+	(*i)--;
 }
 
 
@@ -541,7 +544,7 @@ LONG_list questions_with_tag(TAD_community com, char* tag, Date begin, Date end)
 	LONG_list r = create_list(tam);
 
 	int* i = malloc(sizeof(int));
-	*i = 0;
+	*i = tam-1;
 	void* lista[2] = {r, i};
 
 	// Constroi a lista resultado (r)
