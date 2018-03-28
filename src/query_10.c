@@ -39,3 +39,4 @@ long better_answer(TAD_community com, long id) {
 
 
 	return (long)*answerId;
+}

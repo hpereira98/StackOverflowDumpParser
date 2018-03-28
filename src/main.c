@@ -76,51 +76,6 @@ TAD_community init(){
 
 // FUNCAO AUXILIAR DE INSERCAO, DEPOIS REMOVER DO main
 
-int insert(int* array, int elem, int size){
-	int i = 0;
-	int pos = -1;
-
-	for(i = 0; i<size && pos==-1; i++){
-		if(array[i]<elem) pos = i;
-	}
-	for(i = size-1; i>pos; i--){
-		array[i] = array[i-1];
-	}
-
-	array[pos] = elem;
-	/*printf("inseriu em %d\n",pos );
-	for(int j = 0; j<20;j++)
-		printf("%d ",array[j] ); printf("E\n"); */
-	return pos;
-}
-
-// para propósitos temporários (q9)
-int insertDate(Date* array, Date elem, int size){
-	int i = 0;
-	int pos = -1;
-
-	for(i = 0; i<size && pos==-1; i++){
-		if(comparaDatas(array[i],elem)==-1) pos=i;
-	}
-	for(i = size-1; i>pos; i--){
-		array[i] = array[i-1];
-	}
-
-	array[pos] = elem;
-	/*printf("inseriu em %d\n",pos );
-	for(int j = 0; j<20;j++)
-		printf("%d ",array[j] ); printf("E\n"); */
-	return pos;
-}
-
-void insereId(int* v, int x, int i, int n){
-
-	for(n=n-1; n>i; n--){
-		v[n] = v[n-1];
-	}
-
-	v[i] = x;
-}
 
 
 
@@ -227,7 +182,7 @@ int main(){
 	printf("\n");
 
 	clock_t begin9 = clock();
-	LONG_list new9 = both_participated(teste,76,77); // ids aleatórios
+	LONG_list new9 = both_participated(teste,76,77, 10); // ids aleatórios
 	clock_t end9 = clock();
 
 	printf("Tempo '9 - both_participated' = %f\n", (double)(end9-begin9)/CLOCKS_PER_SEC);
