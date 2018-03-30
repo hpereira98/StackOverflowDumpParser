@@ -128,5 +128,5 @@ void ver_num (gpointer key, gpointer value, gpointer user_data){
 void ver_melhor_resposta (gpointer key, gpointer post, gpointer user_data){
 	struct Post* aux = (struct Post*)post;
 	int* keyId = (int* )key;
-	if (aux->type_id==1) printf(user_data,*keyId, aux->accepted_answer);
+	if (aux!=NULL && aux->type_id==1) printf(user_data,*keyId, aux->accepted_answer);
 }

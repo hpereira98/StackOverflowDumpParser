@@ -117,7 +117,7 @@ int main(){
 	printf("Tempo '10 - better_answer' = %f\n", (double)(end10-begin10)/CLOCKS_PER_SEC);
 
 	/* Função para Debugging da Q10 */
-	g_hash_table_foreach(teste->post,(GHFunc)ver_melhor_resposta,"Post:%d,Best Answer:%d\n");
+	//g_hash_table_foreach(teste->post,(GHFunc)ver_melhor_resposta,"Post:%d,Best Answer:%d\n");
 
 	printf("%d -> melhor: %li\n",216,new10);
 
