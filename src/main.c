@@ -39,11 +39,11 @@ int main(){
 	printf("Tempo '1 - info_from_post' = %f\n", (double)(end1-begin1)/CLOCKS_PER_SEC);
 	
 	clock_t begin2 = clock();
-	LONG_list new2 = top_most_active(teste,500);
-	/*for (int it=0;it<500;it++) {
-		printf("%dº: %li ",(it+1),get_list(new3,it));
+	LONG_list new2 = top_most_active(teste,10);
+	/*for (int it=0;it<10;it++) {
+		printf("%dº: %li ",(it+1),get_list(new2,it));
 		int *aux = malloc(sizeof(int));
-		*aux = get_list(new3,it);
+		*aux = get_list(new2,it);
 		struct User* user = g_hash_table_lookup(teste->user,aux);
 		if(user) printf("%d\n",user->n_perguntas+user->n_respostas);
 	}*/
@@ -98,8 +98,10 @@ int main(){
 	printf("Tempo '8 - contains_word' = %f\n", (double)(end8-begin8)/CLOCKS_PER_SEC);
 
 	clock_t begin9 = clock();
-	//LONG_list new9 = both_participated(teste,76,77, 10); // ids aleatórios
+	LONG_list new9 = both_participated(teste,16575,1465, 10); // ids aleatórios
 	clock_t end9 = clock();
+
+	//for(int i=0;i<10;i++) printf("%d: %li\n",i+1,get_list(new9,i));
 
 	printf("Tempo '9 - both_participated' = %f\n", (double)(end9-begin9)/CLOCKS_PER_SEC);
 
