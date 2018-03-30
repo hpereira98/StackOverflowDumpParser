@@ -39,11 +39,11 @@ int main(){
 	printf("Tempo '1 - info_from_post' = %f\n", (double)(end1-begin1)/CLOCKS_PER_SEC);
 	
 	clock_t begin2 = clock();
-	LONG_list new2 = top_most_active(teste,500);
-	/*for (int it=0;it<500;it++) {
-		printf("%dº: %li ",(it+1),get_list(new3,it));
+	LONG_list new2 = top_most_active(teste,10);
+	/*for (int it=0;it<10;it++) {
+		printf("%dº: %li ",(it+1),get_list(new2,it));
 		int *aux = malloc(sizeof(int));
-		*aux = get_list(new3,it);
+		*aux = get_list(new2,it);
 		struct User* user = g_hash_table_lookup(teste->user,aux);
 		if(user) printf("%d\n",user->n_perguntas+user->n_respostas);
 	}*/
@@ -98,8 +98,10 @@ int main(){
 	printf("Tempo '8 - contains_word' = %f\n", (double)(end8-begin8)/CLOCKS_PER_SEC);
 
 	clock_t begin9 = clock();
-	//LONG_list new9 = both_participated(teste,76,77, 10); // ids aleatórios
+	LONG_list new9 = both_participated(teste,16575,1465, 10); // ids aleatórios
 	clock_t end9 = clock();
+
+	for(int i=0;i<10;i++) printf("%d: %li\n",i+1,get_list(new9,i));
 
 	printf("Tempo '9 - both_participated' = %f\n", (double)(end9-begin9)/CLOCKS_PER_SEC);
 
@@ -108,14 +110,16 @@ int main(){
 
 	
 
-	//clock_t begin8 = clock();
-	//LONG_list new10 = better_answer(teste,76); //escolher id para teste e verificar pelos prints em baixo
-	//clock_t end8 = clock();
+	clock_t begin10 = clock();
+	long new10 = better_answer(teste,216); //escolher id para teste e verificar pelos prints em baixo
+	clock_t end10 = clock();
+
+	printf("Tempo '10 - better_answer' = %f\n", (double)(end10-begin10)/CLOCKS_PER_SEC);
 
 	/* Função para Debugging da Q10 */
 	//g_hash_table_foreach(teste->post,(GHFunc)ver_melhor_resposta,"Post:%d,Best Answer:%d\n");
 
-	//printf("Tempo '10 - better_answer' = %f\n", (double)(end8-begin8)/CLOCKS_PER_SEC);
+	printf("%d -> melhor: %li\n",216,new10);
 
 
 /* Funcao para Debugging da Q2:

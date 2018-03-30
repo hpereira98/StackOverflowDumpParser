@@ -1,3 +1,4 @@
+/*
 
 void ordenaUsers(gpointer key_pointer, gpointer user_pointer, gpointer info){
 	int* ids = ((int**)info)[0];
@@ -36,4 +37,4 @@ LONG_list most_used_best_rep(TAD_community com, int N, Date begin, Date end){
 
 	// quando o post for valido (entre as datas e de um dos top_users): contar todas as tags pois são do tipo "<tag><tag>..." - função auxiliar
 
-}
+} */

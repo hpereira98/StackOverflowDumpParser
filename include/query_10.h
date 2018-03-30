@@ -1,11 +1,13 @@
 #ifndef __QUERY10_H__
 #define __QUERY10_H__
 
+#include "structs.h"
+#include "interface.h"
+#include "my_funcs.h"
 #include <stdlib.h>
-#include <interface.h>
 #include <gmodule.h>
 #include <glib.h>
-#include "structs.h"
+
 
 double answer_score (int score, int rep, int favs, int comments);
 void bestAnswer (gpointer key_pointer, gpointer post_pointer, gpointer info);
