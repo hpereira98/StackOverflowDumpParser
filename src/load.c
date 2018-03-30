@@ -124,6 +124,7 @@ TAD_community load(TAD_community com, char* dump_path){
 				xmlChar* tags = xmlGetProp(cur, (const xmlChar *)"Tags");
 				xmlChar* score_xml = xmlGetProp(cur, (const xmlChar *)"Score");
 				xmlChar* comments = xmlGetProp(cur, (const xmlChar *)"CommentCount");
+				xmlChar* answer = xmlGetProp(cur, (const xmlChar *)"AcceptedAnswerId");
 
 
 	   			int* idOwner = malloc(sizeof(int));
@@ -132,6 +133,7 @@ TAD_community load(TAD_community com, char* dump_path){
 	   			int* idType = malloc(sizeof(int));
 	   			int* score = malloc(sizeof(int));
 	   			int* n_comms = malloc(sizeof(int));
+				int* acptd = malloc(sizeof(int));
 
 	   			struct Post* new = g_new(struct Post, 1);
 	   				
@@ -188,7 +190,15 @@ TAD_community load(TAD_community com, char* dump_path){
 	   			else new->owner_display_name = "";
 
 	   			// Data
-	   			new->data = atribuiData((char*) data);				
+	   			new->data = atribuiData((char*) data);
+
+				// Accepted answer - debugging q10 : COLOCAR EM COMENTÁRIO QUANDO NÃO FOR NECESSÁRIO!! 
+	   			
+	   			if (answer && new->type_id==1) {
+	   				sscanf((const char*)answer,"%d", acptd);
+	   				new->accepted_answer = *acptd;
+	   			}
+	   			else new->accepted_answer=-2;	
 	   			
 	   			// Tags   = "<tag><tag>"  
 	   			if(tags){
@@ -225,18 +235,7 @@ TAD_community load(TAD_community com, char* dump_path){
 				if (user!=NULL){
 					g_array_append_val(user->userPosts,new);
 				}
-
-	   			// Accepted answer - debugging q10 : COLOCAR EM COMENTÁRIO QUANDO NÃO FOR NECESSÁRIO!! 
-	   			/*
-	   			if (new->type_id==1) {
-	   				xmlChar* answer = xmlGetProp(cur, (const xmlChar *)"AcceptedAnswerId");
-					int* a_answer = malloc(sizeof(int));
-
-	   				sscanf((const char*)answer,"%d", a_answer);
-	   				new->accepted_answer = *a_answer;
-	   			}
-	   			else new->accepted_answer=-2;
-	   			*/
+	   			
 	   			// Inserir conforme o Post ID
 	   			g_hash_table_insert(com->post, idPost, new);
 	   			

@@ -110,14 +110,16 @@ int main(){
 
 	
 
-	//clock_t begin8 = clock();
-	//LONG_list new10 = better_answer(teste,76); //escolher id para teste e verificar pelos prints em baixo
-	//clock_t end8 = clock();
+	clock_t begin10 = clock();
+	long new10 = better_answer(teste,216); //escolher id para teste e verificar pelos prints em baixo
+	clock_t end10 = clock();
+
+	printf("Tempo '10 - better_answer' = %f\n", (double)(end10-begin10)/CLOCKS_PER_SEC);
 
 	/* Função para Debugging da Q10 */
-	//g_hash_table_foreach(teste->post,(GHFunc)ver_melhor_resposta,"Post:%d,Best Answer:%d\n");
+	g_hash_table_foreach(teste->post,(GHFunc)ver_melhor_resposta,"Post:%d,Best Answer:%d\n");
 
-	//printf("Tempo '10 - better_answer' = %f\n", (double)(end8-begin8)/CLOCKS_PER_SEC);
+	printf("%d -> melhor: %li\n",216,new10);
 
 
 /* Funcao para Debugging da Q2:
