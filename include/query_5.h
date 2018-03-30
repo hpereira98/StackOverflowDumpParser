@@ -5,7 +5,7 @@
 #include "my_funcs.h"
 #include <glib.h>
 
-int ordena(gconstpointer a,gconstpointer b);
+
 USER get_user_info(TAD_community com, long id);
 
 #endif

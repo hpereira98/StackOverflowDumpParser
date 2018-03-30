@@ -101,7 +101,7 @@ int main(){
 	LONG_list new9 = both_participated(teste,16575,1465, 10); // ids aleatórios
 	clock_t end9 = clock();
 
-	//for(int i=0;i<10;i++) printf("%d: %li\n",i+1,get_list(new9,i));
+	for(int i=0;i<10;i++) printf("%d: %li\n",i+1,get_list(new9,i));
 
 	printf("Tempo '9 - both_participated' = %f\n", (double)(end9-begin9)/CLOCKS_PER_SEC);
 

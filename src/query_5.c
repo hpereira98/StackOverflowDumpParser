@@ -1,11 +1,5 @@
 #include<query_5.h>
 
-int ordena(gconstpointer a,gconstpointer b){
-	struct Post* post1 = *((struct Post**)(a));
-	struct Post* post2 = *((struct Post**)(b));
-	return comparaDatas(post1->data,post2->data)*(-1);
-}
-
 USER get_user_info(TAD_community com, long id){
 	struct User* user = (struct User*)g_hash_table_lookup(com->user,&id);
 	int i, size; long posts[10];

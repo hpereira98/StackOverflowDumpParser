@@ -9,9 +9,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void dateInsertionSort (int id, Date data,int *ids,Date *datas, int* ocupados,int size);
+void swapAnswerPID (TAD_community com, GArray* posts);
 LONG_list both_participated(TAD_community com, long id1, long id2, int N);
-void get_question_ids (struct User* user, int *ids, Date *datas,int* ocupados,int size);
+
 
 
 #endif

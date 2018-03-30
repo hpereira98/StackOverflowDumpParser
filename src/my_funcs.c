@@ -40,6 +40,11 @@ int comparaDatas(Date a, Date b){ // se a primeira for mais pequena que a segund
 	return 0;
 }
 
+int ordena(gconstpointer a,gconstpointer b){
+	struct Post* post1 = *((struct Post**)(a));
+	struct Post* post2 = *((struct Post**)(b));
+	return comparaDatas(post1->data,post2->data)*(-1);
+}
 
 
 // Ordenar Arrays

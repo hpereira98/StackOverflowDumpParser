@@ -16,6 +16,7 @@
 
 Date atribuiData(char* date);
 int comparaDatas(Date a, Date b);
+int ordena(gconstpointer a,gconstpointer b);
 
 int insert(int* array, int elem, int size);
 int insertDate(Date* array, Date elem, int size);
