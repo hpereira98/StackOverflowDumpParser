@@ -4,6 +4,7 @@
 #include <glib.h>
 #include <gmodule.h>
 #include "my_funcs.h"
+#include "common.h"
 
 struct User{
 	int id; // user id
