@@ -1,23 +1,23 @@
 #include <query_10.h>
 
-// QUERY 10
-/*
+
 double answer_score (int score, int rep, int vots, int comments) {
 	return ( (score*0.45)+(rep*0.25)+(vots*0.2)+(comments*0.1));
 }
 
 void bestAnswer (gpointer key_pointer, gpointer post_pointer, gpointer info) {
-	struct Post* post = (struct Post*)post_pointer;
+	Post post = (Post)post_pointer;
 	int* parentId = ((int**)info)[0];
 	double* max = ((double**)info)[1];
 	int* answerId = ((int**)info)[2];
 	double score=0;
+	int postVots = getPostNUpVotes(post) - getPostNDownVotes(post);
 
-	if (post->type_id == 2 && post->parent_id == *parentId) {
-		score=answer_score(post->score, post->owner_rep, (post->n_upvotes)-(post->n_downvotes), post->n_comments);
+	if( getPostTypeID(post) == 2 && getPostParentID(post) == *parentId) {
+		score=answer_score(getPostScore(post), getPostOwnerRep(post),postVots, getPostNComments(post));
 		if (score>(*max)) {
 			*max=score;
-			*answerId=post->id;
+			*answerId=getPostID(post);
 		}
 	}
 }
@@ -38,4 +38,3 @@ long better_answer(TAD_community com, long id) {
 
 	return (long)*answerId;
 }
-*/

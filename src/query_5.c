@@ -1,28 +1,29 @@
 #include<query_5.h>
-/*
+
 USER get_user_info(TAD_community com, long id){
-	struct User* user = (struct User*)g_hash_table_lookup(com->user,&id);
+	User user = (User)g_hash_table_lookup(com->user,&id);
 	int i, size; long posts[10];
-	struct Post* post; 
+	Post post; 
 	USER res = NULL;
 
 	if(user!=NULL){
-		g_array_sort (user->userPosts,ordena);
+		GArray* userPosts = getClonedUserPosts(user);
 		
-		if((user->userPosts)->len > 10) 
+		g_array_sort (userPosts,ordena);
+		
+		if(userPosts->len >= 10) 
 			size = 10;
-		else size = (user->userPosts)->len;
+		else size = userPosts->len;
 
 		for(i=0;i<size;i++){
-				post = g_array_index(user->userPosts,struct Post*,i);
+				post = g_array_index(userPosts,Post,i);
 
 				if(post!=NULL)
-					posts[i] = (long)(post->id);
+					posts[i] = (long)(getPostID(post));
 				else posts[i] = -2;
 		}
-		res = create_user(user->short_bio,posts);
+		res = create_user( getUserShortBio(user),posts);
 	}
 
 	return res;
 }	
-*/

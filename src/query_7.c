@@ -1,9 +1,9 @@
 #include <query_7.h>
-/*
-void ordenaNRespostas(gpointer key_pointer, gpointer post_pointer, gpointer info){ // info = {ids, begin, end, ocupados, n_respostas, N}
-	struct Post* post = (struct Post*) post_pointer;
 
-	if(post->type_id == 1){
+void ordenaNRespostas(gpointer key_pointer, gpointer post_pointer, gpointer info){ // info = {ids, begin, end, ocupados, n_respostas, N}
+	Post post = (Post)post_pointer;
+
+	if(getPostTypeID(post)== 1){
 		int pos;
 		int* ids = ((int**)info)[0];
 		Date begin = ((Date*)info)[1];
@@ -11,11 +11,14 @@ void ordenaNRespostas(gpointer key_pointer, gpointer post_pointer, gpointer info
 		int *ocupados = ((int**)info)[3];
 		int* n_respostas = ((int**)info)[4];
 		int size = *((int**)info)[5];
+		Date postDate = getPostDate(post);
+		int postID = getPostID(post);
+		int postNRespostas = getPostNRespostas(post);
 
-		if(comparaDatas(begin, post->data) == -1 && comparaDatas(post->data, end) == -1){
-			if( (*ocupados != size) || (*ocupados == size && post->n_respostas > n_respostas[size-1]) ){ // neste momento já sei que vai ser inserido
-				pos = insert(n_respostas, post->n_respostas, size);
-				insereId(ids, post->id, pos, size);
+		if(comparaDatas(begin, postDate) == -1 && comparaDatas(postDate, end) == -1){
+			if( (*ocupados != size) || (*ocupados == size && postNRespostas > n_respostas[size-1]) ){ // neste momento já sei que vai ser inserido
+				pos = insert(n_respostas, postNRespostas, size);
+				insereId(ids, postID, pos, size);
 				if(*ocupados < size) (*ocupados)++;
 			}
 		}
@@ -43,4 +46,3 @@ LONG_list most_answered_questions(TAD_community com, int N, Date begin, Date end
 
 	return r;
 }
-*/

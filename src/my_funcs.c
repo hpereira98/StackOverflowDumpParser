@@ -107,7 +107,7 @@ void insereId(int* v, int x, int i, int n){
 void printPostHTa(gpointer key, gpointer value, gpointer user_data){
 	Post post = (Post)value;
 	printf("%d %d %s %d %s %d %d %d\n%s\n%d %d %d %d %d\n",*((int*)(key)),getPostID(post),
- 			getPostTitle(post),
+ 			getPostTittle(post),
  			getPostOwnerID(post),
  			getPostOwnerDisplayName(post),
  			getPostOwnerRep(post),

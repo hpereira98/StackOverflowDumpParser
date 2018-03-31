@@ -8,7 +8,6 @@
 #include <glib.h>
 #include <gmodule.h>
 
-void printPostHT(struct Post* aux);
 void word_lookup(gpointer key_pointer, gpointer post_pointer, gpointer info);
 LONG_list contains_word(TAD_community com, char* word, int N);
 

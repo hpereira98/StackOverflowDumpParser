@@ -1,9 +1,9 @@
 #include <query_6.h>
-/*
-void ordenaScores(gpointer key_pointer, gpointer post_pointer, gpointer info){ // info = {ids, begin, end, ocupados, scores, N}
-	struct Post* post = (struct Post*) post_pointer;
 
-	if(post->type_id == 2){
+void ordenaScores(gpointer key_pointer, gpointer post_pointer, gpointer info){ // info = {ids, begin, end, ocupados, scores, N}
+	Post post = (Post) post_pointer;
+
+	if(getPostTypeID(post) == 2){
 		int pos;
 		int* ids = ((int**)info)[0]; 
 		Date begin = ((Date*)info)[1]; 
@@ -11,13 +11,14 @@ void ordenaScores(gpointer key_pointer, gpointer post_pointer, gpointer info){ /
 		int *ocupados = ((int**)info)[3]; 
 		int* scores = ((int**)info)[4]; 
 		int size = *((int**)info)[5];
+		Date postDate = getPostDate(post);
+		int postID = getPostID(post);
+		int score = getPostNUpVotes(post) - getPostNDownVotes(post);
 
-		int score = (post->n_upvotes)-(post->n_downvotes);
-
-		if(comparaDatas(begin, post->data) == -1 && comparaDatas(post->data, end) == -1){
+		if(comparaDatas(begin,postDate ) == -1 && comparaDatas(postDate, end) == -1){
 			if( (*ocupados != size) || (*ocupados == size && score > scores[size-1]) ){ // neste momento já sei que vai ser inserido
 				pos = insert(scores, score, size);
-				insereId(ids, post->id, pos, size);
+				insereId(ids, postID, pos, size);
 				if(*ocupados < size) (*ocupados)++;
 			}
 		}	
@@ -47,4 +48,3 @@ LONG_list most_voted_answers(TAD_community com, int N, Date begin, Date end){
 	return r;
 }
 
-*/

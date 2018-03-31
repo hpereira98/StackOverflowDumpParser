@@ -1,19 +1,21 @@
 #include <query_4.h>
-/*
+
 void adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer info){ // info = {tree, tag, inicio, fim}
-	struct Post* post = (struct Post*) post_pointer;
+	Post post = (Post) post_pointer;
 	Date begin = ((Date*)(info))[2];
 	Date end = ((Date*)(info))[3]; 
 	GTree* tree = ((GTree**)(info))[0]; 
-	
-	char* tag = malloc(strlen(((char**)info)[1] + 1)); strcpy(tag, "<");
-	char* aux = malloc(strlen(((char**)info)[1] + 1));
+	Date postDate = getPostDate(post);
+
+	char* tag = malloc(strlen(((char**)info)[1]) + 1); strcpy(tag, "<");
+	char* aux = malloc(strlen(((char**)info)[1]) + 1);
 	strcpy(aux, ((char**)info)[1]);
 	strcat(tag, aux); strcat(tag, ">");
 
-	if(comparaDatas(begin, post->data) == 1 && comparaDatas(post->data, end) == -1){  
-		if(strstr(post->tags, tag) != NULL){
-			g_tree_insert(tree, (gpointer)post->data, (gpointer)(&(post->id) ));			
+	if(comparaDatas(begin, postDate) == 1 && comparaDatas(postDate, end) == -1){  
+		if(strstr( getPostTags(post), tag) != NULL){
+			int postID = getPostID(post);
+			g_tree_insert(tree, (gpointer)postDate, (gpointer)(&postID));			
 		}
 	}
 
@@ -51,4 +53,3 @@ LONG_list questions_with_tag(TAD_community com, char* tag, Date begin, Date end)
 
 	return r;
 }
-*/

@@ -1,28 +1,27 @@
 #include <query_1.h>
 
-/*
+
 STR_pair info_from_post(TAD_community com, long id){
 	STR_pair new = create_str_pair(NULL, NULL);
 
-	struct Post* post = malloc(sizeof(struct Post));
-	post = (struct Post*)g_hash_table_lookup(com->post, &id);
+	Post post = (Post)g_hash_table_lookup(com->post, &id);
 	
 	if (!post) printf("Post not found...\n");
 	else { 
-		if(post->parent_id != -2){ //caso seja uma resposta...
-			post = (struct Post*)g_hash_table_lookup(com->post, &post->parent_id);
+		if(getPostTypeID(post)==2){ //caso seja uma resposta...
+			int parentID = getPostParentID(post);
+			post = (Post) g_hash_table_lookup(com->post, &parentID);
 		}
 
-		if(*(post->owner_display_name)=='\0'){
-			struct User* user = malloc(sizeof(struct User));
-			user = (struct User*)g_hash_table_lookup(com->user, &post->owner_id); 
+		if(!getPostOwnerDisplayName(post)){
+			int ownerID = getPostOwnerID(post);
+			User user = (User)g_hash_table_lookup(com->user, &ownerID); 
 			
-			set_fst_str(new, post->titulo);
-			set_snd_str(new, user->display_name);
+			set_fst_str(new, getPostTittle(post));
+			set_snd_str(new, getUserDisplayName(user));
 		}
-		else new = create_str_pair(post->titulo, post->owner_display_name);
+		else new = create_str_pair( getPostTittle(post), getPostOwnerDisplayName(post));
 	}	
 
 	return new;
 }
-*/
