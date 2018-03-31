@@ -1,5 +1,5 @@
 #include "query_3.h"
-
+/*
 void posts_count(gpointer key, gpointer post_pointer, gpointer info){
 	
 	struct Post* post = (struct Post*) post_pointer;
@@ -31,3 +31,4 @@ LONG_pair total_posts(TAD_community com, Date begin, Date end){
 
 	return totalPost;
 }
+*/

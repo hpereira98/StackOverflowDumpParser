@@ -1,7 +1,7 @@
 #include <query_2.h>
 
 // QUERY 2
-
+/*
 void insertionSort (gpointer key, gpointer user_pointer, gpointer info){
 	struct User* user = (struct User*) user_pointer;
 
@@ -47,3 +47,4 @@ LONG_list top_most_active(TAD_community com, int N) {
 	return res;
 
 }
+*/

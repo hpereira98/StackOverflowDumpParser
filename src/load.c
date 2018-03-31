@@ -55,34 +55,42 @@ TAD_community load(TAD_community com, char* dump_path){
    				int* idUser = malloc(sizeof(int));
    				int* repUser = malloc(sizeof(int));
 				
-   				struct User* new = g_new(struct User, 1);//forma de fazer malloc
+   				User new = initUser(); 
    				
    				// Nome
-   				new->display_name = malloc(strlen((const char*)name) + 1);
-   				strcpy(new->display_name,(const char*)name);
+   				setUserDisplayName(new, (char*)name); 
 
    				// ID
    				sscanf((const char*)id, "%d", idUser); 
-   				new->id = *idUser;
+   				setUserID(new,*idUser);
+   				//sscanf((const char*)id, "%d", idUser); 
+   				//new->id = *idUser;
 
    				// Reputação
-   				sscanf((const char*)rep,"%d", repUser);
-   				new->reputacao = *repUser;
+   				sscanf((const char*)rep,"%d", repUser); 
+   				setUserReputacao(new,*repUser); 
+   				//sscanf((const char*)rep,"%d", repUser);
+   				//new->reputacao = *repUser;
 				
 				// Nº perguntas/respostas
-				new->n_perguntas = 0;
-				new->n_respostas = 0;
-				new->n_posts = 0;
+				setUserNRespostas(new,0);
+				setUserNPosts(new,0);
+				setUserNPerguntas(new,0);
 
 				// Bio
+				
+				setUserShortBio(new,(char*)bio); // ter atencao e ver se nao rebenta por ser null
+				/*									   // pricipalmente em futuras evocacoes da funcao getUserShortBio
 				if(bio){
 					new->short_bio = malloc(strlen((const char*)bio) + 1);
 					strcpy(new->short_bio, (const char*)bio);
 				}
 				else new->short_bio = "";
+				*/
 
 				// User's Posts 
-				new->userPosts = g_array_new (FALSE,TRUE,sizeof(struct Post*));//(elemento no fim a 0,inicilizar a 0,tamnho em bytes dos elems)
+				initUserPosts(new);
+				//new->userPosts = g_array_new (FALSE,TRUE,sizeof(struct Post*));//(elemento no fim a 0,inicilizar a 0,tamnho em bytes dos elems)
 			 
    				// Inserir conforme o ID
    				g_hash_table_insert(com->user, idUser, new); i++;
@@ -90,6 +98,8 @@ TAD_community load(TAD_community com, char* dump_path){
    			}
 			xmlFree(id);
 			xmlFree(name);
+			xmlFree(rep);
+			xmlFree(bio);
 			cur = cur->next;
 		}
 	}
@@ -98,7 +108,6 @@ TAD_community load(TAD_community com, char* dump_path){
 
 	// POSTS
 	i = 0;
-
 	xmlDocPtr doc_posts = xmlParseFile(posts_path);
 	if(!doc_posts){
 		printf("Document not parsed successfully\n");
@@ -135,105 +144,119 @@ TAD_community load(TAD_community com, char* dump_path){
 	   			int* n_comms = malloc(sizeof(int));
 				int* acptd = malloc(sizeof(int));
 
-	   			struct Post* new = g_new(struct Post, 1);
+	   			Post new = initPost();
 	   				
 	   			// Titulo
+	   			setPostTittle(new,(char*)titulo);
+	   			/*
 	   			if(titulo){
 	   				new->titulo = malloc(strlen((const char*)titulo) + 1);
 	   				strcpy(new->titulo,(const char*)titulo);
 	   			}
 	   			else new->titulo="";
+				*/
 
-	   			// Owner ID
+	   			// Owner ID - averiguar se novo dump tem posts sem owner id ou nao 
 	   			if(user_id){
 	   				sscanf((const char*)user_id, "%d", idOwner);
-	   				new->owner_id = *idOwner;
+	   				setPostOwnerID(new,*idOwner);
 	   			} 
-	   			else new->owner_id = -2;
+	   			else setPostOwnerID(new,-2);
 
 	   			// Owner Reputation
-	   			struct User* user = (struct User*)g_hash_table_lookup(com->user,idOwner);
+	   			User user = (User)g_hash_table_lookup(com->user,idOwner);
 	   			if (user!=NULL)
-	   				new->owner_rep=user->reputacao;
+	   				setPostOwnerRep(new,getUserReputacao(user));
 
 	   			// Count User's questions and answers 			
 				if (user!=NULL) {
-					if (*idType == 1) (user->n_perguntas)++;
-					else if (*idType == 2) (user->n_respostas)++;
-					(user->n_posts)++;
+					if (*idType == 1) setUserNPerguntas(user,getUserNPerguntas(user)+1);
+					else if (*idType == 2) setUserNRespostas(user,getUserNRespostas(user)+1);
+					setUserNPosts(user,getUserNPosts(user)+1);
 				}
-
-				
 
 	   			// Post ID
 				sscanf((const char*)post_id, "%d", idPost); 
-	   			new->id = *idPost;
+				setPostID(new,*idPost);
+	   			//new->id = *idPost;
 
 	   			
 
 	   			// Type ID
 	   			sscanf((const char*)post_type_id, "%d", idType); 
-	   			new->type_id = *idType;
+	   			setPostTypeID(new,*idType);
+	   			//new->type_id = *idType;
 
 	   			// Parent ID
 	   			if(parent_id) {
 	   				sscanf((const char*)parent_id, "%d", idParent); 
-	   				new->parent_id = *idParent;
+	   				setPostParentID(new,*idParent);
+	   				//new->parent_id = *idParent;
 	   			}
-	   			else new->parent_id = -2;
+	   			else setPostParentID(new,-2);
 
 	   			// Owner Display Name
+	   			setPostOwnerDisplayName(new,(char*)user_display_name);
+	   			/*
 	   			if(user_display_name){
 	   				new->owner_display_name = malloc(strlen((const char*)user_display_name) + 1);
 	   				strcpy(new->owner_display_name,(const char*)user_display_name);
 	   			}
 	   			else new->owner_display_name = "";
+	   			*/
 
 	   			// Data
-	   			new->data = atribuiData((char*) data);
+	   			Date dataPost = atribuiData((char*) data);
+	   			setPostDate(new,dataPost);
 
 				// Accepted answer - debugging q10 : COLOCAR EM COMENTÁRIO QUANDO NÃO FOR NECESSÁRIO!! 
-	   			
+	   			/*
 	   			if (answer && new->type_id==1) {
 	   				sscanf((const char*)answer,"%d", acptd);
 	   				new->accepted_answer = *acptd;
 	   			}
 	   			else new->accepted_answer=-2;	
-	   			
+	   			*/
+
 	   			// Tags   = "<tag><tag>"  
+	   			setPostTags(new,(char*)tags);
+	   			/*
 	   			if(tags){
 	   				new->tags = malloc(strlen((const char*)tags) + 1);
 	   				strcpy(new->tags, (const char*)tags);
 	   			}
 	   			else new->tags = "";
-
+				*/
 	   			// Score
 				sscanf((const char*)score_xml, "%d", score); 
-	   			new->score = *score;
+	   			setPostScore(new,*score);
+	   			//new->score = *score;
 
 	   			// Nº Upvotes
-	   			new->n_upvotes=0;
+	   			setPostNUpVotes(new,0);
 
 	   			// Nº Downvotes
-	   			new->n_downvotes=0;
+	   			setPostNDownVotes(new,0);
 
 	   			// Nº Comments
 	   			sscanf((const char*)comments,"%d", n_comms);
-	   			new->n_comments = *n_comms;
+	   			setPostNComments(new,*n_comms);
+	   			//new->n_comments = *n_comms;
 
 	   			// Nº Respostas
-	   			if(new->type_id == 1){
+	   			if(getPostTypeID(new)==1){
 	   				xmlChar* answercount = xmlGetProp(cur, (const xmlChar *)"AnswerCount");
 	   				int* awnsers = malloc(sizeof(int));
 
 	   				sscanf((const char*)answercount, "%d", awnsers); 
-	   				new->n_respostas = *awnsers;
+	   				setPostNRespostas(new,*awnsers);
+	   				//new->n_respostas = *awnsers;
 	   			}
-	   			else new->n_respostas = -1;
+	   			else setPostNRespostas(new,-1);
 
 	   			// Add Post to User
 				if (user!=NULL){
-					g_array_append_val(user->userPosts,new);
+					g_array_append_val(getUserPosts(user),new);
 				}
 	   			
 	   			// Inserir conforme o Post ID
@@ -247,6 +270,12 @@ TAD_community load(TAD_community com, char* dump_path){
 				xmlFree(user_id);
 				xmlFree(titulo);
 				xmlFree(parent_id);
+				xmlFree(data);
+				xmlFree(tags);
+				xmlFree(score_xml);
+				xmlFree(comments);
+				xmlFree(answer);
+				xmlFree(user_display_name);
 			}
 			xmlFree(post_type_id);
 			cur = cur->next;
@@ -284,10 +313,10 @@ TAD_community load(TAD_community com, char* dump_path){
 				sscanf((const char*)id_post, "%d", postID);
 				sscanf((const char*)vote_type,"%d", votetype);
 
-				struct Post* post = (struct Post*)g_hash_table_lookup(com->post, postID);
+				Post post = (Post) g_hash_table_lookup(com->post, postID);
 
-				if (post && *votetype == 2) (post->n_upvotes)++;
-				else if (post && *votetype == 3) (post->n_downvotes)++;
+				if (post && *votetype == 2) setPostNUpVotes(post,getPostNUpVotes(post)+1);
+				else if (post && *votetype == 3) setPostNDownVotes(post,getPostNDownVotes(post)+1);
 
 				i++;
 			}

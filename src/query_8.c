@@ -1,6 +1,6 @@
 #include "query_8.h"
 
-
+/*
 void printPostHT(struct Post* aux){
 	if(aux!=NULL){
 	printf("%d ",aux->id);
@@ -21,6 +21,7 @@ void insertByDate(struct Post* posts[],struct Post* post, int N, int* used){ //r
 	for(i = 0; i < *used && pos==0; i++){
 		/*Debuggin*/ //printf("A comparar %d %d %d com %d %d %d\n",get_day(post->data),get_month(post->data),get_year(post->data),get_day(posts[i]->data),get_month(posts[i]->data),get_year(posts[i]->data));
 		/*Debuggin*/ //printf("%d\n",comparaDatas(post->data,(posts[i])->data));
+/*
 		if(comparaDatas(post->data,(posts[i])->data)==1)
 			break;		
 	}
@@ -35,8 +36,8 @@ void insertByDate(struct Post* posts[],struct Post* post, int N, int* used){ //r
 	posts[pos] = post;	
 
 }
-
-
+*/
+/*
 void word_lookup(gpointer key_pointer, gpointer post_pointer, gpointer info){
 	struct Post* post = (struct Post*)post_pointer ; 
 
@@ -57,15 +58,16 @@ void word_lookup(gpointer key_pointer, gpointer post_pointer, gpointer info){
 		struct Post* last = postArray[size-1];// null ou endereço de um post
 		/*Debuggin*/ //printf("%d\n",*ocupados);
 		/*Debuggin*/ //printPostHT(post);
-
+/*
 		if(strstr(titulo,word)!=NULL && ((*ocupados<size) || ((*ocupados == size) && (comparaDatas(post->data,last->data)==1)))){
 			 insertByDate(postArray,post,size,ocupados);
 			/*Debuggin*/ //printf("inseriu %dº\n",++i);
 			/*Debuggin*/ //for(int aux=0;aux<10;aux++) if(postArray[aux]!=NULL)printf("%d\n",((struct Post*)(postArray[aux]))->id );
-		}
+		/*}
 	}
 }
-
+*/
+/*
 LONG_list contains_word(TAD_community com, char* word, int N){
 	struct Post* postArray[N]; int i;
 
@@ -81,7 +83,7 @@ LONG_list contains_word(TAD_community com, char* word, int N){
 		struct Post* post = postArray[i];
 		printf("%d %d %d\n",get_day(post->data),get_month(post->data),get_year(post->data));
 	}
-	*/
+	*//*
 	LONG_list r = create_list(*used);
 
 	for(i = 0; i < *used; i++) 
@@ -91,3 +93,4 @@ LONG_list contains_word(TAD_community com, char* word, int N){
 
 	return r;	
 }
+*/

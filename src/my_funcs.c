@@ -41,9 +41,9 @@ int comparaDatas(Date a, Date b){ // se a primeira for mais pequena que a segund
 }
 
 int ordena(gconstpointer a,gconstpointer b){
-	struct Post* post1 = *((struct Post**)(a));
-	struct Post* post2 = *((struct Post**)(b));
-	return comparaDatas(post1->data,post2->data)*(-1);
+	Post post1 = *((Post*)(a));
+	Post post2 = *((Post*)(b));
+	return comparaDatas(getPostDate(post1),getPostDate(post2))*(-1);
 }
 
 
@@ -104,34 +104,58 @@ void insereId(int* v, int x, int i, int n){
 
 /* Funcao para Debugging de PostHashT */
 
+void printPostHTa(gpointer key, gpointer value, gpointer user_data){
+	Post post = (Post)value;
+	printf("%d %d %s %d %s %d %d %d\n%s\n%d %d %d %d %d\n",*((int*)(key)),getPostID(post),
+ 			getPostTitle(post),
+ 			getPostOwnerID(post),
+ 			getPostOwnerDisplayName(post),
+ 			getPostOwnerRep(post),
+		  	getPostTypeID(post),
+ 			getPostParentID(post),
+ 			getPostTags(post),
+ 			getPostScore(post),
+ 			getPostNComments(post),
+ 			getPostNUpVotes(post),
+ 			getPostNDownVotes(post),
+ 			getPostNRespostas(post));
+}
+
 
 /* Funcao para Debugging de UserHashT */
 void printUserHT(gpointer key, gpointer value, gpointer user_data){
-	struct User* aux = (struct User*)value;
+	User aux = (User)value;
 	int* keyId = (int* )key;
-	printf(user_data,*keyId, aux->id, aux->display_name);
+	printf("%d %d %s %d %d %d %d\n%s\n",*keyId, getUserID(aux), 
+		   getUserDisplayName(aux),
+		   getUserReputacao(aux),
+		   getUserNPerguntas(aux),
+		   getUserNRespostas(aux),
+		   getUserNPosts(aux),
+		   getUserShortBio(aux));
 }
 
 /* Funcao para verificar procura na UserHashT */ 
 void testeAcessoUserHT(TAD_community com, int id){
 	int* aux = malloc(sizeof(int));
 	*aux=id;
-	struct User* user = malloc(sizeof(struct User));
-	user = (struct User*)g_hash_table_lookup(com->user, aux);
-	if(user) printf("%d %s\n",user->id,user->display_name);
+	User user = initUser();
+	user = (User)g_hash_table_lookup(com->user, aux);
+	if(user) printf("%d %s\n",getUserID(user),getUserDisplayName(user));
 	 else printf("user not found\n");
 }
 
 // Função para verificar contagem do nº posts
 void ver_num (gpointer key, gpointer value, gpointer user_data){
-	struct User* aux = (struct User*)value;
+	User aux = (User)value;
 	int* keyId = (int* )key;
-	printf(user_data,*keyId, aux->n_respostas,aux->n_perguntas);
+	printf(user_data,*keyId, getUserNRespostas(aux),getUserNPerguntas(aux));
 }
-
+/*
 // Função para seleção da melhor resposta
 void ver_melhor_resposta (gpointer key, gpointer post, gpointer user_data){
 	struct Post* aux = (struct Post*)post;
 	int* keyId = (int* )key;
 	if (aux!=NULL && aux->type_id==1) printf(user_data,*keyId, aux->accepted_answer);
 }
+*/

@@ -1,7 +1,7 @@
 #include <query_9.h>
 
 // QUERY 9
-
+/*
 void swapAnswerPID (TAD_community com, GArray* posts) {
 	for (int i=0;i<posts->len;i++) {
 		struct Post* post = g_array_index(posts,struct Post*,i);
@@ -50,3 +50,4 @@ LONG_list both_participated(TAD_community com, long id1, long id2, int N){
 	return r;
 
 } 
+*/

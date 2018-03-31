@@ -1,5 +1,5 @@
 #include <query_4.h>
-
+/*
 void adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer info){ // info = {tree, tag, inicio, fim}
 	struct Post* post = (struct Post*) post_pointer;
 	Date begin = ((Date*)(info))[2];
@@ -51,3 +51,4 @@ LONG_list questions_with_tag(TAD_community com, char* tag, Date begin, Date end)
 
 	return r;
 }
+*/

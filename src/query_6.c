@@ -1,5 +1,5 @@
 #include <query_6.h>
-
+/*
 void ordenaScores(gpointer key_pointer, gpointer post_pointer, gpointer info){ // info = {ids, begin, end, ocupados, scores, N}
 	struct Post* post = (struct Post*) post_pointer;
 
@@ -46,3 +46,5 @@ LONG_list most_voted_answers(TAD_community com, int N, Date begin, Date end){
 
 	return r;
 }
+
+*/
