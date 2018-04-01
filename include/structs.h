@@ -42,7 +42,7 @@ void setUserShortBio(User user, char* short_bio);
 
 // Getters para Post
 int getPostID(Post post);
-char* getPostTittle(Post post);
+char* getPostTitle(Post post);
 int getPostOwnerID(Post post);
 char* getPostOwnerDisplayName(Post post);
 int getPostOwnerRep(Post post);
@@ -58,7 +58,7 @@ int getPostNRespostas(Post post);
 
 // Setters para Post
 void setPostID(Post post, int id);
-void setPostTittle(Post post, char* titulo);
+void setPostTitle(Post post, char* titulo);
 void setPostOwnerID(Post post, int owner_id);
 void setPostOwnerDisplayName(Post post, char* owner_display_name);
 void setPostOwnerRep(Post post, int owner_rep);

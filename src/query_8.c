@@ -32,7 +32,7 @@ void word_lookup(gpointer key_pointer, gpointer post_pointer, gpointer info){
 
 	if(getPostTypeID(post)==1){
 		
-		char* titulo = getPostTittle(post);
+		char* titulo = getPostTitle(post);
 		char* word = mystrdup(((char**)info)[1]);
 
 		Post* postArray = ((Post**)info)[0];

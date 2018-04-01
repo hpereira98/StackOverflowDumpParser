@@ -97,6 +97,19 @@ void insereId(int* v, int x, int i, int n){
 
 
 
+// String
+
+char* envolveTag(char* tag){
+	char* aux = malloc(strlen(tag) + 2);
+	int i;
+	
+	aux[0] = '<';
+	for(i = 1; i<strlen(tag) + 1; i++) aux[i] = tag[i-1];
+	aux[i] = '>';
+
+	return aux;
+
+}
 
 
 
@@ -107,7 +120,7 @@ void insereId(int* v, int x, int i, int n){
 void printPostHTa(gpointer key, gpointer value, gpointer user_data){
 	Post post = (Post)value;
 	printf("%d %d %s %d %s %d %d %d\n%s\n%d %d %d %d %d\n",*((int*)(key)),getPostID(post),
- 			getPostTittle(post),
+ 			getPostTitle(post),
  			getPostOwnerID(post),
  			getPostOwnerDisplayName(post),
  			getPostOwnerRep(post),

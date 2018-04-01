@@ -7,13 +7,15 @@ void adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer info){
 	GTree* tree = ((GTree**)(info))[0]; 
 	Date postDate = getPostDate(post);
 
-	char* tag = malloc(strlen(((char**)info)[1]) + 1); strcpy(tag, "<");
-	char* aux = malloc(strlen(((char**)info)[1]) + 1);
-	strcpy(aux, ((char**)info)[1]);
-	strcat(tag, aux); strcat(tag, ">");
+	char* tag = envolveTag(((char**)info)[1]);
 
-	if(comparaDatas(begin, postDate) == 1 && comparaDatas(postDate, end) == -1){  
-		if(strstr( getPostTags(post), tag) != NULL){
+	/*char* aux = malloc(strlen(((char**)info)[1]) + 1);
+	strcpy(aux, ((char**)info)[1]);
+	strcat(tag, aux); strcat(tag, ">");*/
+
+	if(comparaDatas(begin, postDate) == 1 && comparaDatas(postDate, end) == -1){ 
+		char* post_tags = getPostTags(post);
+		if(post_tags != NULL && strstr(post_tags, tag) != NULL){
 			int postID = getPostID(post);
 			g_tree_insert(tree, (gpointer)postDate, (gpointer)(&postID));			
 		}

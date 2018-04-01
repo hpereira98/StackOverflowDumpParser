@@ -207,7 +207,7 @@ void setPostID(Post post, int id){
 	post->id = id;
 }
 
-void setPostTittle(Post post, char* titulo){
+void setPostTitle(Post post, char* titulo){
 	post->titulo = mystrdup(titulo); 
 }
 

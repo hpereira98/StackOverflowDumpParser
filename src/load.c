@@ -147,7 +147,7 @@ TAD_community load(TAD_community com, char* dump_path){
 	   			Post new = initPost();
 	   				
 	   			// Titulo
-	   			setPostTittle(new,(char*)titulo);
+	   			setPostTitle(new,(char*)titulo);
 	   			/*
 	   			if(titulo){
 	   				new->titulo = malloc(strlen((const char*)titulo) + 1);

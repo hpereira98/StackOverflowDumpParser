@@ -40,7 +40,7 @@ int main(){
 	printf("Tempo '1 - info_from_post' = %f\n", (double)(end1-begin1)/CLOCKS_PER_SEC);
 	
 	clock_t begin2 = clock();
-	//LONG_list new2 = top_most_active(teste,10);
+	LONG_list new2 = top_most_active(teste,10);
 	/*for (int it=0;it<10;it++) {
 		printf("%dº: %li ",(it+1),get_list(new2,it));
 		int *aux = malloc(sizeof(int));
@@ -53,28 +53,28 @@ int main(){
 	printf("Tempo '2 - top_most_active' = %f\n", (double)(end2-begin2)/CLOCKS_PER_SEC);
 
 	clock_t begin3 = clock();
-	//LONG_pair new3 = total_posts(teste,inicio,fim);
+	LONG_pair new3 = total_posts(teste,inicio,fim);
 	//printf("%ld %ld\n",get_fst_long(new1),get_snd_long(new1));
 	clock_t end3 = clock();
 
 	printf("Tempo '3 - total_posts' = %f\n", (double)(end3-begin3)/CLOCKS_PER_SEC);
 
 	clock_t begin4 = clock();
-	//LONG_list new4 = questions_with_tag(teste, "android", inicio, fim);
+	LONG_list new4 = questions_with_tag(teste, "android", inicio, fim);
 	clock_t end4 = clock();
 
 	printf("Tempo '4 - questions_with_tag' = %f\n", (double)(end4-begin4)/CLOCKS_PER_SEC);
 
 
 	clock_t begin5 = clock();
-	//long id = 9;
-	//USER new5 = get_user_info(teste,id);
+	long id = 9;
+	USER new5 = get_user_info(teste,id);
 	clock_t end5 = clock();
 
 	printf("Tempo '5 - get_user_info' = %f\n",(double)(end5-begin5)/CLOCKS_PER_SEC);
 
 	clock_t begin6 = clock();
-	//LONG_list new6 = most_voted_answers(teste, 100, inicio, fim);
+	LONG_list new6 = most_voted_answers(teste, 100, inicio, fim);
 	//for(int i=0;i<100;i++) printf("%ld\n",get_list(new4, i));
 	clock_t end6 = clock();
 
@@ -82,7 +82,7 @@ int main(){
 
 
 	clock_t begin7 = clock();
-	//LONG_list new7 = most_answered_questions(teste, 100, inicio, fim);
+	LONG_list new7 = most_answered_questions(teste, 100, inicio, fim);
 	//for(int i=0;i<100;i++) printf("%ld\n",get_list(new5, i));
 	clock_t end7 = clock();
 
@@ -90,7 +90,7 @@ int main(){
 
 
 	clock_t begin8 = clock();
-	//LONG_list new8 = contains_word(teste,"a",1000);
+	LONG_list new8 = contains_word(teste,"a",1000);
 	//for(int aux=0;aux<10;aux++) 
 	//	printf("%ld ",get_list(new8,aux));
 	//printf("\n");
@@ -99,7 +99,7 @@ int main(){
 	printf("Tempo '8 - contains_word' = %f\n", (double)(end8-begin8)/CLOCKS_PER_SEC);
 
 	clock_t begin9 = clock();
-	//LONG_list new9 = both_participated(teste,16575,1465, 10); // ids aleatórios
+	LONG_list new9 = both_participated(teste,16575,1465, 10); // ids aleatórios
 	clock_t end9 = clock();
 
 	//for(int i=0;i<10;i++) printf("%d: %li\n",i+1,get_list(new9,i));
