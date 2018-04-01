@@ -33,6 +33,14 @@ struct post{
 	int accepted_answer; // testar q10 - POR EM COMENTARIO QUANDO NAO FOR NECESSARIO
 };
 
+struct tag{
+	char* name;
+	int id;
+	int ocorrencias;
+};
+
+
+
 // USERS
 
 // Inits
@@ -263,4 +271,42 @@ void setPostNUpVotes(Post post, int n_upvotes){
 
 void setPostNRespostas(Post post, int n_respostas){
 	post->n_respostas = n_respostas;
+}
+
+
+// Tags
+
+// Init 
+
+Tag initTag(){
+	Tag new = malloc(sizeof(struct tag));
+	return new;
+}
+
+// Getters
+
+char* getTagName(Tag tag){
+	return mystrdup(tag->name);
+}
+
+int getTagID(Tag tag){
+	return tag->id;
+}
+
+int getTagOcor(Tag tag){
+	return tag->ocorrencias;
+}
+
+// Setters 
+
+void setTagName(Tag tag, char* name){
+	tag->name = mystrdup(name); 
+}
+
+void setTagID(Tag tag, int id){
+	tag->id = id;
+}
+
+void setTagOcor(Tag tag, int ocor){
+	tag->ocorrencias = ocor;
 }

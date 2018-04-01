@@ -2,33 +2,41 @@
 
 TAD_community init(){
 	struct TCD_community* new = malloc(sizeof(struct TCD_community));
-  	GHashTable* newUserHash = g_hash_table_new(g_int_hash, g_int_equal);
-  	GHashTable* newPostHash = g_hash_table_new(g_int_hash, g_int_equal);
 
-  	new->user = newUserHash;
-  	new->post = newPostHash;
+  	GHashTable* new_user_hash = g_hash_table_new(g_int_hash, g_int_equal);
+  	GHashTable* new_post_hash = g_hash_table_new(g_int_hash, g_int_equal);
+	GHashTable* new_tags_hash = g_hash_table_new(g_int_hash, g_int_equal);
+  	
+  	new->user = new_user_hash;
+  	new->post = new_post_hash;
+  	new->tags = new_tags_hash;
 
   	return new;
 }
 
 TAD_community load(TAD_community com, char* dump_path){
 	int i = 0;
+
 	char* users = "Users.xml";
 	char* users_path = malloc(strlen(dump_path)+strlen(users) + 1);
-	strcpy(users_path,dump_path);
-	strcat(users_path,users);
-	
+	strcpy(users_path, dump_path);
+	strcat(users_path, users);
 
 	char* posts = "Posts.xml";
 	char* posts_path = malloc(strlen(dump_path)+strlen(posts) + 1);
-	strcpy(posts_path,dump_path);
-	strcat(posts_path,posts);
+	strcpy(posts_path, dump_path);
+	strcat(posts_path, posts);
 
 	char* votes = "Votes.xml";
 	char* votes_path = malloc(strlen(dump_path)+strlen(votes)+1);
-	strcpy(votes_path,dump_path);
-	strcat(votes_path,votes);
+	strcpy(votes_path, dump_path);
+	strcat(votes_path, votes);
 	
+	char* tags = "Tags.xml";
+	char* tags_path = malloc(strlen(dump_path)+strlen(tags)+1);
+	strcpy(tags_path, dump_path);
+	strcat(tags_path, tags);
+		
 
 
 	// USERS
@@ -328,6 +336,59 @@ TAD_community load(TAD_community com, char* dump_path){
 
 	printf("Votes: %d\n", i);
 	xmlFreeDoc(doc_votes);
+
+	// TAGS
+
+	i = 0;
+
+	xmlDocPtr doc_tags = xmlParseFile(tags_path);
+	if(!doc_tags){
+		printf("Document not parsed successfully\n");
+	}
+
+	cur = xmlDocGetRootElement(doc_tags);
+	if(!cur){
+		printf("Empty Document\n");
+		xmlFreeDoc(doc_tags);
+	}
+	else{		
+		cur = cur->xmlChildrenNode;
+		while(cur){
+
+
+			xmlChar* tag_id = xmlGetProp(cur, (const xmlChar *)"Id");
+
+	   		if(tag_id){
+	   			xmlChar* tag_name = xmlGetProp(cur, (const xmlChar *)"TagName");
+		   		Tag new = initTag();
+
+		   		// ID		
+				int* tagID = malloc(sizeof(int));
+				sscanf((const char*)tag_id, "%d", tagID);
+				
+				setTagID(new, *tagID);
+
+				// Name
+				setTagName(new, (char*)tag_name);
+
+				// Ocorrencias
+				setTagOcor(new, 0);
+
+	   			// Inserir conforme a Tag ID
+	   			g_hash_table_insert(com->tags, tagID, new);
+				
+				i++;
+				xmlFree(tag_name);
+			}
+
+			xmlFree(tag_id);
+ 
+			cur = cur->next;
+		}
+	}
+
+	printf("Tags: %d\n", i);
+	xmlFreeDoc(doc_tags);
 
 	return(com);		
 }

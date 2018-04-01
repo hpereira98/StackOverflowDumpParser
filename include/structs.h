@@ -8,17 +8,19 @@
 
 typedef struct user* User;
 typedef struct post* Post;
-
+typedef struct tag* Tag;
 
 struct TCD_community{
 	GHashTable* user;
-	GHashTable* post;	
+	GHashTable* post;
+	GHashTable* tags;	
 };
 
 // Inits 
 User initUser();
 void initUserPosts(User user); // funcao para fazer criar um garray de posts num dado user
 Post initPost();
+Tag initTag();
 
 // Getters para user
 int getUserID(User user);
@@ -71,5 +73,15 @@ void setPostNComments(Post post, int n_comments);
 void setPostNDownVotes(Post post, int n_downvotes);
 void setPostNUpVotes(Post post, int n_upvotes);
 void setPostNRespostas(Post post, int n_respostas);
+
+// Getters para Tag
+char* getTagName(Tag tag);
+int getTagID(Tag tag);
+int getTagOcor(Tag tag);
+
+// Setters para Tag
+void setTagName(Tag tag, char* name);
+void setTagID(Tag tag, int id);
+void setTagOcor(Tag tag, int ocor);
 
 #endif
