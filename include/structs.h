@@ -84,4 +84,6 @@ void setTagName(Tag tag, char* name);
 void setTagID(Tag tag, int id);
 void setTagOcor(Tag tag, int ocor);
 
+Tag createTag(char* name, int id, int ocorrencias);
+
 #endif

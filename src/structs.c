@@ -283,6 +283,16 @@ Tag initTag(){
 	return new;
 }
 
+Tag createTag(char* name, int id, int ocorrencias){
+	Tag new = initTag();
+
+	setTagName(new, name);
+	setTagID(new, id);
+	setTagOcor(new, ocorrencias);
+
+	return new;
+}
+
 // Getters
 
 char* getTagName(Tag tag){
