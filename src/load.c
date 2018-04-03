@@ -5,9 +5,9 @@ TAD_community init(){
 
   	GHashTable* new_user_hash = g_hash_table_new(g_int_hash, g_int_equal);
   	GHashTable* new_post_hash = g_hash_table_new(g_int_hash, g_int_equal);
-	GHashTable* new_tags_hash = g_hash_table_new(g_int_hash, g_int_equal);
+	GHashTable* new_tags_hash = g_hash_table_new(g_str_hash, g_str_equal);
   	
-  	new->user = new_user_hash;
+  	new->user = new_user_hash; 
   	new->post = new_post_hash;
   	new->tags = new_tags_hash;
 
@@ -375,10 +375,10 @@ TAD_community load(TAD_community com, char* dump_path){
 				setTagOcor(new, 0);
 
 	   			// Inserir conforme a Tag ID
-	   			g_hash_table_insert(com->tags, tagID, new);
+	   			g_hash_table_insert(com->tags, tag_name, new);
 				
 				i++;
-				xmlFree(tag_name);
+				
 			}
 
 			xmlFree(tag_id);

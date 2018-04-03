@@ -3,6 +3,7 @@
 #include <structs.h>
 #include <query_5.h>
 #include <my_funcs.h>
+
 /*NOTAS:
 &#xA - \n codificado
 &quot - "
@@ -11,7 +12,11 @@
 &gt - >
 &amp - &
 */
+void printTagsHT(gpointer key, gpointer tag, gpointer info){
+	Tag tag1 = (Tag)tag;
 
+	printf("%s %d\n",(char*)key,getTagID(tag));
+}
 
 int compare_ints(gpointer a, gpointer b) {
  		int* x = (int*)a;
@@ -23,8 +28,8 @@ int compare_ints(gpointer a, gpointer b) {
 int main(){
 	struct TCD_community* teste = init();
 	char* path = "../../dumpexemplo/android/";
-	Date inicio = createDate(01,01,2011);
-	Date fim = createDate(31,02,2011);
+	Date inicio = createDate(1,1,2011);
+	Date fim = createDate(31,2,2017);
 
 	clock_t begin = clock();
 	load(teste, path);
@@ -113,13 +118,14 @@ int main(){
 
 	printf("Tempo '10 - better_answer' = %f\n", (double)(end10-begin10)/CLOCKS_PER_SEC);
 
+	//g_hash_table_foreach(teste->tags,(GHFunc)printTagsHT,NULL);
 
+	
 	clock_t begin11 = clock();
-	long new11 = most_used_best_rep(teste, 10, inicio, fim);
+	LONG_list new11 = most_used_best_rep(teste, 1000, inicio, fim);
 	clock_t end11 = clock();
 
 	printf("Tempo '11 - better_answer' = %f\n", (double)(end11-begin11)/CLOCKS_PER_SEC);
-
 
 
 
