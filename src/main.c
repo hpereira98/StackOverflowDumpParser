@@ -23,8 +23,8 @@ int compare_ints(gpointer a, gpointer b) {
 int main(){
 	struct TCD_community* teste = init();
 	char* path = "../../dumpexemplo/android/";
-	Date inicio = createDate(12,9,2010);
-	Date fim = createDate(14,9,2010);
+	Date inicio = createDate(01,01,2011);
+	Date fim = createDate(31,02,2011);
 
 	clock_t begin = clock();
 	load(teste, path);
@@ -107,15 +107,23 @@ int main(){
 	printf("Tempo '9 - both_participated' = %f\n", (double)(end9-begin9)/CLOCKS_PER_SEC);
 
 
-	
-
-	
-
 	clock_t begin10 = clock();
-	//long new10 = better_answer(teste,216); //escolher id para teste e verificar pelos prints em baixo
+	long new10 = better_answer(teste,216); //escolher id para teste e verificar pelos prints em baixo
 	clock_t end10 = clock();
 
 	printf("Tempo '10 - better_answer' = %f\n", (double)(end10-begin10)/CLOCKS_PER_SEC);
+
+
+	clock_t begin11 = clock();
+	long new11 = most_used_best_rep(teste, 10, inicio, fim);
+	clock_t end11 = clock();
+
+	printf("Tempo '11 - better_answer' = %f\n", (double)(end11-begin11)/CLOCKS_PER_SEC);
+
+
+
+
+
 
 	/* Função para Debugging da Q10 */
 	//g_hash_table_foreach(teste->post,(GHFunc)ver_melhor_resposta,"Post:%d,Best Answer:%d\n");
