@@ -1,18 +1,5 @@
 #include <load.h>
 
-TAD_community init(){
-	struct TCD_community* new = malloc(sizeof(struct TCD_community));
-
-  	GHashTable* new_user_hash = g_hash_table_new(g_int_hash, g_int_equal);
-  	GHashTable* new_post_hash = g_hash_table_new(g_int_hash, g_int_equal);
-	GHashTable* new_tags_hash = g_hash_table_new(g_int_hash, g_int_equal);
-  	
-  	new->user = new_user_hash;
-  	new->post = new_post_hash;
-  	new->tags = new_tags_hash;
-
-  	return new;
-}
 
 TAD_community load(TAD_community com, char* dump_path){
 	int i = 0;
@@ -150,7 +137,6 @@ TAD_community load(TAD_community com, char* dump_path){
 	   			int* idType = malloc(sizeof(int));
 	   			int* score = malloc(sizeof(int));
 	   			int* n_comms = malloc(sizeof(int));
-				int* acptd = malloc(sizeof(int));
 
 	   			Post new = initPost();
 	   				

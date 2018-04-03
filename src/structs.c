@@ -30,7 +30,7 @@ struct post{
 	int n_upvotes;
 	int n_downvotes;
 	int n_respostas;
-	int accepted_answer; // testar q10 - POR EM COMENTARIO QUANDO NAO FOR NECESSARIO
+	// int accepted_answer; // testar q10 - POR EM COMENTARIO QUANDO NAO FOR NECESSARIO
 };
 
 struct tag{
@@ -133,7 +133,14 @@ void setUserShortBio(User user, char* short_bio){
 }
 
 
+// Cleaner
 
+void freeUser (User user) {
+	free(user->display_name);
+	free(user->short_bio);
+	g_array_free(user->userPosts,TRUE);
+	free(user);
+}
 
 // POSTS
 
@@ -273,6 +280,17 @@ void setPostNRespostas(Post post, int n_respostas){
 	post->n_respostas = n_respostas;
 }
 
+// Cleaner
+
+void freePost (Post post) {
+	free(post->titulo);
+	free(post->owner_display_name);
+	free_date(post->data);
+	free(post->tags);
+	free(post);	
+}
+
+
 
 // Tags
 
@@ -320,3 +338,10 @@ void setTagID(Tag tag, int id){
 void setTagOcor(Tag tag, int ocor){
 	tag->ocorrencias = ocor;
 }
+
+// Cleaner
+
+void freeTags (Tag tag) {
+	free(tag->name);
+	free(tag);
+} 

@@ -41,6 +41,8 @@ void setUserNPerguntas(User user, int n_perguntas);
 void setUserNRespostas(User user,int n_respostas);
 void setUserNPosts(User user, int n_posts);
 void setUserShortBio(User user, char* short_bio);
+// Cleaner
+void freeUser (User user);
 
 // Getters para Post
 int getPostID(Post post);
@@ -74,6 +76,10 @@ void setPostNDownVotes(Post post, int n_downvotes);
 void setPostNUpVotes(Post post, int n_upvotes);
 void setPostNRespostas(Post post, int n_respostas);
 
+// Cleaner
+void freePost (Post post);
+
+
 // Getters para Tag
 char* getTagName(Tag tag);
 int getTagID(Tag tag);
@@ -83,6 +89,9 @@ int getTagOcor(Tag tag);
 void setTagName(Tag tag, char* name);
 void setTagID(Tag tag, int id);
 void setTagOcor(Tag tag, int ocor);
+// Cleaner
+void freeTags (Tag tag);
+
 
 Tag createTag(char* name, int id, int ocorrencias);
 
