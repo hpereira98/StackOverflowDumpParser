@@ -28,8 +28,8 @@ int compare_ints(gpointer a, gpointer b) {
 int main(){
 	struct TCD_community* teste = init();
 	char* path = "../../dumpexemplo/android/";
-	Date inicio = createDate(1,1,2011);
-	Date fim = createDate(31,2,2017);
+	Date inicio = createDate(1,1,2000);
+	Date fim = createDate(31,2,2020);
 
 	clock_t begin = clock();
 	load(teste, path);
@@ -95,10 +95,15 @@ int main(){
 
 
 	clock_t begin8 = clock();
-	LONG_list new8 = contains_word(teste,"a",1000);
-	//for(int aux=0;aux<10;aux++) 
-	//	printf("%ld ",get_list(new8,aux));
-	//printf("\n");
+	LONG_list new8 = contains_word(teste,"computer",100);
+	for(int aux=0;aux<100;aux++) {
+		int id = get_list(new8,aux);
+		printf("%d ",id);
+		Post post = g_hash_table_lookup(teste->post,&id); Date data = getPostDate(post);
+		printf("%d %d %d\n",get_day(data),get_month(data),get_year(data));
+	}
+
+	
 	clock_t end8 = clock();
 
 	printf("Tempo '8 - contains_word' = %f\n", (double)(end8-begin8)/CLOCKS_PER_SEC);
@@ -122,7 +127,7 @@ int main(){
 
 	
 	clock_t begin11 = clock();
-	LONG_list new11 = most_used_best_rep(teste, 1000, inicio, fim);
+	//LONG_list new11 = most_used_best_rep(teste, 1000, inicio, fim);
 	clock_t end11 = clock();
 
 	printf("Tempo '11 - better_answer' = %f\n", (double)(end11-begin11)/CLOCKS_PER_SEC);

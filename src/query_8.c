@@ -35,17 +35,18 @@ void word_lookup(gpointer key_pointer, gpointer post_pointer, gpointer info){
 		char* titulo = getPostTitle(post);
 		char* word = mystrdup(((char**)info)[1]);
 
-		Post* postArray = ((Post**)info)[0];
+		GArray* postArray = ((GArray**)info)[0];
 
-		int size = *((int**)info)[2];
 		int* ocupados = ((int**)info)[3];
-	
-		Post last = postArray[size-1];// null ou endereço de um post
+		int size = postArray->len;
+
+		//if(size!=0) Post last = g_array_index(postArray,Post,size-1);// null ou endereço de um post
 
 		/*Debuggin*/ //printf("%d\n",*ocupados);
 
-		if(strstr(titulo,word)!=NULL && ((*ocupados<size) || ((*ocupados == size) && (comparaDatas(getPostDate(post),getPostDate(last))==1)))){
-			 insertByDate(postArray,post,size,ocupados);
+		if(strstr(titulo,word)!=NULL ){
+			//insertByDate(postArray,post,size,ocupados);
+			g_array_append_val(postArray,post);
 			/*Debuggin*/ //printf("inseriu %dº\n",++i);
 			/*Debuggin*/ //for(int aux=0;aux<10;aux++) if(postArray[aux]!=NULL)printf("%d\n",((struct Post*)(postArray[aux]))->id );
 		}
@@ -54,20 +55,26 @@ void word_lookup(gpointer key_pointer, gpointer post_pointer, gpointer info){
 
 
 LONG_list contains_word(TAD_community com, char* word, int N){
-	Post postArray[N]; int i;
+	GArray* postArray = g_array_new(FALSE,FALSE,sizeof(Post)); int i;
 
-	for(i=0;i<N;i++) postArray[i]=NULL;
+	//for(i=0;i<N;i++) postArray[i]=NULL;
 
 	int* used = malloc(sizeof(int)); *used=0;
 
 	void* info[4] ={postArray,word,&N,used};
 
 	g_hash_table_foreach(com->post, word_lookup, info);
-		
-	LONG_list r = create_list(*used);
 
-	for(i = 0; i < *used; i++) 
-			set_list(r, i, getPostID(postArray[i]));
+	g_array_sort(postArray,ordena);	
+	printf("TAMANHO DO ARRAY: %d\n",postArray->len);
+	int size;
+	if(postArray->len < N) size = postArray->len;
+	else size = N;
+
+	LONG_list r = create_list(size);
+
+	for(i = 0; i < size; i++) 
+			set_list(r, i, getPostID(g_array_index(postArray,Post,i)));
 		
 
 
