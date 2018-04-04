@@ -1,3 +1,4 @@
+/*
 #include <clean.h>
 
 void cleanUser (gpointer key, gpointer user_pointer, gpointer info) {
@@ -26,3 +27,4 @@ TAD_community clean(TAD_community com) {
 
 	return com;
 }
+*/

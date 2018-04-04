@@ -7,7 +7,6 @@
 #include "structs.h"
 #include <stdlib.h>
 
-STR_pair info_from_post(TAD_community com, long id);
-
+STR_pair info_from_post_aux(GHashTable* com_post,GHashTable* com_user, long id);
 
 #endif

@@ -56,7 +56,7 @@ int elemTag(GArray* array, char* name){
 	return -1;
 }
 
-void adicionaTag(GArray* array, char* tags, TAD_community com){
+void adicionaTag(GArray* array, char* tags, GHashTable* com_tags){
 	int x;
 	Tag tag;
 	if(tags){
@@ -68,7 +68,7 @@ void adicionaTag(GArray* array, char* tags, TAD_community com){
 					setTagOcor(tag, getTagOcor(tag) + 1);
 				}
 				else{
-					tag = g_hash_table_lookup(com->tags, name); 
+					tag = g_hash_table_lookup(com_tags, name); 
 					Tag new_tag = createTag(name, getTagID(tag), 1); 
 					g_array_append_val(array, new_tag);					
 				}	
@@ -78,7 +78,7 @@ void adicionaTag(GArray* array, char* tags, TAD_community com){
 }
 
 
-LONG_list most_used_best_rep(TAD_community com, int N, Date begin, Date end){
+LONG_list most_used_best_rep_aux(GHashTable* com_user,GHashTable* com_tags, int N, Date begin, Date end){
 	int* top_users_ids = malloc(sizeof(int)*N);
 	int* rep_users = malloc(sizeof(int)*N);
 	
@@ -91,12 +91,12 @@ LONG_list most_used_best_rep(TAD_community com, int N, Date begin, Date end){
 	void* info[4] = {(void*)top_users_ids, (void*)rep_users, (void*)ocupados, (void*)&N};
 	
 	// Filtra os melhores N users por reputação
-	g_hash_table_foreach(com->user, ordenaUsers, info); 
+	g_hash_table_foreach(com_user, ordenaUsers, info); 
  	 
 	GArray* tags = g_array_new(FALSE, TRUE,sizeof(Tag));
 
 	for(int i = 0; i<N; i++){ 
-		User user = (User)g_hash_table_lookup(com->user, &(top_users_ids[i]));
+		User user = (User)g_hash_table_lookup(com_user, &(top_users_ids[i]));
 		GArray* user_posts = getUserPosts(user);
 		
 		for(int j = 0; j<user_posts->len; j++){
@@ -104,7 +104,7 @@ LONG_list most_used_best_rep(TAD_community com, int N, Date begin, Date end){
 			Date data = getPostDate(post);
 
 			if(comparaDatas(begin, data) == -1 && comparaDatas(data, end) == -1)
-				adicionaTag(tags, getPostTags(post), com);		
+				adicionaTag(tags, getPostTags(post), com_tags);		
 			
 		}
 	}

@@ -39,7 +39,87 @@ struct tag{
 	int ocorrencias;
 };
 
+struct TCD_community{
+	GHashTable* user;
+	GHashTable* post;
+	GHashTable* tags;	
+};
+// QUERIES
 
+TAD_community init(){
+	struct TCD_community* new = malloc(sizeof(struct TCD_community));
+
+  	GHashTable* new_user_hash = g_hash_table_new(g_int_hash, g_int_equal);
+  	GHashTable* new_post_hash = g_hash_table_new(g_int_hash, g_int_equal);
+	GHashTable* new_tags_hash = g_hash_table_new(g_int_hash, g_int_equal);
+  	
+  	new->user = new_user_hash;
+  	new->post = new_post_hash;
+  	new->tags = new_tags_hash;
+
+  	return new;
+}
+
+
+TAD_community load(TAD_community com, char* dump_path){
+	load_aux(com->user,com->post,com->tags,dump_path);
+	return com;
+}  
+
+// query 1
+STR_pair info_from_post(TAD_community com, long id){
+	return info_from_post_aux(com->post,com->user,id);
+}  
+
+// query 2
+LONG_list top_most_active(TAD_community com, int N){
+	return top_most_active_aux(com->user,N);
+}
+
+// query 3
+LONG_pair total_posts(TAD_community com, Date begin, Date end){
+	return total_posts_aux(com->post,begin,end);
+}
+
+// query 4
+LONG_list questions_with_tag(TAD_community com, char* tag, Date begin, Date end){
+	return questions_with_tag_aux(com->post,tag,begin,end);
+}
+
+// query 5
+USER get_user_info(TAD_community com, long id){
+	return get_user_info_aux(com->user,id);
+}
+
+// query 6
+LONG_list most_voted_answers(TAD_community com, int N, Date begin, Date end){
+	return most_voted_answers_aux(com->post,N,begin,end);
+}
+
+// query 7
+LONG_list most_answered_questions(TAD_community com, int N, Date begin, Date end){
+	return most_answered_questions_aux();
+}
+
+// query 8
+LONG_list contains_word(TAD_community com, char* word, int N){
+	return contains_word_aux(com->post,word,N);
+}
+
+// query 9
+LONG_list both_participated(TAD_community com, long id1, long id2, int N){
+	return both_participated_aux(com->user, com->post,id1,id2,N);
+}
+
+// query 10
+long better_answer(TAD_community com, long id){
+	return better_answer_aux(com->post,id);
+}
+
+// query 11
+LONG_list most_used_best_rep(TAD_community com, int N, Date begin, Date end){
+	return most_used_best_rep_aux(com->user,com->tags,N,begin,end);
+}
 
 // USERS
 
@@ -53,6 +133,7 @@ User initUser(){
 void initUserPosts(User user){
 	user->userPosts = g_array_new (FALSE,TRUE,sizeof(struct post*));
 }
+
 
 // Getters
 

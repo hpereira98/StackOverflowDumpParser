@@ -96,13 +96,14 @@ int main(){
 
 	clock_t begin8 = clock();
 	LONG_list new8 = contains_word(teste,"a",50000);
+	/*
 	for(int aux=0;aux<43691;aux++) {
 		int id = get_list(new8,aux);
 		printf("%d %d ",aux,id);
 		Post post = g_hash_table_lookup(teste->post,&id); Date data = getPostDate(post);
 		printf("%d %d %d\n",get_day(data),get_month(data),get_year(data));
 	}
-	
+	*/
 
 	
 	clock_t end8 = clock();

@@ -9,6 +9,6 @@
 #include <gmodule.h>
 
 void word_lookup(gpointer key_pointer, gpointer post_pointer, gpointer info);
-LONG_list contains_word(TAD_community com, char* word, int N);
+LONG_list contains_word_aux(GHashTable* com_post, char* word, int N);
 
 #endif

@@ -2,7 +2,7 @@
 
 
 
-TAD_community load(TAD_community com, char* dump_path){
+void load_aux(GHashTable* com_user, GHashTable* com_post ,GHashTable* com_tags, char* dump_path){
 	int i = 0;
 
 	char* users = "Users.xml";
@@ -89,7 +89,7 @@ TAD_community load(TAD_community com, char* dump_path){
 				//new->userPosts = g_array_new (FALSE,TRUE,sizeof(struct Post*));//(elemento no fim a 0,inicilizar a 0,tamnho em bytes dos elems)
 			 
    				// Inserir conforme o ID
-   				g_hash_table_insert(com->user, idUser, new); i++;
+   				g_hash_table_insert(com_user, idUser, new); i++;
 				
    			}
 			xmlFree(id);
@@ -159,7 +159,7 @@ TAD_community load(TAD_community com, char* dump_path){
 	   			else setPostOwnerID(new,-2);
 
 	   			// Owner Reputation
-	   			User user = (User)g_hash_table_lookup(com->user,idOwner);
+	   			User user = (User)g_hash_table_lookup(com_user,idOwner);
 	   			if (user!=NULL)
 	   				setPostOwnerRep(new,getUserReputacao(user));
 
@@ -255,7 +255,7 @@ TAD_community load(TAD_community com, char* dump_path){
 				}
 	   			
 	   			// Inserir conforme o Post ID
-	   			g_hash_table_insert(com->post, idPost, new);
+	   			g_hash_table_insert(com_post, idPost, new);
 	   			
 	   			/*Debugging*/ //printf("Inserido %d\n", i);
 	   			i++;
@@ -308,7 +308,7 @@ TAD_community load(TAD_community com, char* dump_path){
 				sscanf((const char*)id_post, "%d", postID);
 				sscanf((const char*)vote_type,"%d", votetype);
 
-				Post post = (Post) g_hash_table_lookup(com->post, postID);
+				Post post = (Post) g_hash_table_lookup(com_post, postID);
 
 				if (post && *votetype == 2) setPostNUpVotes(post,getPostNUpVotes(post)+1);
 				else if (post && *votetype == 3) setPostNDownVotes(post,getPostNDownVotes(post)+1);
@@ -362,7 +362,7 @@ TAD_community load(TAD_community com, char* dump_path){
 				setTagOcor(new, 0);
 
 	   			// Inserir conforme a Tag ID
-	   			g_hash_table_insert(com->tags, tag_name, new);
+	   			g_hash_table_insert(com_tags, tag_name, new);
 				
 				i++;
 				
@@ -377,5 +377,5 @@ TAD_community load(TAD_community com, char* dump_path){
 	printf("Tags: %d\n", i);
 	xmlFreeDoc(doc_tags);
 
-	return(com);		
+		
 }

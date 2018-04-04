@@ -26,7 +26,7 @@ void ordenaNRespostas(gpointer key_pointer, gpointer post_pointer, gpointer info
 
 }
 
-LONG_list most_answered_questions(TAD_community com, int N, Date begin, Date end){
+LONG_list most_answered_questions_aux(GHashTable* com_post, int N, Date begin, Date end){
 	int* ids = malloc(sizeof(int)*N);
 	int* n_respostas = malloc(sizeof(int)*N);
 	int *ocupados = malloc(sizeof(int)); *ocupados=0;
@@ -39,10 +39,10 @@ LONG_list most_answered_questions(TAD_community com, int N, Date begin, Date end
 
 	void* info[6] = {(void*)ids, (void*)begin, (void*)end, (void*)ocupados, (void*)n_respostas, (void*)&N};
 	
-	g_hash_table_foreach(com->post, ordenaNRespostas, info);
+	g_hash_table_foreach(com_post, ordenaNRespostas, info);
 
-	LONG_list r = create_list(N);	
-	for(i = 0; i<N; i++) set_list(r, i, ids[i]);
+	LONG_list r = create_list(*ocupados);	
+	for(i = 0; i<*ocupados; i++) set_list(r, i, ids[i]);
 
 	return r;
 }

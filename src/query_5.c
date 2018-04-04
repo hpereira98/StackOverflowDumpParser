@@ -1,7 +1,7 @@
 #include<query_5.h>
 
-USER get_user_info(TAD_community com, long id){
-	User user = (User)g_hash_table_lookup(com->user,&id);
+USER get_user_info_aux(GHashTable* com_user, long id){
+	User user = (User)g_hash_table_lookup(com_user,&id);
 	int i, size; long posts[10];
 	Post post; 
 	USER res = NULL;

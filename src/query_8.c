@@ -19,20 +19,20 @@ void word_lookup(gpointer key_pointer, gpointer post_pointer, gpointer info){
 }
 
 
-LONG_list contains_word(TAD_community com, char* word, int N){
+LONG_list contains_word_aux(GHashTable* com_post, char* word, int N){
 	GArray* postArray = g_array_new(FALSE,FALSE,sizeof(Post)); 
 	Post post;
 	int i, size;
 
-	void* info[2] ={postArray,word,};
+	void* info[2] ={postArray,word};
 
-	g_hash_table_foreach(com->post, word_lookup, info);
+	g_hash_table_foreach(com_post, word_lookup, info);
 
 	g_array_sort(postArray,ordena);	
 	
 	if(postArray->len < N) size = postArray->len;
 	else size = N;
-
+	printf("%d\n", postArray->len);
 	LONG_list postList = create_list(size);
 
 	for(i = 0; i < size; i++){

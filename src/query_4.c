@@ -34,13 +34,13 @@ void addToLongList(gpointer key_pointer, gpointer id_pointer, gpointer info){ //
 }
 
 
-LONG_list questions_with_tag(TAD_community com, char* tag, Date begin, Date end){ // PERGUNTAR AO STOR O TIPO DA TAG: "<TAG>" OU "TAG" !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+LONG_list questions_with_tag_aux(GHashTable* com_post, char* tag, Date begin, Date end){ // PERGUNTAR AO STOR O TIPO DA TAG: "<TAG>" OU "TAG" !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	GTree* tree = g_tree_new((GCompareFunc)comparaDatas);
 	void* info[4] = {(void*)tree, (void*)tag, (void*)begin, (void*)end};
 
 	// Constroi a tree com os posts com a tag e dentro da data
-	g_hash_table_foreach(com->post, (GHFunc)adicionaComTag, (gpointer)info);
+	g_hash_table_foreach(com_post, (GHFunc)adicionaComTag, (gpointer)info);
 
 	gint tam = g_tree_nnodes(tree); 
 

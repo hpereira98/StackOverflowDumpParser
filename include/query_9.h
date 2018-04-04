@@ -9,8 +9,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void swapAnswerPID (TAD_community com, GArray* posts);
-LONG_list both_participated(TAD_community com, long id1, long id2, int N);
+void swapAnswerPID (GHashTable* com_post, GArray* posts);
+LONG_list both_participated_aux(GHashTable* com_user, GHashTable* com_post, long id1, long id2, int N);
 
 
 

@@ -22,7 +22,7 @@ void bestAnswer (gpointer key_pointer, gpointer post_pointer, gpointer info) {
 	}
 }
 
-long better_answer(TAD_community com, long id) {
+long better_answer_aux(GHashTable* com_post, long id){
 
 	int* parentId = malloc(sizeof(int));
 	*parentId=id;
@@ -34,7 +34,7 @@ long better_answer(TAD_community com, long id) {
 
 	void* info[3] = {(void*)parentId, (void*)max, (void*)answerId};
 
-	g_hash_table_foreach(com->post, bestAnswer, info);
+	g_hash_table_foreach(com_post, bestAnswer, info);
 
 	return (long)*answerId;
 }

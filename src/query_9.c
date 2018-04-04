@@ -1,12 +1,12 @@
 #include <query_9.h>
 
-void swapAnswerPID (TAD_community com, GArray* posts) {
+void swapAnswerPID (GHashTable* com_post, GArray* posts) {
 	for (int i=0;i<posts->len;i++) {
 		Post post = g_array_index(posts,Post,i);
 		if (getPostTypeID(post)==2) {
 
 			int pid = getPostParentID(post);
-			Post newPost = g_hash_table_lookup(com->post,&pid);
+			Post newPost = g_hash_table_lookup(com_post,&pid);
 
 			g_array_append_val(posts,newPost);
 			g_array_remove_index(posts,i);
@@ -15,10 +15,10 @@ void swapAnswerPID (TAD_community com, GArray* posts) {
 	}
 }
 
-LONG_list both_participated(TAD_community com, long id1, long id2, int N){
+LONG_list both_participated_aux(GHashTable* com_user, GHashTable* com_post, long id1, long id2, int N){
 	
-	User user1 = g_hash_table_lookup(com->user,&id1); 
-	User user2 = g_hash_table_lookup(com->user,&id2);
+	User user1 = g_hash_table_lookup(com_user,&id1); 
+	User user2 = g_hash_table_lookup(com_user,&id2);
 
 	int nPostsUser1 = getUserNPosts(user1);
 	int nPostsUser2 = getUserNPosts(user2);
@@ -28,8 +28,8 @@ LONG_list both_participated(TAD_community com, long id1, long id2, int N){
 	GArray *posts1 = getClonedUserPosts(user1);
 	GArray *posts2 = getClonedUserPosts(user2);
 	
-	swapAnswerPID(com,posts1);
-	swapAnswerPID(com,posts2);
+	swapAnswerPID(com_post,posts1);
+	swapAnswerPID(com_post,posts2);
 
 	g_array_sort(posts1,ordena);
 	g_array_sort(posts2,ordena);

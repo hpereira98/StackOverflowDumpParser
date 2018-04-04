@@ -5,8 +5,7 @@
 #include "my_funcs.h"
 #include <glib.h>
 
-
-USER get_user_info(TAD_community com, long id);
+USER get_user_info_aux(GHashTable* com_user, long id);
 
 #endif
 

@@ -6,7 +6,7 @@
 #include "structs.h"
 #include <string.h>
 
-TAD_community load(TAD_community com, char* dump_path);
+void load_aux(GHashTable* com_user, GHashTable* com_post ,GHashTable* com_tags, char* dump_path);
 TAD_community init();
 
 

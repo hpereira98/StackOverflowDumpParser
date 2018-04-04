@@ -13,12 +13,12 @@ void posts_count(gpointer key, gpointer post_pointer, gpointer info){
 	
 	if(comparaDatas(post_date,begin)==1 && comparaDatas(end,post_date)==1){
 		if(getPostTypeID(post)==1) (*numQuestions)++;
-			else (*numAnswers)++;
+			else if(getPostTypeID(post)==2) (*numAnswers)++;
 	}
 }
 
 
-LONG_pair total_posts(TAD_community com, Date begin, Date end){
+LONG_pair total_posts_aux(GHashTable* com_posts, Date begin, Date end){
 
 	int *numQuestions = malloc(sizeof(int));
 	int *numAnswers = malloc(sizeof(int));
@@ -26,8 +26,9 @@ LONG_pair total_posts(TAD_community com, Date begin, Date end){
 
 	void* info[4] = {begin, end, numQuestions, numAnswers};
 	
-	g_hash_table_foreach(com->post,posts_count,info);
+	g_hash_table_foreach(com_posts,posts_count,info);
 	LONG_pair totalPost = create_long_pair(*numQuestions,*numAnswers);
 
 	return totalPost;
+	
 }

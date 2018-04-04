@@ -24,9 +24,8 @@ void insertionSort (gpointer key, gpointer user_pointer, gpointer info){
 }
 
 
-LONG_list top_most_active(TAD_community com, int N) {
+LONG_list top_most_active_aux(GHashTable* com_user, int N) {
 	
-	LONG_list res = create_list(N);	
 	
 	int *ocupados = malloc(sizeof(int)); *ocupados=0;
 	int id[N];
@@ -38,9 +37,10 @@ LONG_list top_most_active(TAD_community com, int N) {
 	
 	void* info[4] = {id,num_posts,&N,ocupados};
 
-	g_hash_table_foreach(com->user, insertionSort, info);
+	g_hash_table_foreach(com_user, insertionSort, info);
 
-	for (int i=0;i<N;i++)
+	LONG_list res = create_list(*ocupados);	
+	for (int i=0;i<*ocupados;i++)
 		set_list(res,i,(long)id[i]);
 
 	return res;

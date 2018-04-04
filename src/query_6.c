@@ -27,7 +27,7 @@ void ordenaScores(gpointer key_pointer, gpointer post_pointer, gpointer info){ /
 }
 
 
-LONG_list most_voted_answers(TAD_community com, int N, Date begin, Date end){
+LONG_list most_voted_answers_aux(GHashTable* com_post, int N, Date begin, Date end){
 	int* ids = malloc(sizeof(int)*N);
 	int* scores = malloc(sizeof(int)*N);
 	int* ocupados = malloc(sizeof(int)); *ocupados=0;
@@ -40,7 +40,7 @@ LONG_list most_voted_answers(TAD_community com, int N, Date begin, Date end){
 
 	void* info[6] = {(void*)ids, (void*)begin, (void*)end, (void*)ocupados, (void*)scores, (void*)&N};
 
-	g_hash_table_foreach(com->post, ordenaScores, info);
+	g_hash_table_foreach(com_post, ordenaScores, info);
 
 	LONG_list r = create_list(N);	
 	for(i = 0; i<N; i++) set_list(r, i, ids[i]);

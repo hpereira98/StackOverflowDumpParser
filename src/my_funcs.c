@@ -136,6 +136,7 @@ void printPostHTa(gpointer key, gpointer value, gpointer user_data){
 
 
 /* Funcao para Debugging de UserHashT */
+/*
 void printUserHT(gpointer key, gpointer value, gpointer user_data){
 	User aux = (User)value;
 	int* keyId = (int* )key;
@@ -147,8 +148,9 @@ void printUserHT(gpointer key, gpointer value, gpointer user_data){
 		   getUserNPosts(aux),
 		   getUserShortBio(aux));
 }
-
+*/
 /* Funcao para verificar procura na UserHashT */ 
+/*
 void testeAcessoUserHT(TAD_community com, int id){
 	int* aux = malloc(sizeof(int));
 	*aux=id;
@@ -157,13 +159,15 @@ void testeAcessoUserHT(TAD_community com, int id){
 	if(user) printf("%d %s\n",getUserID(user),getUserDisplayName(user));
 	 else printf("user not found\n");
 }
-
+*/
 // Função para verificar contagem do nº posts
+/*
 void ver_num (gpointer key, gpointer value, gpointer user_data){
 	User aux = (User)value;
 	int* keyId = (int* )key;
 	printf(user_data,*keyId, getUserNRespostas(aux),getUserNPerguntas(aux));
 }
+*/
 /*
 // Função para seleção da melhor resposta
 void ver_melhor_resposta (gpointer key, gpointer post, gpointer user_data){

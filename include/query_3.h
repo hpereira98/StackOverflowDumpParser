@@ -9,7 +9,7 @@
 #include <stdlib.h>
 
 void posts_count(gpointer key, gpointer post_pointer, gpointer info);
-LONG_pair total_posts(TAD_community com, Date begin, Date end);
+LONG_pair total_posts_aux(GHashTable* com_posts, Date begin, Date end);
 
 
 #endif
