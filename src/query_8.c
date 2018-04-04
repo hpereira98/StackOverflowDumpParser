@@ -1,4 +1,4 @@
-#include "query_8.h"
+#include <query_8.h>
 
 
 void word_lookup(gpointer key_pointer, gpointer post_pointer, gpointer info){

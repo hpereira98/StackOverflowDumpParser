@@ -98,7 +98,7 @@ LONG_list most_voted_answers(TAD_community com, int N, Date begin, Date end){
 
 // query 7
 LONG_list most_answered_questions(TAD_community com, int N, Date begin, Date end){
-	return most_answered_questions_aux();
+	return most_answered_questions_aux(com->post,N,begin,end);
 }
 
 // query 8

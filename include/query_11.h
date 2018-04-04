@@ -1,12 +1,7 @@
 #ifndef __QUERY11_H__
 #define __QUERY11_H__
 
-#include "structs.h"
-#include "interface.h"
-#include <gmodule.h>
-#include <glib.h>
-#include <string.h>
-
+#include "toInclude.h"
 
 void ordenaUsers(gpointer key_pointer, gpointer user_pointer, gpointer info);
 int ordenaTags(Tag* a, Tag* b);

@@ -1,6 +1,5 @@
 #include <query_1.h>
 
-
 STR_pair info_from_post_aux(GHashTable* com_post,GHashTable* com_user, long id){
 	STR_pair new = create_str_pair(NULL, NULL);
 

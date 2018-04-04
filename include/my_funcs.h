@@ -1,18 +1,7 @@
 #ifndef __MYFUNCS_H__
 #define __MYFUNCS_H__
 
-#include "date.h"
-#include <string.h>
-#include <stdlib.h>
-#include "interface.h"
-
-//tirar estes depois
-#include <glib.h>
-#include "structs.h"
-#include <stdio.h>
-
-
-
+#include "toInclude.h"
 
 Date atribuiData(char* date);
 int comparaDatas(Date a, Date b);

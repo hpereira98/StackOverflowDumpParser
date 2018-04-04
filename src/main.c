@@ -45,7 +45,7 @@ int main(){
 	printf("Tempo '1 - info_from_post' = %f\n", (double)(end1-begin1)/CLOCKS_PER_SEC);
 	
 	clock_t begin2 = clock();
-	LONG_list new2 = top_most_active(teste,10);
+	LONG_list new2 = top_most_active(teste,100000);
 	/*for (int it=0;it<10;it++) {
 		printf("%dº: %li ",(it+1),get_list(new2,it));
 		int *aux = malloc(sizeof(int));
@@ -79,7 +79,7 @@ int main(){
 	printf("Tempo '5 - get_user_info' = %f\n",(double)(end5-begin5)/CLOCKS_PER_SEC);
 
 	clock_t begin6 = clock();
-	LONG_list new6 = most_voted_answers(teste, 100, inicio, fim);
+	LONG_list new6 = most_voted_answers(teste, 100000, inicio, fim);
 	//for(int i=0;i<100;i++) printf("%ld\n",get_list(new4, i));
 	clock_t end6 = clock();
 
@@ -87,7 +87,7 @@ int main(){
 
 
 	clock_t begin7 = clock();
-	LONG_list new7 = most_answered_questions(teste, 100, inicio, fim);
+	LONG_list new7 = most_answered_questions(teste, 100000, inicio, fim);
 	//for(int i=0;i<100;i++) printf("%ld\n",get_list(new5, i));
 	clock_t end7 = clock();
 
@@ -95,7 +95,7 @@ int main(){
 
 
 	clock_t begin8 = clock();
-	LONG_list new8 = contains_word(teste,"a",50000);
+	LONG_list new8 = contains_word(teste,"a",100000);
 	/*
 	for(int aux=0;aux<43691;aux++) {
 		int id = get_list(new8,aux);
@@ -111,7 +111,7 @@ int main(){
 	printf("Tempo '8 - contains_word' = %f\n", (double)(end8-begin8)/CLOCKS_PER_SEC);
 
 	clock_t begin9 = clock();
-	LONG_list new9 = both_participated(teste,16575,1465, 10); // ids aleatórios
+	//LONG_list new9 = both_participated(teste,16575,1465, 10); // ids aleatórios
 	clock_t end9 = clock();
 
 	//for(int i=0;i<10;i++) printf("%d: %li\n",i+1,get_list(new9,i));
@@ -129,7 +129,7 @@ int main(){
 
 	
 	clock_t begin11 = clock();
-	//LONG_list new11 = most_used_best_rep(teste, 1000, inicio, fim);
+	LONG_list new11 = most_used_best_rep(teste, 100000, inicio, fim);
 	clock_t end11 = clock();
 
 	printf("Tempo '11 - better_answer' = %f\n", (double)(end11-begin11)/CLOCKS_PER_SEC);

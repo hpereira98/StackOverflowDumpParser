@@ -1,4 +1,4 @@
-#include "query_3.h"
+#include <query_3.h>
 
 void posts_count(gpointer key, gpointer post_pointer, gpointer info){
 	

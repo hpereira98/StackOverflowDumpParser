@@ -1,28 +1,12 @@
 #ifndef __STRUCTS_H__
 #define __STRUCTS_H__
 
-#include <glib.h>
-#include <gmodule.h>
-#include "my_funcs.h"
-#include "common.h"
-#include "load.h"
-#include "query_1.h"
-#include "query_2.h"
-#include "query_3.h"
-#include "query_4.h"
-#include "query_5.h"
-#include "query_6.h"
-#include "query_7.h"
-#include "query_8.h"
-#include "query_9.h"
-#include "query_10.h"
-#include "query_11.h"
-
 
 typedef struct user* User;
 typedef struct post* Post;
 typedef struct tag* Tag;
 
+#include "toInclude.h"
 
 
 // Inits 

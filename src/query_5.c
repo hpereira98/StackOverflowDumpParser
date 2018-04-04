@@ -1,4 +1,4 @@
-#include<query_5.h>
+#include <query_5.h>
 
 USER get_user_info_aux(GHashTable* com_user, long id){
 	User user = (User)g_hash_table_lookup(com_user,&id);
