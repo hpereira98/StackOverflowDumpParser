@@ -5,7 +5,7 @@ void swapAnswerPID (GHashTable* com_post, GArray* posts) {
 		Post post = g_array_index(posts,Post,i);
 		if (getPostTypeID(post)==2) {
 
-			int pid = getPostParentID(post);
+			long pid = getPostParentID(post);
 			Post newPost = g_hash_table_lookup(com_post,&pid);
 
 			g_array_append_val(posts,newPost);

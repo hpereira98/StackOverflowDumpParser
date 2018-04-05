@@ -1,7 +1,7 @@
 #include "structs.h"
 
 struct user{
-	int id; // user id
+	long id; // user id
 	char* display_name; // username
 	int n_perguntas; // número de perguntas
 	int n_respostas; // número de respostas
@@ -16,13 +16,13 @@ struct user{
 };
 
 struct post{
-	int id;
+	long id;
 	char* titulo;
-	int owner_id;
+	long owner_id;
 	char* owner_display_name;
 	int owner_rep;
 	int type_id;
-	int parent_id;
+	long parent_id;
 	Date data;
 	char* tags;
 	int score;
@@ -35,7 +35,7 @@ struct post{
 
 struct tag{
 	char* name;
-	int id;
+	long id;
 	int ocorrencias;
 };
 
@@ -137,7 +137,7 @@ void initUserPosts(User user){
 
 // Getters
 
-int getUserID(User user){
+long getUserID(User user){
 	return user->id;
 }
 
@@ -185,7 +185,7 @@ GArray* getClonedUserPosts(User user){
 
 // Setters
 
-void setUserID(User user, int id){
+void setUserID(User user, long id){
 	user->id = id;
 }
 
@@ -234,7 +234,7 @@ Post initPost(){
 
 // Getters
 
-int getPostID(Post post){
+long getPostID(Post post){
 	return post->id;
 }
 
@@ -242,7 +242,7 @@ char* getPostTitle(Post post){
 	return mystrdup(post->titulo);
 }
 
-int getPostOwnerID(Post post){
+long getPostOwnerID(Post post){
 	if(post->owner_id != -2) return post->owner_id;
 	else return post->id;
 }
@@ -259,7 +259,7 @@ int getPostTypeID(Post post){
 	return post->type_id;
 }
 
-int getPostParentID(Post post){
+long getPostParentID(Post post){
 	return post->parent_id;
 }
 
@@ -299,7 +299,7 @@ int getPostNRespostas(Post post){
 
 // Setters
 
-void setPostID(Post post, int id){
+void setPostID(Post post, long id){
 	post->id = id;
 }
 
@@ -307,7 +307,7 @@ void setPostTitle(Post post, char* titulo){
 	post->titulo = mystrdup(titulo); 
 }
 
-void setPostOwnerID(Post post, int owner_id){
+void setPostOwnerID(Post post, long owner_id){
 	post->owner_id = owner_id; 		
 }
 
@@ -323,7 +323,7 @@ void setPostTypeID(Post post, int type_id){
 	post->type_id = type_id;
 }
 
-void setPostParentID(Post post, int parent_id){
+void setPostParentID(Post post, long parent_id){
 	post->parent_id = parent_id; 
 }
 
@@ -382,7 +382,7 @@ Tag initTag(){
 	return new;
 }
 
-Tag createTag(char* name, int id, int ocorrencias){
+Tag createTag(char* name, long id, int ocorrencias){
 	Tag new = initTag();
 
 	setTagName(new, name);
@@ -398,7 +398,7 @@ char* getTagName(Tag tag){
 	return mystrdup(tag->name);
 }
 
-int getTagID(Tag tag){
+long getTagID(Tag tag){
 	return tag->id;
 }
 
@@ -412,7 +412,7 @@ void setTagName(Tag tag, char* name){
 	tag->name = mystrdup(name); 
 }
 
-void setTagID(Tag tag, int id){
+void setTagID(Tag tag, long id){
 	tag->id = id;
 }
 

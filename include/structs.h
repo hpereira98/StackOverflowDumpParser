@@ -16,7 +16,7 @@ Post initPost();
 Tag initTag();
 
 // Getters para user
-int getUserID(User user);
+long getUserID(User user);
 char* getUserDisplayName(User user);
 int getUserReputacao(User user);
 int getUserNPerguntas(User user);
@@ -27,7 +27,7 @@ GArray* getUserPosts(User user);
 GArray* getClonedUserPosts(User user);
 
 // Setters para user
-void setUserID(User user, int id);
+void setUserID(User user, long id);
 void setUserDisplayName(User user, char* display_name);
 void setUserReputacao(User user, int reputacao);
 void setUserNPerguntas(User user, int n_perguntas);
@@ -38,13 +38,13 @@ void setUserShortBio(User user, char* short_bio);
 void freeUser (User user);
 
 // Getters para Post
-int getPostID(Post post);
+long getPostID(Post post);
 char* getPostTitle(Post post);
-int getPostOwnerID(Post post);
+long getPostOwnerID(Post post);
 char* getPostOwnerDisplayName(Post post);
 int getPostOwnerRep(Post post);
 int getPostTypeID(Post post);
-int getPostParentID(Post post);
+long getPostParentID(Post post);
 Date getPostDate(Post post);
 char* getPostTags(Post post);
 int getPostScore(Post post);
@@ -54,13 +54,13 @@ int getPostNDownVotes(Post post);
 int getPostNRespostas(Post post);
 
 // Setters para Post
-void setPostID(Post post, int id);
+void setPostID(Post post, long id);
 void setPostTitle(Post post, char* titulo);
-void setPostOwnerID(Post post, int owner_id);
+void setPostOwnerID(Post post, long owner_id);
 void setPostOwnerDisplayName(Post post, char* owner_display_name);
 void setPostOwnerRep(Post post, int owner_rep);
 void setPostTypeID(Post post, int type_id);
-void setPostParentID(Post post, int parent_id);
+void setPostParentID(Post post, long parent_id);
 void setPostDate(Post post, Date data);
 void setPostTags(Post post, char* tags);
 void setPostScore(Post post, int score);
@@ -72,20 +72,19 @@ void setPostNRespostas(Post post, int n_respostas);
 // Cleaner
 void freePost (Post post);
 
-
 // Getters para Tag
 char* getTagName(Tag tag);
-int getTagID(Tag tag);
+long getTagID(Tag tag);
 int getTagOcor(Tag tag);
 
 // Setters para Tag
 void setTagName(Tag tag, char* name);
-void setTagID(Tag tag, int id);
+void setTagID(Tag tag, long id);
 void setTagOcor(Tag tag, int ocor);
 // Cleaner
 void freeTags (Tag tag);
 
 
-Tag createTag(char* name, int id, int ocorrencias);
+Tag createTag(char* name, long id, int ocorrencias);
 
 #endif

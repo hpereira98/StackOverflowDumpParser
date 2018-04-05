@@ -10,7 +10,7 @@ void printUserHT(gpointer key, gpointer value, gpointer user_data);
 void printPostHTa(gpointer key, gpointer value, gpointer user_data);
 int insert(int* array, int elem, int size);
 int insertDate(Date* array, Date elem, int size);
-void insereId(int* v, int x, int i, int n);
+void insereId(long* v, long x, int i, int n);
 char* envolveTag(char* tag);
 
 void ver_melhor_resposta (gpointer key, gpointer post, gpointer user_data);

@@ -117,7 +117,7 @@ LONG_list most_used_best_rep_aux(GHashTable* com_user,GHashTable* com_tags, int 
 
 	for (int i=0; i<size; i++){
 		Tag tag = g_array_index(tags, Tag, i);
-		printf("%d %d\n",getTagID(tag),getTagOcor(tag)); //para verificar se esta a correto o resultado
+		printf("%li %d\n",getTagID(tag),getTagOcor(tag)); //para verificar se esta a correto o resultado
 		set_list(r,i, getTagID(tag));	
 	} 
 

@@ -16,7 +16,7 @@ void adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer info){
 	if(comparaDatas(begin, postDate) == 1 && comparaDatas(postDate, end) == -1){ 
 		char* post_tags = getPostTags(post);
 		if(post_tags != NULL && strstr(post_tags, tag) != NULL){
-			int postID = getPostID(post);
+			long postID = getPostID(post);
 			g_tree_insert(tree, (gpointer)postDate, (gpointer)(&postID));			
 		}
 	}
@@ -25,7 +25,7 @@ void adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer info){
 
 
 void addToLongList(gpointer key_pointer, gpointer id_pointer, gpointer info){ // info = {lista, i}
-	int* id = (int*) id_pointer;
+	long* id = (long*) id_pointer;
 	int* i = ((int**)(info))[1]; 
 	LONG_list lista = ((LONG_list*)(info))[0]; 
 

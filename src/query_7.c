@@ -25,6 +25,7 @@ void inserePosts(gpointer key_pointer, gpointer post_pointer, gpointer info){
 
 
 LONG_list most_answered_questions_aux(GHashTable* com_post, int N, Date begin, Date end){
+
 	GArray* posts = g_array_new(FALSE,FALSE,sizeof(Post));
 	int size;
 	Post post;
