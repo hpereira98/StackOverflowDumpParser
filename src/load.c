@@ -48,7 +48,7 @@ void load_aux(GHashTable* com_user, GHashTable* com_post ,GHashTable* com_tags, 
 			xmlChar* bio = xmlGetProp(cur, (const xmlChar *)"AboutMe");
 
    			if(id != NULL){
-   				int* idUser = malloc(sizeof(int));
+   				long* idUser = malloc(sizeof(long));
    				int* repUser = malloc(sizeof(int));
 				
    				User new = initUser(); 
@@ -57,7 +57,7 @@ void load_aux(GHashTable* com_user, GHashTable* com_post ,GHashTable* com_tags, 
    				setUserDisplayName(new, (char*)name); 
 
    				// ID
-   				sscanf((const char*)id, "%d", idUser); 
+   				sscanf((const char*)id, "%li", idUser); 
    				setUserID(new,*idUser);
    				//sscanf((const char*)id, "%d", idUser); 
    				//new->id = *idUser;
@@ -132,9 +132,9 @@ void load_aux(GHashTable* com_user, GHashTable* com_post ,GHashTable* com_tags, 
 				xmlChar* answer = xmlGetProp(cur, (const xmlChar *)"AcceptedAnswerId");
 
 
-	   			int* idOwner = malloc(sizeof(int));
-	   			int* idPost = malloc(sizeof(int));
-	   			int* idParent = malloc(sizeof(int));
+	   			long* idOwner = malloc(sizeof(long));
+	   			long* idPost = malloc(sizeof(long));
+	   			long* idParent = malloc(sizeof(long));
 	   			int* idType = malloc(sizeof(int));
 	   			int* score = malloc(sizeof(int));
 	   			int* n_comms = malloc(sizeof(int));
@@ -153,7 +153,7 @@ void load_aux(GHashTable* com_user, GHashTable* com_post ,GHashTable* com_tags, 
 
 	   			// Owner ID - averiguar se novo dump tem posts sem owner id ou nao 
 	   			if(user_id){
-	   				sscanf((const char*)user_id, "%d", idOwner);
+	   				sscanf((const char*)user_id, "%li", idOwner);
 	   				setPostOwnerID(new,*idOwner);
 	   			} 
 	   			else setPostOwnerID(new,-2);
@@ -171,7 +171,7 @@ void load_aux(GHashTable* com_user, GHashTable* com_post ,GHashTable* com_tags, 
 				}
 
 	   			// Post ID
-				sscanf((const char*)post_id, "%d", idPost); 
+				sscanf((const char*)post_id, "%li", idPost); 
 				setPostID(new,*idPost);
 	   			//new->id = *idPost;
 
@@ -184,7 +184,7 @@ void load_aux(GHashTable* com_user, GHashTable* com_post ,GHashTable* com_tags, 
 
 	   			// Parent ID
 	   			if(parent_id) {
-	   				sscanf((const char*)parent_id, "%d", idParent); 
+	   				sscanf((const char*)parent_id, "%li", idParent); 
 	   				setPostParentID(new,*idParent);
 	   				//new->parent_id = *idParent;
 	   			}
@@ -302,10 +302,10 @@ void load_aux(GHashTable* com_user, GHashTable* com_post ,GHashTable* com_tags, 
 
 			if(id_post && vote_type){
 			
-				int* postID = malloc(sizeof(int));
+				long* postID = malloc(sizeof(long));
 				int* votetype = malloc(sizeof(int));
 
-				sscanf((const char*)id_post, "%d", postID);
+				sscanf((const char*)id_post, "%li", postID);
 				sscanf((const char*)vote_type,"%d", votetype);
 
 				Post post = (Post) g_hash_table_lookup(com_post, postID);
@@ -350,8 +350,8 @@ void load_aux(GHashTable* com_user, GHashTable* com_post ,GHashTable* com_tags, 
 		   		Tag new = initTag();
 
 		   		// ID		
-				int* tagID = malloc(sizeof(int));
-				sscanf((const char*)tag_id, "%d", tagID);
+				long* tagID = malloc(sizeof(long));
+				sscanf((const char*)tag_id, "%li", tagID);
 				
 				setTagID(new, *tagID);
 

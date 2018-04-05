@@ -8,11 +8,11 @@ STR_pair info_from_post_aux(GHashTable* com_post,GHashTable* com_user, long id){
 	if (!post) printf("Post not found...\n");
 	else {
 		if(getPostTypeID(post)==2){ //caso seja uma resposta...
-			int parentID = getPostParentID(post);
+			long parentID = getPostParentID(post);
 			post = (Post) g_hash_table_lookup(com_post, &parentID);
 		}
 		if(!getPostOwnerDisplayName(post)){
-			int ownerID = getPostOwnerID(post);
+			long ownerID = getPostOwnerID(post);
 			User user = (User)g_hash_table_lookup(com_user, &ownerID); 
 			
 			set_fst_str(new, getPostTitle(post));

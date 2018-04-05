@@ -7,9 +7,9 @@ double answer_score (int score, int rep, int vots, int comments) {
 
 void bestAnswer (gpointer key_pointer, gpointer post_pointer, gpointer info) {
 	Post post = (Post)post_pointer;
-	int* parentId = ((int**)info)[0];
+	long* parentId = ((long**)info)[0];
 	double* max = ((double**)info)[1];
-	int* answerId = ((int**)info)[2];
+	long* answerId = ((long**)info)[2];
 	double score=0;
 	int postVots = getPostNUpVotes(post) - getPostNDownVotes(post);
 
@@ -24,17 +24,17 @@ void bestAnswer (gpointer key_pointer, gpointer post_pointer, gpointer info) {
 
 long better_answer_aux(GHashTable* com_post, long id){
 
-	int* parentId = malloc(sizeof(int));
+	long* parentId = malloc(sizeof(long));
 	*parentId=id;
 
 	int *max = malloc(sizeof(int));
 	*max=0;
 
-	int *answerId = malloc(sizeof(int));
+	long *answerId = malloc(sizeof(long));
 
 	void* info[3] = {(void*)parentId, (void*)max, (void*)answerId};
 
 	g_hash_table_foreach(com_post, bestAnswer, info);
 
-	return (long)*answerId;
+	return *answerId;
 }

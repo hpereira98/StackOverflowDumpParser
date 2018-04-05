@@ -19,7 +19,7 @@ USER get_user_info_aux(GHashTable* com_user, long id){
 				post = g_array_index(userPosts,Post,i);
 
 				if(post!=NULL)
-					posts[i] = (long)(getPostID(post));
+					posts[i] = getPostID(post);
 				else posts[i] = -2;
 		}
 		res = create_user( getUserShortBio(user),posts);

@@ -5,14 +5,14 @@ void ordenaNRespostas(gpointer key_pointer, gpointer post_pointer, gpointer info
 
 	if(getPostTypeID(post)== 1){
 		int pos;
-		int* ids = ((int**)info)[0];
+		long* ids = ((long**)info)[0];
 		Date begin = ((Date*)info)[1];
 		Date end = ((Date*)info)[2];
 		int *ocupados = ((int**)info)[3];
 		int* n_respostas = ((int**)info)[4];
 		int size = *((int**)info)[5];
 		Date postDate = getPostDate(post);
-		int postID = getPostID(post);
+		long postID = getPostID(post);
 		int postNRespostas = getPostNRespostas(post);
 
 		if(comparaDatas(begin, postDate) == -1 && comparaDatas(postDate, end) == -1){
@@ -27,7 +27,7 @@ void ordenaNRespostas(gpointer key_pointer, gpointer post_pointer, gpointer info
 }
 
 LONG_list most_answered_questions_aux(GHashTable* com_post, int N, Date begin, Date end){
-	int* ids = malloc(sizeof(int)*N);
+	long* ids = malloc(sizeof(long)*N);
 	int* n_respostas = malloc(sizeof(int)*N);
 	int *ocupados = malloc(sizeof(int)); *ocupados=0;
 	int i;

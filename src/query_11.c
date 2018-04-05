@@ -1,7 +1,7 @@
 #include <query_11.h>
 
 void ordenaUsers(gpointer key_pointer, gpointer user_pointer, gpointer info){
-	int* ids = ((int**)info)[0];
+	long* ids = ((int**)info)[0];
 	int* rep = ((int**)info)[1];
 	int *ocupados = ((int**)info)[2];
 	int size = *((int**)info)[3];
@@ -79,7 +79,7 @@ void adicionaTag(GArray* array, char* tags, GHashTable* com_tags){
 
 
 LONG_list most_used_best_rep_aux(GHashTable* com_user,GHashTable* com_tags, int N, Date begin, Date end){
-	int* top_users_ids = malloc(sizeof(int)*N);
+	long* top_users_ids = malloc(sizeof(long)*N);
 	int* rep_users = malloc(sizeof(int)*N);
 	
 	for(int i = 0; i<N; i++){ // estas declarações e inicializações acho que podem ser apenas 'int top_users_ids[N] = {-2};'
@@ -126,7 +126,7 @@ LONG_list most_used_best_rep_aux(GHashTable* com_user,GHashTable* com_tags, int 
 
 	for (int i=0; i<size; i++){
 		Tag tag = g_array_index(tags, Tag, i);
-		printf("%d %d\n",getTagID(tag),getTagOcor(tag)); //para verificar se esta a correto o resultado
+		printf("%li %d\n",getTagID(tag),getTagOcor(tag)); //para verificar se esta a correto o resultado
 		set_list(r,i, getTagID(tag));	
 	} 
 

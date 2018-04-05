@@ -49,7 +49,7 @@ int ordena(gconstpointer a,gconstpointer b){
 
 // Ordenar Arrays
 
-int insert(int* array, int elem, int size){
+int insert(long* array, long elem, int size){
 	int i = 0;
 	int pos = -1;
 
@@ -86,7 +86,7 @@ int insertDate(Date* array, Date elem, int size){
 	return pos;
 }
 
-void insereId(int* v, int x, int i, int n){
+void insereId(long* v, long x, int i, int n){
 
 	for(n=n-1; n>i; n--){
 		v[n] = v[n-1];
@@ -119,7 +119,7 @@ char* envolveTag(char* tag){
 
 void printPostHTa(gpointer key, gpointer value, gpointer user_data){
 	Post post = (Post)value;
-	printf("%d %d %s %d %s %d %d %d\n%s\n%d %d %d %d %d\n",*((int*)(key)),getPostID(post),
+	printf("%li %li %s %li %s %d %d %li\n%s\n%d %d %d %d %d\n",*((int*)(key)),getPostID(post),
  			getPostTitle(post),
  			getPostOwnerID(post),
  			getPostOwnerDisplayName(post),

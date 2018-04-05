@@ -5,14 +5,14 @@ void ordenaScores(gpointer key_pointer, gpointer post_pointer, gpointer info){ /
 
 	if(getPostTypeID(post) == 2){
 		int pos;
-		int* ids = ((int**)info)[0]; 
+		long* ids = ((long**)info)[0]; 
 		Date begin = ((Date*)info)[1]; 
 		Date end = ((Date*)info)[2]; 
 		int *ocupados = ((int**)info)[3]; 
 		int* scores = ((int**)info)[4]; 
 		int size = *((int**)info)[5];
 		Date postDate = getPostDate(post);
-		int postID = getPostID(post);
+		long postID = getPostID(post);
 		int score = getPostNUpVotes(post) - getPostNDownVotes(post);
 
 		if(comparaDatas(begin,postDate ) == -1 && comparaDatas(postDate, end) == -1){
@@ -28,7 +28,7 @@ void ordenaScores(gpointer key_pointer, gpointer post_pointer, gpointer info){ /
 
 
 LONG_list most_voted_answers_aux(GHashTable* com_post, int N, Date begin, Date end){
-	int* ids = malloc(sizeof(int)*N);
+	long* ids = malloc(sizeof(long)*N);
 	int* scores = malloc(sizeof(int)*N);
 	int* ocupados = malloc(sizeof(int)); *ocupados=0;
 	int i;
