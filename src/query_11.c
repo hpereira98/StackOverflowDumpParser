@@ -1,30 +1,25 @@
 #include <query_11.h>
 
-void ordenaUsers(gpointer key_pointer, gpointer user_pointer, gpointer info){
-	int* ids = ((int**)info)[0];
-	int* rep = ((int**)info)[1];
-	int *ocupados = ((int**)info)[2];
-	int size = *((int**)info)[3];
-	User user = (User)user_pointer;
-	int user_rep = getUserReputacao(user);
+int sortByRep(User* a,User *b){
+	int rep_a = getUserReputacao(*a);
+	int rep_b = getUserReputacao(*b);
+	
+	return rep_b - rep_a;
+}
 
-	if( (*ocupados != size) || (*ocupados == size && user_rep > rep[size-1]) ){
-		int pos = insert(rep, user_rep, size);
-		insereId(ids, getUserID(user), pos, size);
-		if(*ocupados < size) (*ocupados)++;
-	}
+void insereUsers(gpointer key_pointer, gpointer user_pointer, gpointer info){
+	User user = (User)user_pointer;
+	GArray* users = (GArray*)info;
+
+	g_array_append_val(users, user);
+
 }
 
 int ordenaTags(Tag* a, Tag* b){
-
 	int ocor_a = getTagOcor(*a);
 	int ocor_b = getTagOcor(*b);
 
-	if(ocor_a > ocor_b) return -1;
-	if(ocor_a < ocor_b) return 1;
-	
-
-	return 0;
+	return ocor_b - ocor_a;
 }
 
 
@@ -59,6 +54,7 @@ int elemTag(GArray* array, char* name){
 void adicionaTag(GArray* array, char* tags, GHashTable* com_tags){
 	int x;
 	Tag tag;
+
 	if(tags){
 		for(int i=0; tags[i]!='\0'; i++){
 			char* name = nextTag(tags, &i);  
@@ -79,24 +75,19 @@ void adicionaTag(GArray* array, char* tags, GHashTable* com_tags){
 
 
 LONG_list most_used_best_rep_aux(GHashTable* com_user,GHashTable* com_tags, int N, Date begin, Date end){
-	int* top_users_ids = malloc(sizeof(int)*N);
-	int* rep_users = malloc(sizeof(int)*N);
-	
-	for(int i = 0; i<N; i++){ // estas declarações e inicializações acho que podem ser apenas 'int top_users_ids[N] = {-2};'
-		top_users_ids[i] = -2;
-		rep_users[i] = -2;
-	}
+	GArray* users = g_array_new(FALSE,FALSE,sizeof(User));
 
-	int *ocupados = malloc(sizeof(int)); *ocupados = 0;
-	void* info[4] = {(void*)top_users_ids, (void*)rep_users, (void*)ocupados, (void*)&N};
+	void* info = (void*)users;
 	
 	// Filtra os melhores N users por reputação
-	g_hash_table_foreach(com_user, ordenaUsers, info); 
- 	 
+	g_hash_table_foreach(com_user, insereUsers, info); 
+ 	
+ 	g_array_sort(users, (GCompareFunc)sortByRep);
+
 	GArray* tags = g_array_new(FALSE, TRUE,sizeof(Tag));
 
 	for(int i = 0; i<N; i++){ 
-		User user = (User)g_hash_table_lookup(com_user, &(top_users_ids[i]));
+		User user = g_array_index(users, User, i);	
 		GArray* user_posts = getUserPosts(user);
 		
 		for(int j = 0; j<user_posts->len; j++){

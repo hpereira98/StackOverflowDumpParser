@@ -1,26 +1,25 @@
 #include <query_6.h>
 
-void ordenaScores(gpointer key_pointer, gpointer post_pointer, gpointer info){ // info = {ids, begin, end, ocupados, scores, N}
+
+int sortByScore(Post* a, Post *b){
+	int score_a = getPostNUpVotes(*a) - getPostNDownVotes(*a);
+	int score_b = getPostNUpVotes(*b) - getPostNDownVotes(*b);
+	
+	return score_b - score_a;
+}
+
+
+void inserePost(gpointer key_pointer, gpointer post_pointer, gpointer info){
 	Post post = (Post) post_pointer;
 
 	if(getPostTypeID(post) == 2){
-		int pos;
-		int* ids = ((int**)info)[0]; 
-		Date begin = ((Date*)info)[1]; 
-		Date end = ((Date*)info)[2]; 
-		int *ocupados = ((int**)info)[3]; 
-		int* scores = ((int**)info)[4]; 
-		int size = *((int**)info)[5];
+		Date begin = ((Date*)info)[0]; 
+		Date end = ((Date*)info)[1]; 
 		Date postDate = getPostDate(post);
-		int postID = getPostID(post);
-		int score = getPostNUpVotes(post) - getPostNDownVotes(post);
+		GArray* posts = ((GArray**)info)[2];
 
-		if(comparaDatas(begin,postDate ) == -1 && comparaDatas(postDate, end) == -1){
-			if( (*ocupados != size) || (*ocupados == size && score > scores[size-1]) ){ // neste momento já sei que vai ser inserido
-				pos = insert(scores, score, size);
-				insereId(ids, postID, pos, size);
-				if(*ocupados < size) (*ocupados)++;
-			}
+		if(comparaDatas(begin, postDate) == -1 && comparaDatas(postDate, end) == -1){
+			g_array_append_val(posts, post);
 		}	
 	}
 
@@ -28,23 +27,25 @@ void ordenaScores(gpointer key_pointer, gpointer post_pointer, gpointer info){ /
 
 
 LONG_list most_voted_answers_aux(GHashTable* com_post, int N, Date begin, Date end){
-	int* ids = malloc(sizeof(int)*N);
-	int* scores = malloc(sizeof(int)*N);
-	int* ocupados = malloc(sizeof(int)); *ocupados=0;
-	int i;
+	GArray* posts = g_array_new(FALSE,FALSE,sizeof(Post));
+	int size;
+	Post post;
 
-	for(i = 0; i<N; i++){
-		ids[i] = -2;
-		scores[i] = -2;
+	void* info[3] = {(void*)begin, (void*)end, (void*)posts};
+
+	g_hash_table_foreach(com_post, inserePost, info);
+
+	g_array_sort(posts,(GCompareFunc)sortByScore);
+
+	if(posts->len>N) size = N;
+	else size = posts->len;
+
+	LONG_list r = create_list(size);	
+
+	for(int i=0; i<size; i++){
+		post = g_array_index(posts, Post, i);
+		set_list(r, i, (long)getPostID(post));
 	}
-
-	void* info[6] = {(void*)ids, (void*)begin, (void*)end, (void*)ocupados, (void*)scores, (void*)&N};
-
-	g_hash_table_foreach(com_post, ordenaScores, info);
-
-	LONG_list r = create_list(N);	
-	for(i = 0; i<N; i++) set_list(r, i, ids[i]);
-
 	return r;
 }
 

@@ -1,48 +1,49 @@
 #include <query_7.h>
 
-void ordenaNRespostas(gpointer key_pointer, gpointer post_pointer, gpointer info){ // info = {ids, begin, end, ocupados, n_respostas, N}
-	Post post = (Post)post_pointer;
 
-	if(getPostTypeID(post)== 1){
-		int pos;
-		int* ids = ((int**)info)[0];
-		Date begin = ((Date*)info)[1];
-		Date end = ((Date*)info)[2];
-		int *ocupados = ((int**)info)[3];
-		int* n_respostas = ((int**)info)[4];
-		int size = *((int**)info)[5];
-		Date postDate = getPostDate(post);
-		int postID = getPostID(post);
-		int postNRespostas = getPostNRespostas(post);
-
-		if(comparaDatas(begin, postDate) == -1 && comparaDatas(postDate, end) == -1){
-			if( (*ocupados != size) || (*ocupados == size && postNRespostas > n_respostas[size-1]) ){ // neste momento já sei que vai ser inserido
-				pos = insert(n_respostas, postNRespostas, size);
-				insereId(ids, postID, pos, size);
-				if(*ocupados < size) (*ocupados)++;
-			}
-		}
-	}
-
+int sortByNRespostas(Post* a, Post *b){
+	int n_resp_a = getPostNRespostas(*a);
+	int n_resp_b = getPostNRespostas(*b);
+	
+	return n_resp_b - n_resp_a;
 }
 
-LONG_list most_answered_questions_aux(GHashTable* com_post, int N, Date begin, Date end){
-	int* ids = malloc(sizeof(int)*N);
-	int* n_respostas = malloc(sizeof(int)*N);
-	int *ocupados = malloc(sizeof(int)); *ocupados=0;
-	int i;
+void inserePosts(gpointer key_pointer, gpointer post_pointer, gpointer info){
+	Post post = (Post) post_pointer;
 
-	for(i = 0; i<N; i++){
-		ids[i] = -2;
-		n_respostas[i] = -2;
+	if(getPostTypeID(post) == 1){
+		Date begin = ((Date*)info)[0]; 
+		Date end = ((Date*)info)[1]; 
+		Date postDate = getPostDate(post);
+		GArray* posts = ((GArray**)info)[2];
+
+		if(comparaDatas(begin, postDate) == -1 && comparaDatas(postDate, end) == -1){
+			g_array_append_val(posts, post);
+		}	
 	}
+}
 
-	void* info[6] = {(void*)ids, (void*)begin, (void*)end, (void*)ocupados, (void*)n_respostas, (void*)&N};
+
+LONG_list most_answered_questions_aux(GHashTable* com_post, int N, Date begin, Date end){
+	GArray* posts = g_array_new(FALSE,FALSE,sizeof(Post));
+	int size;
+	Post post;
+
+	void* info[6] = {(void*)begin, (void*)end, (void*)posts};
 	
-	g_hash_table_foreach(com_post, ordenaNRespostas, info);
+	g_hash_table_foreach(com_post, inserePosts, info);
+	
+	g_array_sort(posts,(GCompareFunc)sortByNRespostas);
 
-	LONG_list r = create_list(*ocupados);	
-	for(i = 0; i<*ocupados; i++) set_list(r, i, ids[i]);
+	if(posts->len>N) size = N;
+	else size = posts->len;
+
+	LONG_list r = create_list(size);	
+
+	for(int i=0; i<size; i++){
+		post = g_array_index(posts, Post, i);
+		set_list(r, i, (long)getPostID(post));
+	}
 
 	return r;
 }
