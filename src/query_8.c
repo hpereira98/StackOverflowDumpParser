@@ -24,7 +24,7 @@ LONG_list contains_word_aux(GHashTable* com_post, char* word, int N){
 	Post post;
 	int i, size;
 
-	void* info[2] ={postArray,word};
+	void* info[2] = {postArray,word};
 
 	g_hash_table_foreach(com_post, word_lookup, info);
 
