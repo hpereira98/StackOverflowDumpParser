@@ -2,7 +2,7 @@
 
 
 
-void load_aux(GHashTable* com_user, GHashTable* com_post ,GHashTable* com_tags, char* dump_path){
+void load_aux(GHashTable* com_user, GTree* com_post ,GHashTable* com_tags, char* dump_path){
 	int i = 0;
 
 	char* users = "Users.xml";
@@ -201,8 +201,8 @@ void load_aux(GHashTable* com_user, GHashTable* com_post ,GHashTable* com_tags, 
 	   			*/
 
 	   			// Data
-	   			Date dataPost = atribuiData((char*) data);
-	   			setPostDate(new,dataPost);
+	   			setPostDate(new, (char*)data);
+	   			char * key = mystrdup((char*)data);
 
 				// Accepted answer - debugging q10 : COLOCAR EM COMENTÁRIO QUANDO NÃO FOR NECESSÁRIO!! 
 	   			/*
@@ -254,8 +254,8 @@ void load_aux(GHashTable* com_user, GHashTable* com_post ,GHashTable* com_tags, 
 					g_array_append_val(getUserPosts(user),new);
 				}
 	   			
-	   			// Inserir conforme o Post ID
-	   			g_hash_table_insert(com_post, idPost, new);
+	   			// Inserir conforme a Data
+	   			g_tree_insert(com_post, key, new);
 	   			
 	   			/*Debugging*/ //printf("Inserido %d\n", i);
 	   			i++;
@@ -277,8 +277,9 @@ void load_aux(GHashTable* com_user, GHashTable* com_post ,GHashTable* com_tags, 
 		}
 	}
 	printf("Posts: %d\n", i);
+	i=0;
 	xmlFreeDoc(doc_posts);
-
+	g_tree_foreach(com_post,printPost,&i);
 	// VOTES
 
 	i = 0;
@@ -308,8 +309,8 @@ void load_aux(GHashTable* com_user, GHashTable* com_post ,GHashTable* com_tags, 
 				sscanf((const char*)id_post, "%li", postID);
 				sscanf((const char*)vote_type,"%d", votetype);
 
-				Post post = (Post) g_hash_table_lookup(com_post, postID);
-
+				Post post = (Post) g_tree_lookup(com_post, postID);//ERRADO! mas desta forma nao da erro, depois discutir solucao para a procura
+				// pois sem data temos de percorrer a arvore in order ate encontrar o elemento 	O(N)
 				if (post && *votetype == 2) setPostNUpVotes(post,getPostNUpVotes(post)+1);
 				else if (post && *votetype == 3) setPostNDownVotes(post,getPostNDownVotes(post)+1);
 

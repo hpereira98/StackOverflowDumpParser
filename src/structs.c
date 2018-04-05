@@ -23,7 +23,7 @@ struct post{
 	int owner_rep;
 	int type_id;
 	long parent_id;
-	Date data;
+	char* data;
 	char* tags;
 	int score;
 	int n_comments;
@@ -50,11 +50,11 @@ TAD_community init(){
 	struct TCD_community* new = malloc(sizeof(struct TCD_community));
 
   	GHashTable* new_user_hash = g_hash_table_new(g_int_hash, g_int_equal);
-  	GHashTable* new_post_hash = g_hash_table_new(g_int_hash, g_int_equal);
+  	GHashTable* new_post_tree = g_tree_new((GCompareFunc)cmpIsoDate);
 	GHashTable* new_tags_hash = g_hash_table_new(g_int_hash, g_int_equal);
   	
   	new->user = new_user_hash;
-  	new->post = new_post_hash;
+  	new->post = new_post_tree;
   	new->tags = new_tags_hash;
 
   	return new;
@@ -65,7 +65,7 @@ TAD_community load(TAD_community com, char* dump_path){
 	load_aux(com->user,com->post,com->tags,dump_path);
 	return com;
 }  
-
+/*
 // query 1
 STR_pair info_from_post(TAD_community com, long id){
 	return info_from_post_aux(com->post,com->user,id);
@@ -120,6 +120,7 @@ long better_answer(TAD_community com, long id){
 LONG_list most_used_best_rep(TAD_community com, int N, Date begin, Date end){
 	return most_used_best_rep_aux(com->user,com->tags,N,begin,end);
 }
+*/
 
 // USERS
 
@@ -263,14 +264,8 @@ long getPostParentID(Post post){
 	return post->parent_id;
 }
 
-Date getPostDate(Post post){
-	int dia, mes, ano;
-
-	dia = get_day(post->data);
-	mes = get_month(post->data);
-	ano = get_year(post->data);
-
-	return createDate(dia, mes, ano);
+char* getPostDate(Post post){
+	return mystrdup(post->data);
 }
 
 char* getPostTags(Post post){
@@ -327,14 +322,8 @@ void setPostParentID(Post post, long parent_id){
 	post->parent_id = parent_id; 
 }
 
-void setPostDate(Post post, Date data){
-	int dia, mes, ano;
-
-	dia = get_day(data);
-	mes = get_month(data);
-	ano = get_year(data);
-
-	post->data = createDate(dia, mes, ano);
+void setPostDate(Post post, char* data){
+	post->data = mystrdup(data);
 }
 
 void setPostTags(Post post, char* tags){
@@ -366,7 +355,7 @@ void setPostNRespostas(Post post, int n_respostas){
 void freePost (Post post) {
 	free(post->titulo);
 	free(post->owner_display_name);
-	free_date(post->data);
+	free(post->data);
 	free(post->tags);
 	free(post);	
 }

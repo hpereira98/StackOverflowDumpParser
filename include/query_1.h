@@ -4,6 +4,6 @@
 #include "toInclude.h"
 
 
-STR_pair info_from_post_aux(GHashTable* com_post,GHashTable* com_user, long id);
+STR_pair info_from_post_aux(GTree* com_post,GHashTable* com_user, long id);
 
 #endif

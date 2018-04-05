@@ -3,6 +3,12 @@
 
 // Datas
 
+int cmpIsoDate(char* a, char* b){
+	int r = strcmp(a,b);
+	if(r==0) r = 1; // evitar que posts strings de data iguais nao deixem de ser inserios na btree
+	return (-1)*r; // inverter ordem cronologica
+}
+
 Date atribuiData(char* date){ // "AAAA-MM-DD"
 	char* ano_str = malloc(5);
 	char* mes_str = malloc(3);
@@ -43,7 +49,7 @@ int comparaDatas(Date a, Date b){ // se a primeira for mais pequena que a segund
 int ordena(gconstpointer a,gconstpointer b){
 	Post post1 = *((Post*)(a));
 	Post post2 = *((Post*)(b));
-	return comparaDatas(getPostDate(post1),getPostDate(post2))*(-1);
+	return strcmp(getPostDate(post1),getPostDate(post2))*(-1);
 }
 
 
@@ -117,21 +123,13 @@ char* envolveTag(char* tag){
 
 /* Funcao para Debugging de PostHashT */
 
-void printPostHTa(gpointer key, gpointer value, gpointer user_data){
+gboolean printPost(gpointer key, gpointer value, gpointer user_data){
 	Post post = (Post)value;
-	printf("%li %li %s %li %s %d %d %li\n%s\n%d %d %d %d %d\n",*((long*)(key)),getPostID(post),
- 			getPostTitle(post),
- 			getPostOwnerID(post),
- 			getPostOwnerDisplayName(post),
- 			getPostOwnerRep(post),
-		  	getPostTypeID(post),
- 			getPostParentID(post),
- 			getPostTags(post),
- 			getPostScore(post),
- 			getPostNComments(post),
- 			getPostNUpVotes(post),
- 			getPostNDownVotes(post),
- 			getPostNRespostas(post));
+	
+	int* i = ((int*)user_data);
+	printf("%d %s %d %s\n",(*i)++,getPostDate(post),getPostID(post),getPostTitle(post));
+ 	
+	return FALSE;
 }
 
 

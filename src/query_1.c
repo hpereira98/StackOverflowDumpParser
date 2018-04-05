@@ -1,6 +1,6 @@
 #include <query_1.h>
 
-STR_pair info_from_post_aux(GHashTable* com_post,GHashTable* com_user, long id){
+STR_pair info_from_post_aux(GTree* com_post,GHashTable* com_user, long id){
 	STR_pair new = create_str_pair(NULL, NULL);
 
 	Post post = (Post)g_hash_table_lookup(com_post, &id);
