@@ -1,7 +1,7 @@
 #include <query_11.h>
 
 void ordenaUsers(gpointer key_pointer, gpointer user_pointer, gpointer info){
-	long* ids = ((int**)info)[0];
+	long* ids = ((long**)info)[0];
 	int* rep = ((int**)info)[1];
 	int *ocupados = ((int**)info)[2];
 	int size = *((int**)info)[3];

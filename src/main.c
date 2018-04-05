@@ -15,7 +15,7 @@
 void printTagsHT(gpointer key, gpointer tag, gpointer info){
 	Tag tag1 = (Tag)tag;
 
-	printf("%s %d\n",(char*)key,getTagID(tag));
+	printf("%s %li\n",(char*)key,getTagID(tag));
 }
 
 int compare_ints(gpointer a, gpointer b) {
