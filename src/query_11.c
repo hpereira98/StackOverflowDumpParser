@@ -74,7 +74,7 @@ void adicionaTag(GArray* array, char* tags, GHashTable* com_tags){
 }
 
 
-LONG_list most_used_best_rep_aux(GHashTable* com_user,GHashTable* com_tags, int N, Date begin, Date end){
+LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int N, Date begin, Date end){
 	GArray* users = g_array_new(FALSE,FALSE,sizeof(User));
 
 	void* info = (void*)users;
@@ -94,9 +94,9 @@ LONG_list most_used_best_rep_aux(GHashTable* com_user,GHashTable* com_tags, int 
 			Post post = g_array_index(user_posts, Post, j);			
 			Date data = getPostDate(post);
 
-			if(comparaDatas(begin, data) == -1 && comparaDatas(data, end) == -1)
+			if(comparaDatas(begin, end, data) == 0){
 				adicionaTag(tags, getPostTags(post), com_tags);		
-			
+			}
 		}
 	}
 	

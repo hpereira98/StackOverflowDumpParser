@@ -3,9 +3,8 @@
 
 #include "toInclude.h"
 
-Date atribuiData(char* date);
 int cmpIsoDate(char* a, char* b);
-int comparaDatas(Date a, Date b);
+int comparaDatas(Date a, Date b, Date c);
 int ordena(gconstpointer a,gconstpointer b);
 void printUserHT(gpointer key, gpointer value, gpointer user_data);
 gboolean printPost(gpointer key, gpointer value, gpointer user_data);

@@ -3,8 +3,8 @@
 
 #include "toInclude.h"
 
-void adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer info);
+gboolean adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer info);
 void addToLongList(gpointer key_pointer, gpointer id_pointer, gpointer info);
-LONG_list questions_with_tag_aux(GHashTable* com_post, char* tag, Date begin, Date end);
+LONG_list questions_with_tag_aux(GTree* com_post, char* tag, Date begin, Date end);
 
 #endif

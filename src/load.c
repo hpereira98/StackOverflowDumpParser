@@ -279,7 +279,7 @@ void load_aux(GHashTable* com_user, GTree* com_post ,GHashTable* com_tags, char*
 	printf("Posts: %d\n", i);
 	i=0;
 	xmlFreeDoc(doc_posts);
-	g_tree_foreach(com_post,printPost,&i);
+	//g_tree_foreach(com_post,printPost,&i);
 	// VOTES
 
 	i = 0;

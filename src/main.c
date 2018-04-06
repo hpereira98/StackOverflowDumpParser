@@ -12,11 +12,12 @@
 &gt - >
 &amp - &
 */
-void printTagsHT(gpointer key, gpointer tag, gpointer info){
+
+/*void printTagsHT(gpointer key, gpointer tag, gpointer info){
 	Tag tag1 = (Tag)tag;
 
 	printf("%s %li\n",(char*)key,getTagID(tag));
-}
+}*/
 
 int compare_ints(gpointer a, gpointer b) {
  		int* x = (int*)a;
@@ -27,9 +28,9 @@ int compare_ints(gpointer a, gpointer b) {
 
 int main(){
 	struct TCD_community* teste = init();
-	char* path = "../../dumpexemplo/android/";
-	Date inicio = createDate(1,1,2000);
-	Date fim = createDate(31,2,2020);
+	char* path = "../../dumpexemplo/ubuntu/";
+	Date inicio = createDate(1,1,2015);
+	Date fim = createDate(31,2,2016);
 
 	clock_t begin = clock();
 	load(teste, path);
@@ -75,7 +76,7 @@ int main(){
 	printf("Tempo '5 - get_user_info' = %f\n",(double)(end5-begin5)/CLOCKS_PER_SEC);
 
 	clock_t begin6 = clock();
-	//LONG_list new6 = most_voted_answers(teste, 100000, inicio, fim);
+	LONG_list new6 = most_voted_answers(teste, 10000, inicio, fim);
 	//for(int i=0;i<100;i++) printf("%ld\n",get_list(new6, i));
 	clock_t end6 = clock();
 
@@ -83,7 +84,7 @@ int main(){
 
 
 	clock_t begin7 = clock();
-	//LONG_list new7 = most_answered_questions(teste, 100000, inicio, fim);
+	LONG_list new7 = most_answered_questions(teste, 10000, inicio, fim);
 	//for(int i=0;i<100;i++) printf("%ld\n",get_list(new5, i));
 	clock_t end7 = clock();
 

@@ -19,14 +19,14 @@ void word_lookup(gpointer key_pointer, gpointer post_pointer, gpointer info){
 }
 
 
-LONG_list contains_word_aux(GHashTable* com_post, char* word, int N){
+LONG_list contains_word_aux(GTree* com_post, char* word, int N){
 	GArray* postArray = g_array_new(FALSE,FALSE,sizeof(Post)); 
 	Post post;
 	int i, size;
 
 	void* info[2] = {postArray,word};
 
-	g_hash_table_foreach(com_post, word_lookup, info);
+	g_tree_foreach(com_post, (GTraverseFunc)word_lookup, info);
 
 	g_array_sort(postArray,ordena);	
 	

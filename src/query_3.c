@@ -1,6 +1,6 @@
 #include <query_3.h>
 
-void posts_count(gpointer key, gpointer post_pointer, gpointer info){
+gboolean posts_count(gpointer key, gpointer post_pointer, gpointer info){
 	
 	Post post = (Post) post_pointer;
 	Date post_date = getPostDate(post);
@@ -11,14 +11,18 @@ void posts_count(gpointer key, gpointer post_pointer, gpointer info){
 	int* numQuestions = ((int**)(info))[2];
 	int* numAnswers = ((int**)(info))[3];
 	
-	if(comparaDatas(post_date,begin)==1 && comparaDatas(end,post_date)==1){
+	if(comparaDatas(begin, end, post_date) == 0){
 		if(getPostTypeID(post)==1) (*numQuestions)++;
 			else if(getPostTypeID(post)==2) (*numAnswers)++;
 	}
+
+	else if(comparaDatas(begin, end, post_date) == -1) return TRUE;
+
+	return FALSE;
 }
 
 
-LONG_pair total_posts_aux(GHashTable* com_posts, Date begin, Date end){
+LONG_pair total_posts_aux(GTree* com_posts, Date begin, Date end){
 
 	int *numQuestions = malloc(sizeof(int));
 	int *numAnswers = malloc(sizeof(int));
@@ -26,7 +30,7 @@ LONG_pair total_posts_aux(GHashTable* com_posts, Date begin, Date end){
 
 	void* info[4] = {begin, end, numQuestions, numAnswers};
 	
-	g_hash_table_foreach(com_posts,posts_count,info);
+	g_tree_foreach(com_posts, (GTraverseFunc)posts_count, info);
 	LONG_pair totalPost = create_long_pair(*numQuestions,*numAnswers);
 
 	return totalPost;

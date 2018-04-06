@@ -8,7 +8,7 @@ int ordenaTags(Tag* a, Tag* b);
 char* nextTag(char* tags, int *i);
 int elemTag(GArray* array, char* name);
 void adicionaTag(GArray* array, char* tags, GHashTable* com_tags);
-LONG_list most_used_best_rep_aux(GHashTable* com_user,GHashTable* com_tags, int N, Date begin, Date end);
+LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int N, Date begin, Date end);
 
 
 #endif

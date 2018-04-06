@@ -1,6 +1,6 @@
 #include <query_9.h>
 
-void swapAnswerPID (GHashTable* com_post, GArray* posts) {
+void swapAnswerPID (GTree* com_post, GArray* posts) {
 	for (int i=0;i<posts->len;i++) {
 		Post post = g_array_index(posts,Post,i);
 		if (getPostTypeID(post)==2) {
@@ -15,7 +15,7 @@ void swapAnswerPID (GHashTable* com_post, GArray* posts) {
 	}
 }
 
-LONG_list both_participated_aux(GHashTable* com_user, GHashTable* com_post, long id1, long id2, int N){
+LONG_list both_participated_aux(GHashTable* com_user, GTree* com_post, long id1, long id2, int N){
 	
 	User user1 = g_hash_table_lookup(com_user,&id1); 
 	User user2 = g_hash_table_lookup(com_user,&id2);

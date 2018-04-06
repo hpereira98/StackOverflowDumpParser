@@ -9,39 +9,19 @@ int cmpIsoDate(char* a, char* b){
 	return (-1)*r; // inverter ordem cronologica
 }
 
-Date atribuiData(char* date){ // "AAAA-MM-DD"
-	char* ano_str = malloc(5);
-	char* mes_str = malloc(3);
-	char* dia_str = malloc(3);
-	int ano, mes, dia;
-
-	strncpy(ano_str, date, 4);
-	ano_str[4]='\0';
-	strncpy(mes_str, date+5, 2);
-	mes_str[2]='\0';
-	strncpy(dia_str, date+8, 2);
-	dia_str[2]='\0';
-
-	ano=atoi(ano_str);
-	mes=atoi(mes_str);
-	dia=atoi(dia_str);
-
-	return (createDate(dia, mes, ano));
-}
-
-int comparaDatas(Date a, Date b){ // se a primeira for mais pequena que a segunda retorna -1
+int comparaDatas(Date a, Date b, Date c){ // se a primeira for mais pequena que a segunda retorna -1
 
 	// Compara o ano
-	if(get_year(a) > get_year(b)) return 1;
-	if(get_year(a) < get_year(b)) return -1;
+	if(get_year(c) < get_year(a)) return -1;
+	else if(get_year(b) < get_year(c)) return 1;
 
 	// Compara o mês - se chegaram aqui é proque o ano é o mesmo
-	if(get_month(a) > get_month(b)) return 1;
-	if(get_month(a) < get_month(b)) return -1;
+	if(get_month(c) < get_month(a)) return -1;
+	else if(get_month(b) < get_month(c)) return 1;
 
 	// Compara o dia - se chegaram aqui é porque o ano e o mês são os mesmos
-	if(get_day(a) > get_day(b)) return 1;
-	if(get_day(a) < get_day(b)) return -1;
+	if(get_day(c) < get_day(a)) return -1;
+	else if(get_day(b) < get_day(c)) return 1;
 
 	return 0;
 }
@@ -73,6 +53,7 @@ int insert(int* array, int elem, int size){
 	return pos;
 }
 
+/*
 // para propósitos temporários (q9)
 int insertDate(Date* array, Date elem, int size){
 	int i = 0;
@@ -88,9 +69,9 @@ int insertDate(Date* array, Date elem, int size){
 	array[pos] = elem;
 	/*printf("inseriu em %d\n",pos );
 	for(int j = 0; j<20;j++)
-		printf("%d ",array[j] ); printf("E\n"); */
+		printf("%d ",array[j] ); printf("E\n");
 	return pos;
-}
+}*/
 
 void insereId(long* v, long x, int i, int n){
 

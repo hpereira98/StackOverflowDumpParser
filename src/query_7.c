@@ -8,23 +8,27 @@ int sortByNRespostas(Post* a, Post *b){
 	return n_resp_b - n_resp_a;
 }
 
-void inserePosts(gpointer key_pointer, gpointer post_pointer, gpointer info){
+gboolean inserePosts(gpointer key_pointer, gpointer post_pointer, gpointer info){
 	Post post = (Post) post_pointer;
 
 	if(getPostTypeID(post) == 1){
 		Date begin = ((Date*)info)[0]; 
 		Date end = ((Date*)info)[1]; 
-		Date postDate = getPostDate(post);
+		Date post_date = getPostSimpleDate(post);
 		GArray* posts = ((GArray**)info)[2];
 
-		if(comparaDatas(begin, postDate) == -1 && comparaDatas(postDate, end) == -1){
+		if(comparaDatas(begin, end, post_date) == 0){
 			g_array_append_val(posts, post);
-		}	
+		}
+
+		else if(comparaDatas(begin, end, post_date) == -1) return TRUE;
 	}
+
+	return FALSE;
 }
 
 
-LONG_list most_answered_questions_aux(GHashTable* com_post, int N, Date begin, Date end){
+LONG_list most_answered_questions_aux(GTree* com_post, int N, Date begin, Date end){
 
 	GArray* posts = g_array_new(FALSE,FALSE,sizeof(Post));
 	int size;
@@ -32,7 +36,7 @@ LONG_list most_answered_questions_aux(GHashTable* com_post, int N, Date begin, D
 
 	void* info[6] = {(void*)begin, (void*)end, (void*)posts};
 	
-	g_hash_table_foreach(com_post, inserePosts, info);
+	g_tree_foreach(com_post, (GTraverseFunc)inserePosts, info);
 	
 	g_array_sort(posts,(GCompareFunc)sortByNRespostas);
 

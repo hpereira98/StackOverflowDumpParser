@@ -41,7 +41,7 @@ struct tag{
 
 struct TCD_community{
 	GHashTable* user;
-	GHashTable* post;
+	GTree* post;
 	GHashTable* tags;	
 };
 // QUERIES
@@ -50,7 +50,7 @@ TAD_community init(){
 	struct TCD_community* new = malloc(sizeof(struct TCD_community));
 
   	GHashTable* new_user_hash = g_hash_table_new(g_int_hash, g_int_equal);
-  	GHashTable* new_post_tree = g_tree_new((GCompareFunc)cmpIsoDate);
+  	GTree* new_post_tree = g_tree_new((GCompareFunc)cmpIsoDate);
 	GHashTable* new_tags_hash = g_hash_table_new(g_int_hash, g_int_equal);
   	
   	new->user = new_user_hash;
@@ -90,6 +90,7 @@ LONG_list questions_with_tag(TAD_community com, char* tag, Date begin, Date end)
 USER get_user_info(TAD_community com, long id){
 	return get_user_info_aux(com->user,id);
 }
+*/
 
 // query 6
 LONG_list most_voted_answers(TAD_community com, int N, Date begin, Date end){
@@ -100,7 +101,7 @@ LONG_list most_voted_answers(TAD_community com, int N, Date begin, Date end){
 LONG_list most_answered_questions(TAD_community com, int N, Date begin, Date end){
 	return most_answered_questions_aux(com->post,N,begin,end);
 }
-
+/*
 // query 8
 LONG_list contains_word(TAD_community com, char* word, int N){
 	return contains_word_aux(com->post,word,N);
@@ -267,6 +268,29 @@ long getPostParentID(Post post){
 char* getPostDate(Post post){
 	return mystrdup(post->data);
 }
+
+Date getPostSimpleDate(Post post){ // "AAAA-MM-DD"
+	char* date = getPostDate(post);
+
+	char* ano_str = malloc(5);
+	char* mes_str = malloc(3);
+	char* dia_str = malloc(3);
+	int ano, mes, dia;
+
+	strncpy(ano_str, date, 4);
+	ano_str[4]='\0';
+	strncpy(mes_str, date+5, 2);
+	mes_str[2]='\0';
+	strncpy(dia_str, date+8, 2);
+	dia_str[2]='\0';
+
+	ano=atoi(ano_str);
+	mes=atoi(mes_str);
+	dia=atoi(dia_str);
+
+	return (createDate(dia, mes, ano));
+}
+
 
 char* getPostTags(Post post){
 	return mystrdup(post->tags);

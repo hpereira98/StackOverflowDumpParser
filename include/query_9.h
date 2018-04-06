@@ -3,8 +3,8 @@
 
 #include "toInclude.h"
 
-void swapAnswerPID (GHashTable* com_post, GArray* posts);
-LONG_list both_participated_aux(GHashTable* com_user, GHashTable* com_post, long id1, long id2, int N);
+void swapAnswerPID (GTree* com_post, GArray* posts);
+LONG_list both_participated_aux(GHashTable* com_user, GTree* com_post, long id1, long id2, int N);
 
 
 

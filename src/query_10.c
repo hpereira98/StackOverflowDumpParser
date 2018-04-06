@@ -22,7 +22,7 @@ void bestAnswer (gpointer key_pointer, gpointer post_pointer, gpointer info) {
 	}
 }
 
-long better_answer_aux(GHashTable* com_post, long id){
+long better_answer_aux(GTree* com_post, long id){
 
 	long* parentId = malloc(sizeof(long));
 	*parentId=id;
