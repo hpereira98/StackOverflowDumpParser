@@ -1,5 +1,5 @@
 #include <query_3.h>
-
+/*
 gboolean posts_count(gpointer key, gpointer post_pointer, gpointer info){
 	
 	Post post = (Post) post_pointer;
@@ -36,3 +36,4 @@ LONG_pair total_posts_aux(GTree* com_posts, Date begin, Date end){
 	return totalPost;
 	
 }
+*/

@@ -27,10 +27,14 @@ struct post{
 	char* tags;
 	int score;
 	int n_comments;
-	int n_upvotes;
-	int n_downvotes;
 	int n_respostas;
 	// int accepted_answer; // testar q10 - POR EM COMENTARIO QUANDO NAO FOR NECESSARIO
+};
+
+struct postAux{
+	int n_upvotes;
+	int n_downvotes;
+	char* data;
 };
 
 struct tag{
@@ -42,35 +46,41 @@ struct tag{
 struct TCD_community{
 	GHashTable* user;
 	GTree* post;
+	GHashTable* postAux;
 	GHashTable* tags;	
 };
+
 // QUERIES
+
 
 TAD_community init(){
 	struct TCD_community* new = malloc(sizeof(struct TCD_community));
 
   	GHashTable* new_user_hash = g_hash_table_new(g_int_hash, g_int_equal);
   	GTree* new_post_tree = g_tree_new((GCompareFunc)cmpIsoDate);
-	GHashTable* new_tags_hash = g_hash_table_new(g_int_hash, g_int_equal);
+  	GHashTable* new_postAux_hash = g_hash_table_new(g_int_hash, g_int_equal);
+	GHashTable* new_tags_hash = g_hash_table_new(g_str_hash, g_str_equal);
   	
   	new->user = new_user_hash;
   	new->post = new_post_tree;
-  	new->tags = new_tags_hash;
+  	new->postAux = new_postAux_hash;
+  	new->tags = new_tags_hash;	
 
   	return new;
 }
 
 
 TAD_community load(TAD_community com, char* dump_path){
-	load_aux(com->user,com->post,com->tags,dump_path);
+	load_aux(com->user,com->post,com->postAux,com->tags,dump_path);
 	return com;
 }  
 /*
 // query 1
 STR_pair info_from_post(TAD_community com, long id){
-	return info_from_post_aux(com->post,com->user,id);
-}  
-
+	return info_from_post_aux(com->post, com->postAux, com->user, id);
+} 
+*/ 
+/*
 // query 2
 LONG_list top_most_active(TAD_community com, int N){
 	return top_most_active_aux(com->user,N);
@@ -91,7 +101,7 @@ USER get_user_info(TAD_community com, long id){
 	return get_user_info_aux(com->user,id);
 }
 */
-
+/*
 // query 6
 LONG_list most_voted_answers(TAD_community com, int N, Date begin, Date end){
 	return most_voted_answers_aux(com->post,N,begin,end);
@@ -101,6 +111,7 @@ LONG_list most_voted_answers(TAD_community com, int N, Date begin, Date end){
 LONG_list most_answered_questions(TAD_community com, int N, Date begin, Date end){
 	return most_answered_questions_aux(com->post,N,begin,end);
 }
+*/
 /*
 // query 8
 LONG_list contains_word(TAD_community com, char* word, int N){
@@ -122,6 +133,25 @@ LONG_list most_used_best_rep(TAD_community com, int N, Date begin, Date end){
 	return most_used_best_rep_aux(com->user,com->tags,N,begin,end);
 }
 */
+
+// Hash PostAux para Post 
+
+Post getPost(GTree* com_post, GHashTable* com_postAux,long id){
+
+	PostAux postAux = (PostAux)g_hash_table_lookup(com_postAux, &id);
+
+	/* Debugging */ if(!postAux) printf("Post not found\n");
+	
+	char* postDate = getPostAuxDate(postAux);
+	
+	char  postID[50]; 
+	sprintf (postID, "%lu", id);
+
+	STR_pair postKey = create_str_pair(postDate,postID);
+
+	Post post = (Post)g_tree_search(com_post,(GCompareFunc)postTreeSearch,postKey);
+	return post;
+}
 
 // USERS
 
@@ -234,6 +264,7 @@ Post initPost(){
 	return new;
 }
 
+
 // Getters
 
 long getPostID(Post post){
@@ -304,14 +335,6 @@ int getPostNComments(Post post){
 	return post->n_comments;
 }
 
-int getPostNUpVotes(Post post){
-	return post->n_upvotes;
-}
-
-int getPostNDownVotes(Post post){
-	return post->n_downvotes;
-}
-
 int getPostNRespostas(Post post){
 	return post->n_respostas;
 }
@@ -362,13 +385,6 @@ void setPostNComments(Post post, int n_comments){
 	post->n_comments =  n_comments;
 }
 
-void setPostNDownVotes(Post post, int n_downvotes){
-	post->n_downvotes = n_downvotes; 
-}
-
-void setPostNUpVotes(Post post, int n_upvotes){
-	post->n_upvotes = n_upvotes; 
-}
 
 void setPostNRespostas(Post post, int n_respostas){
 	post->n_respostas = n_respostas;
@@ -384,7 +400,43 @@ void freePost (Post post) {
 	free(post);	
 }
 
+// PostAux
 
+// Init
+
+PostAux initPostAux(){
+	PostAux new = malloc(sizeof(struct postAux));
+	return new;
+}
+
+// Getters
+
+char* getPostAuxDate(PostAux postAux){
+	return mystrdup(postAux->data);
+}
+
+int getPostAuxNDownVotes(PostAux postAux){
+	return postAux->n_downvotes;
+}
+
+int getPostAuxNUpVotes(PostAux postAux){
+	return postAux->n_upvotes;
+}
+
+
+// Setters
+
+void setPostAuxDate(PostAux postAux, char* data){
+	postAux->data = mystrdup(data);
+}
+
+void setPostAuxNDownVotes(PostAux postAux, int n_downvotes){
+	postAux->n_downvotes = n_downvotes; 
+}
+
+void setPostAuxNUpVotes(PostAux postAux, int n_upvotes){
+	postAux->n_upvotes = n_upvotes; 
+}
 
 // Tags
 

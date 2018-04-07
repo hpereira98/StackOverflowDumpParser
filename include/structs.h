@@ -4,16 +4,22 @@
 
 typedef struct user* User;
 typedef struct post* Post;
+typedef struct postAux* PostAux;
 typedef struct tag* Tag;
+
 
 #include "toInclude.h"
 
+//Post
+
+Post getPost(GTree* com_post, GHashTable* com_postAux,long id);
 
 // Inits 
 User initUser();
 void initUserPosts(User user); // funcao para fazer criar um garray de posts num dado user
 Post initPost();
 Tag initTag();
+PostAux initPostAux();
 
 // Getters para user
 long getUserID(User user);
@@ -50,8 +56,6 @@ Date getPostSimpleDate(Post post);
 char* getPostTags(Post post);
 int getPostScore(Post post);
 int getPostNComments(Post post);
-int getPostNUpVotes(Post post);
-int getPostNDownVotes(Post post);
 int getPostNRespostas(Post post);
 
 // Setters para Post
@@ -73,6 +77,16 @@ void setPostNRespostas(Post post, int n_respostas);
 // Cleaner
 void freePost (Post post);
 
+// Getters para PostAux
+char* getPostAuxDate(PostAux postAux);
+int getPostAuxNDownVotes(PostAux postAux);
+int getPostAuxNUpVotes(PostAux postAux);
+
+// Setters para PostAux
+void setPostAuxDate(PostAux postAux, char* data);
+void setPostAuxNDownVotes(PostAux postAux, int n_downvotes);
+void setPostAuxNUpVotes(PostAux postAux, int n_upvotes);
+
 // Getters para Tag
 char* getTagName(Tag tag);
 long getTagID(Tag tag);
@@ -82,6 +96,7 @@ int getTagOcor(Tag tag);
 void setTagName(Tag tag, char* name);
 void setTagID(Tag tag, long id);
 void setTagOcor(Tag tag, int ocor);
+
 // Cleaner
 void freeTags (Tag tag);
 

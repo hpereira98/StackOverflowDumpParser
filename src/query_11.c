@@ -1,5 +1,5 @@
 #include <query_11.h>
-
+/*
 int sortByRep(User* a,User *b){
 	int rep_a = getUserReputacao(*a);
 	int rep_b = getUserReputacao(*b);
@@ -124,3 +124,4 @@ LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int
 	return r;
 
 }
+*/

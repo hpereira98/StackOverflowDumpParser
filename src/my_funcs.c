@@ -3,8 +3,13 @@
 
 // Datas
 
-int cmpIsoDate(char* a, char* b){
-	int r = strcmp(a,b);
+int postTreeSearch(STR_pair a, STR_pair b){
+	if(strcmp(get_snd_str(a), get_snd_str(b)) == 0) return 0; // caso os posts tenham o mesmo id para a procura
+	else return cmpIsoDate(a,b); // se nao usa a funcao de comparacao para saber para onde se deslocar 
+}
+
+int cmpIsoDate(STR_pair a, STR_pair b){
+	int r = strcmp(get_fst_str(a), get_fst_str(b));
 	if(r==0) r = 1; // evitar que posts strings de data iguais nao deixem de ser inserios na btree
 	return (-1)*r; // inverter ordem cronologica
 }
@@ -104,15 +109,22 @@ char* envolveTag(char* tag){
 
 /* Funcao para Debugging de PostHashT */
 
-gboolean printPost(gpointer key, gpointer value, gpointer user_data){
+gboolean printPostTree(gpointer key, gpointer value, gpointer user_data){
 	Post post = (Post)value;
 	
 	int* i = ((int*)user_data);
-	printf("%d %s %d %s\n",(*i)++,getPostDate(post),getPostID(post),getPostTitle(post));
+	printf("%d %s %ld %s\n",(*i)++,getPostDate(post),getPostID(post),getPostTitle(post));
  	
 	return FALSE;
 }
 
+void printPostAuxHT(gpointer key, gpointer value, gpointer user_data){
+	PostAux postAux = (PostAux)value;
+	
+	int* i = ((int*)user_data);
+	printf("%d %d %s\n",(*i)++,*((int*)key),getPostAuxDate(postAux));
+ 	
+}
 
 /* Funcao para Debugging de UserHashT */
 /*

@@ -1,6 +1,6 @@
 #include <query_6.h>
 
-
+/*
 int sortByScore(Post* a, Post *b){
 	int score_a = getPostNUpVotes(*a) - getPostNDownVotes(*a);
 	int score_b = getPostNUpVotes(*b) - getPostNDownVotes(*b);
@@ -52,4 +52,4 @@ LONG_list most_voted_answers_aux(GTree* com_post, int N, Date begin, Date end){
 	}
 	return r;
 }
-
+*/

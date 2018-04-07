@@ -3,7 +3,7 @@
 
 #include "toInclude.h"
 
-void load_aux(GHashTable* com_user, GTree* com_post ,GHashTable* com_tags, char* dump_path);
+void load_aux(GHashTable* com_user, GTree* com_post, GHashTable* com_postAux, GHashTable* com_tags, char* dump_path);
 TAD_community init();
 
 

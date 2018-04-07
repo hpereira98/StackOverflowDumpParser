@@ -3,11 +3,13 @@
 
 #include "toInclude.h"
 
-int cmpIsoDate(char* a, char* b);
+int postTreeSearch(STR_pair a, STR_pair b);
+int cmpIsoDate(STR_pair a, STR_pair b);
 int comparaDatas(Date a, Date b, Date c);
 int ordena(gconstpointer a,gconstpointer b);
 void printUserHT(gpointer key, gpointer value, gpointer user_data);
-gboolean printPost(gpointer key, gpointer value, gpointer user_data);
+gboolean printPostTree(gpointer key, gpointer value, gpointer user_data);
+void printPostAuxHT(gpointer key, gpointer value, gpointer user_data);
 int insert(int* array, int elem, int size);
 int insertDate(Date* array, Date elem, int size);
 void insereId(long* v, long x, int i, int n);

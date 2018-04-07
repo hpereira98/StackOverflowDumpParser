@@ -1,6 +1,6 @@
 #include <query_10.h>
 
-
+/*
 double answer_score (int score, int rep, int vots, int comments) {
 	return ( (score*0.45)+(rep*0.25)+(vots*0.2)+(comments*0.1));
 }
@@ -38,3 +38,4 @@ long better_answer_aux(GTree* com_post, long id){
 
 	return *answerId;
 }
+*/

@@ -2,7 +2,7 @@
 
 
 
-void load_aux(GHashTable* com_user, GTree* com_post ,GHashTable* com_tags, char* dump_path){
+void load_aux(GHashTable* com_user, GTree* com_post, GHashTable* com_postAux, GHashTable* com_tags, char* dump_path){
 	int i = 0;
 
 	char* users = "Users.xml";
@@ -29,10 +29,15 @@ void load_aux(GHashTable* com_user, GTree* com_post ,GHashTable* com_tags, char*
 
 	// USERS
 
+	/*Debugging*/ clock_t users_begin = clock();
+
 	xmlDocPtr doc_users = xmlParseFile(users_path);
 	if(!doc_users){
 		printf("Document not parsed successfully\n");
 	}
+
+	/*Debugging*/ clock_t users_opened = clock();	
+	
 
 	xmlNodePtr cur = xmlDocGetRootElement(doc_users);
 	if(!cur){
@@ -59,34 +64,21 @@ void load_aux(GHashTable* com_user, GTree* com_post ,GHashTable* com_tags, char*
    				// ID
    				sscanf((const char*)id, "%li", idUser); 
    				setUserID(new,*idUser);
-   				//sscanf((const char*)id, "%d", idUser); 
-   				//new->id = *idUser;
-
+   			
    				// Reputação
    				sscanf((const char*)rep,"%d", repUser); 
-   				setUserReputacao(new,*repUser); 
-   				//sscanf((const char*)rep,"%d", repUser);
-   				//new->reputacao = *repUser;
+   				setUserReputacao(new,*repUser); 	
 				
 				// Nº perguntas/respostas
 				setUserNRespostas(new,0);
 				setUserNPosts(new,0);
 				setUserNPerguntas(new,0);
 
-				// Bio
+				// Bio			
+				setUserShortBio(new,(char*)bio); 
 				
-				setUserShortBio(new,(char*)bio); // ter atencao e ver se nao rebenta por ser null
-				/*									   // pricipalmente em futuras evocacoes da funcao getUserShortBio
-				if(bio){
-					new->short_bio = malloc(strlen((const char*)bio) + 1);
-					strcpy(new->short_bio, (const char*)bio);
-				}
-				else new->short_bio = "";
-				*/
-
 				// User's Posts 
 				initUserPosts(new);
-				//new->userPosts = g_array_new (FALSE,TRUE,sizeof(struct Post*));//(elemento no fim a 0,inicilizar a 0,tamnho em bytes dos elems)
 			 
    				// Inserir conforme o ID
    				g_hash_table_insert(com_user, idUser, new); i++;
@@ -100,14 +92,23 @@ void load_aux(GHashTable* com_user, GTree* com_post ,GHashTable* com_tags, char*
 		}
 	}
 	printf("Users: %d\n", i);
+	/*Debugging*/ clock_t users_end = clock(); 
+	/*Debugging*/ printf("Tempo abrir xmlUsers' = %f\n", (double)(users_opened-users_begin)/CLOCKS_PER_SEC);
+	/*Debugging*/ printf("Tempo processar Users' = %f\n", (double)(users_end-users_opened)/CLOCKS_PER_SEC);
+
 	xmlFreeDoc(doc_users);
 
 	// POSTS
-	i = 0;
+	i=0;
+	/*Debugging*/ clock_t posts_begin = clock();
+
 	xmlDocPtr doc_posts = xmlParseFile(posts_path);
 	if(!doc_posts){
 		printf("Document not parsed successfully\n");
 	}
+
+	/*Debugging*/ clock_t posts_opened = clock();	
+	
 
 	cur = xmlDocGetRootElement(doc_posts);
 	if(!cur){
@@ -139,29 +140,21 @@ void load_aux(GHashTable* com_user, GTree* com_post ,GHashTable* com_tags, char*
 	   			int* score = malloc(sizeof(int));
 	   			int* n_comms = malloc(sizeof(int));
 
-	   			Post new = initPost();
+	   			Post newPost = initPost();
+	   			PostAux newPostAux = initPostAux();
 	   				
 	   			// Titulo
-	   			setPostTitle(new,(char*)titulo);
-	   			/*
-	   			if(titulo){
-	   				new->titulo = malloc(strlen((const char*)titulo) + 1);
-	   				strcpy(new->titulo,(const char*)titulo);
-	   			}
-	   			else new->titulo="";
-				*/
+	   			setPostTitle(newPost,(char*)titulo);
 
-	   			// Owner ID - averiguar se novo dump tem posts sem owner id ou nao 
-	   			if(user_id){
-	   				sscanf((const char*)user_id, "%li", idOwner);
-	   				setPostOwnerID(new,*idOwner);
-	   			} 
-	   			else setPostOwnerID(new,-2);
+	   			// Owner ID 
+	   			sscanf((const char*)user_id, "%li", idOwner);
+	   			setPostOwnerID(newPost,*idOwner);
+	   			
 
 	   			// Owner Reputation
 	   			User user = (User)g_hash_table_lookup(com_user,idOwner);
 	   			if (user!=NULL)
-	   				setPostOwnerRep(new,getUserReputacao(user));
+	   				setPostOwnerRep(newPost,getUserReputacao(user));
 
 	   			// Count User's questions and answers 			
 				if (user!=NULL) {
@@ -170,39 +163,31 @@ void load_aux(GHashTable* com_user, GTree* com_post ,GHashTable* com_tags, char*
 					setUserNPosts(user,getUserNPosts(user)+1);
 				}
 
-	   			// Post ID
+	   			// Post ID 
 				sscanf((const char*)post_id, "%li", idPost); 
-				setPostID(new,*idPost);
-	   			//new->id = *idPost;
+				setPostID(newPost,*idPost);
 
 	   			
 
 	   			// Type ID
 	   			sscanf((const char*)post_type_id, "%d", idType); 
-	   			setPostTypeID(new,*idType);
-	   			//new->type_id = *idType;
+	   			setPostTypeID(newPost,*idType);
+	   			
 
 	   			// Parent ID
 	   			if(parent_id) {
 	   				sscanf((const char*)parent_id, "%li", idParent); 
-	   				setPostParentID(new,*idParent);
-	   				//new->parent_id = *idParent;
+	   				setPostParentID(newPost,*idParent);
+	   				
 	   			}
-	   			else setPostParentID(new,-2);
+	   			else setPostParentID(newPost,-2);
 
 	   			// Owner Display Name
-	   			setPostOwnerDisplayName(new,(char*)user_display_name);
-	   			/*
-	   			if(user_display_name){
-	   				new->owner_display_name = malloc(strlen((const char*)user_display_name) + 1);
-	   				strcpy(new->owner_display_name,(const char*)user_display_name);
-	   			}
-	   			else new->owner_display_name = "";
-	   			*/
+	   			setPostOwnerDisplayName(newPost,(char*)user_display_name);
 
 	   			// Data
-	   			setPostDate(new, (char*)data);
-	   			char * key = mystrdup((char*)data);
+	   			setPostDate(newPost, (char*)data);
+	   			setPostAuxDate(newPostAux,(char*)data);
 
 				// Accepted answer - debugging q10 : COLOCAR EM COMENTÁRIO QUANDO NÃO FOR NECESSÁRIO!! 
 	   			/*
@@ -214,49 +199,46 @@ void load_aux(GHashTable* com_user, GTree* com_post ,GHashTable* com_tags, char*
 	   			*/
 
 	   			// Tags   = "<tag><tag>"  
-	   			setPostTags(new,(char*)tags);
-	   			/*
-	   			if(tags){
-	   				new->tags = malloc(strlen((const char*)tags) + 1);
-	   				strcpy(new->tags, (const char*)tags);
-	   			}
-	   			else new->tags = "";
-				*/
+	   			setPostTags(newPost,(char*)tags);
+	   			
 	   			// Score
 				sscanf((const char*)score_xml, "%d", score); 
-	   			setPostScore(new,*score);
-	   			//new->score = *score;
+	   			setPostScore(newPost,*score);
+	   			
 
 	   			// Nº Upvotes
-	   			setPostNUpVotes(new,0);
+	   			setPostAuxNUpVotes(newPostAux,0);
 
 	   			// Nº Downvotes
-	   			setPostNDownVotes(new,0);
+	   			setPostAuxNDownVotes(newPostAux,0);
 
 	   			// Nº Comments
 	   			sscanf((const char*)comments,"%d", n_comms);
-	   			setPostNComments(new,*n_comms);
-	   			//new->n_comments = *n_comms;
+	   			setPostNComments(newPost,*n_comms);
 
 	   			// Nº Respostas
-	   			if(getPostTypeID(new)==1){
+	   			if(getPostTypeID(newPost)==1){
 	   				xmlChar* answercount = xmlGetProp(cur, (const xmlChar *)"AnswerCount");
 	   				int* awnsers = malloc(sizeof(int));
 
 	   				sscanf((const char*)answercount, "%d", awnsers); 
-	   				setPostNRespostas(new,*awnsers);
-	   				//new->n_respostas = *awnsers;
+	   				setPostNRespostas(newPost,*awnsers);
 	   			}
-	   			else setPostNRespostas(new,-1);
+	   			else setPostNRespostas(newPost,-1);
 
-	   			// Add Post to User
+	   			// Add Post to User !! ver se ao aplicar encapsulamento nao compensa passar apenas os ids
 				if (user!=NULL){
-					g_array_append_val(getUserPosts(user),new);
+					g_array_append_val(getUserPosts(user),newPost);
 				}
-	   			
+
+				char* keyDate = mystrdup((char*)data);
+				char* keyID = mystrdup((char*)post_id);
+
+	   			STR_pair key = create_str_pair(keyDate,keyID);
+				
 	   			// Inserir conforme a Data
-	   			g_tree_insert(com_post, key, new);
-	   			
+	   			g_tree_insert(com_post, key, newPost);
+	   			g_hash_table_insert(com_postAux,idPost,newPostAux);
 	   			/*Debugging*/ //printf("Inserido %d\n", i);
 	   			i++;
 
@@ -276,18 +258,31 @@ void load_aux(GHashTable* com_user, GTree* com_post ,GHashTable* com_tags, char*
 			cur = cur->next;
 		}
 	}
-	printf("Posts: %d\n", i);
-	i=0;
+
+	/*Debugging*/ printf("Posts: %d\n", i);
+
+	/*Debugging*/ clock_t posts_end = clock(); 
+	/*Debugging*/ printf("Tempo abrir xmlPost' = %f\n", (double)(posts_opened-posts_begin)/CLOCKS_PER_SEC);
+	/*Debugging*/ printf("Tempo processar posts' = %f\n", (double)(posts_end-posts_opened)/CLOCKS_PER_SEC);
+	
+	/*Debugging*/ i=0;
+	/*Debugging*/// g_tree_foreach(com_post,printPostTree,&i);
+	/*Debugging*/ //g_hash_table_foreach(com_postAux,printPostAuxHT,&i);
+
 	xmlFreeDoc(doc_posts);
-	//g_tree_foreach(com_post,printPost,&i);
+
 	// VOTES
 
 	i = 0;
+
+	/*Debugging*/ clock_t votes_begin = clock();
 
 	xmlDocPtr doc_votes = xmlParseFile(votes_path);
 	if(!doc_votes){
 		printf("Document not parsed successfully\n");
 	}
+
+	/*Debugging*/ clock_t votes_opened = clock();	
 
 	cur = xmlDocGetRootElement(doc_votes);
 	if(!cur){
@@ -309,10 +304,9 @@ void load_aux(GHashTable* com_user, GTree* com_post ,GHashTable* com_tags, char*
 				sscanf((const char*)id_post, "%li", postID);
 				sscanf((const char*)vote_type,"%d", votetype);
 
-				Post post = (Post) g_tree_lookup(com_post, postID);//ERRADO! mas desta forma nao da erro, depois discutir solucao para a procura
-				// pois sem data temos de percorrer a arvore in order ate encontrar o elemento 	O(N)
-				if (post && *votetype == 2) setPostNUpVotes(post,getPostNUpVotes(post)+1);
-				else if (post && *votetype == 3) setPostNDownVotes(post,getPostNDownVotes(post)+1);
+				PostAux postAux = (PostAux) g_hash_table_lookup(com_postAux,postID);
+				if (postAux && *votetype == 2) setPostAuxNUpVotes(postAux,getPostAuxNUpVotes(postAux)+1);
+				else if (postAux && *votetype == 3) setPostAuxNDownVotes(postAux,getPostAuxNDownVotes(postAux)+1);
 
 				i++;
 			}
@@ -323,16 +317,25 @@ void load_aux(GHashTable* com_user, GTree* com_post ,GHashTable* com_tags, char*
 	}
 
 	printf("Votes: %d\n", i);
+	/*Debugging*/ clock_t votes_end = clock(); 
+	/*Debugging*/ printf("Tempo abrir xmlVotes' = %f\n", (double)(votes_opened-votes_begin)/CLOCKS_PER_SEC);
+	/*Debugging*/ printf("Tempo processar Votes' = %f\n", (double)(votes_end-votes_opened)/CLOCKS_PER_SEC);
+
 	xmlFreeDoc(doc_votes);
 
 	// TAGS
 
 	i = 0;
 
+	/*Debugging*/ clock_t tags_begin = clock();
+
 	xmlDocPtr doc_tags = xmlParseFile(tags_path);
 	if(!doc_tags){
 		printf("Document not parsed successfully\n");
 	}
+
+	/*Debugging*/ clock_t tags_opened = clock();	
+	
 
 	cur = xmlDocGetRootElement(doc_tags);
 	if(!cur){
@@ -376,6 +379,10 @@ void load_aux(GHashTable* com_user, GTree* com_post ,GHashTable* com_tags, char*
 	}
 
 	printf("Tags: %d\n", i);
+	/*Debugging*/ clock_t tags_end = clock(); 
+	/*Debugging*/ printf("Tempo abrir xmlTags' = %f\n", (double)(tags_opened-tags_begin)/CLOCKS_PER_SEC);
+	/*Debugging*/ printf("Tempo processar Tags' = %f\n", (double)(tags_end-tags_opened)/CLOCKS_PER_SEC);
+
 	xmlFreeDoc(doc_tags);
 
 		

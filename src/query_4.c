@@ -1,5 +1,5 @@
 #include <query_4.h>
-
+/*
 gboolean adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer info){ // info = {tree, tag, inicio, fim}
 	Post post = (Post) post_pointer;
 	Date begin = ((Date*)(info))[2];
@@ -54,3 +54,4 @@ LONG_list questions_with_tag_aux(GTree* com_post, char* tag, Date begin, Date en
 
 	return r;
 }
+*/

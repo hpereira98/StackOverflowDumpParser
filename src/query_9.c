@@ -1,5 +1,5 @@
 #include <query_9.h>
-
+/*
 void swapAnswerPID (GTree* com_post, GArray* posts) {
 	for (int i=0;i<posts->len;i++) {
 		Post post = g_array_index(posts,Post,i);
@@ -51,3 +51,4 @@ LONG_list both_participated_aux(GHashTable* com_user, GTree* com_post, long id1,
 	return r;
 
 } 
+*/
