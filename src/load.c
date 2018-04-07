@@ -180,10 +180,7 @@ void load_aux(GHashTable* com_user, GTree* com_post, GHashTable* com_postAux, GH
 	   				setPostParentID(newPost,*idParent);
 	   				
 	   			}
-	   			else setPostParentID(newPost,-2);
-
-	   			// Owner Display Name
-	   			setPostOwnerDisplayName(newPost,(char*)user_display_name);
+	   			else setPostParentID(newPost,-2);   			
 
 	   			// Data
 	   			setPostDate(newPost, (char*)data);

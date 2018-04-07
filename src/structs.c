@@ -19,7 +19,6 @@ struct post{
 	long id;
 	char* titulo;
 	long owner_id;
-	char* owner_display_name;
 	int owner_rep;
 	int type_id;
 	long parent_id;
@@ -57,7 +56,7 @@ TAD_community init(){
 	struct TCD_community* new = malloc(sizeof(struct TCD_community));
 
   	GHashTable* new_user_hash = g_hash_table_new(g_int_hash, g_int_equal);
-  	GTree* new_post_tree = g_tree_new((GCompareFunc)cmpIsoDate);
+  	GTree* new_post_tree = g_tree_new((GCompareFunc)cmpTreeKey);
   	GHashTable* new_postAux_hash = g_hash_table_new(g_int_hash, g_int_equal);
 	GHashTable* new_tags_hash = g_hash_table_new(g_str_hash, g_str_equal);
   	
@@ -74,12 +73,12 @@ TAD_community load(TAD_community com, char* dump_path){
 	load_aux(com->user,com->post,com->postAux,com->tags,dump_path);
 	return com;
 }  
-/*
+
 // query 1
 STR_pair info_from_post(TAD_community com, long id){
 	return info_from_post_aux(com->post, com->postAux, com->user, id);
 } 
-*/ 
+ 
 /*
 // query 2
 LONG_list top_most_active(TAD_community com, int N){
@@ -137,19 +136,28 @@ LONG_list most_used_best_rep(TAD_community com, int N, Date begin, Date end){
 // Hash PostAux para Post 
 
 Post getPost(GTree* com_post, GHashTable* com_postAux,long id){
+	Post post  = NULL;
 
 	PostAux postAux = (PostAux)g_hash_table_lookup(com_postAux, &id);
 
-	/* Debugging */ if(!postAux) printf("Post not found\n");
+	/* Debugging */ if(!postAux) printf("PostAux not found\n");
 	
-	char* postDate = getPostAuxDate(postAux);
+	if(postAux){
+
+		char* postDate = getPostAuxDate(postAux);
 	
-	char  postID[50]; 
-	sprintf (postID, "%lu", id);
+		char  postID[50]; 
+		sprintf (postID, "%lu", id);
 
-	STR_pair postKey = create_str_pair(postDate,postID);
+		STR_pair postKey = create_str_pair(postDate,postID);
 
-	Post post = (Post)g_tree_search(com_post,(GCompareFunc)postTreeSearch,postKey);
+		/* Debugging */ // printf("%s %s\n",get_fst_str(postKey),get_snd_str(postKey) );
+
+		post = (Post)g_tree_lookup(com_post, postKey);
+
+		/* Debugging */ if(!post) printf("Post not found\n");
+	}
+
 	return post;
 }
 
@@ -280,10 +288,6 @@ long getPostOwnerID(Post post){
 	else return post->id;
 }
 
-char* getPostOwnerDisplayName(Post post){
-	return mystrdup(post->owner_display_name);
-}
-
 int getPostOwnerRep(Post post){
 	return post->owner_rep;
 }
@@ -353,10 +357,6 @@ void setPostOwnerID(Post post, long owner_id){
 	post->owner_id = owner_id; 		
 }
 
-void setPostOwnerDisplayName(Post post, char* owner_display_name){
-	 post->owner_display_name = mystrdup(owner_display_name);
-}
-
 void setPostOwnerRep(Post post, int owner_rep){
 	post->owner_rep = owner_rep; 
 }
@@ -394,7 +394,6 @@ void setPostNRespostas(Post post, int n_respostas){
 
 void freePost (Post post) {
 	free(post->titulo);
-	free(post->owner_display_name);
 	free(post->data);
 	free(post->tags);
 	free(post);	

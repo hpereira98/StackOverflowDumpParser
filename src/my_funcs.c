@@ -3,14 +3,18 @@
 
 // Datas
 
-int postTreeSearch(STR_pair a, STR_pair b){
-	if(strcmp(get_snd_str(a), get_snd_str(b)) == 0) return 0; // caso os posts tenham o mesmo id para a procura
-	else return cmpIsoDate(a,b); // se nao usa a funcao de comparacao para saber para onde se deslocar 
-}
 
-int cmpIsoDate(STR_pair a, STR_pair b){
+
+int cmpTreeKey(STR_pair a, STR_pair b){
+
+	/* Debugging */ // printf("(%s %s) e (%s %s)\n",get_fst_str(a),get_snd_str(a), get_fst_str(b),get_snd_str(b) );
+	
+	if(strcmp(get_snd_str(a), get_snd_str(b)) == 0) return 0; // caso os posts tenham o mesmo id para a procura
+
 	int r = strcmp(get_fst_str(a), get_fst_str(b));
-	if(r==0) r = 1; // evitar que posts strings de data iguais nao deixem de ser inserios na btree
+
+	if(r==0) r = 1; // evitar que posts com strings de data iguais nao deixem de ser inseridos na btree
+	
 	return (-1)*r; // inverter ordem cronologica
 }
 

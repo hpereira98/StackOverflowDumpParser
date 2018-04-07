@@ -3,8 +3,7 @@
 
 #include "toInclude.h"
 
-int postTreeSearch(STR_pair a, STR_pair b);
-int cmpIsoDate(STR_pair a, STR_pair b);
+int cmpTreeKey(STR_pair a, STR_pair b);
 int comparaDatas(Date a, Date b, Date c);
 int ordena(gconstpointer a,gconstpointer b);
 void printUserHT(gpointer key, gpointer value, gpointer user_data);
