@@ -7,9 +7,6 @@ struct user{
 	int n_respostas; // número de respostas
 	int n_posts; // número total de posts
 	int reputacao; // reputacao
-	//Date data_posts[];
-	//Date data_respostas[];
-	//char* títulos[];
 	char* short_bio; // descrição do user
 	GArray* userPosts;
 
@@ -42,6 +39,11 @@ struct tag{
 	int ocorrencias;
 };
 
+struct postKey{
+	char* data;
+	long id;
+};
+
 struct TCD_community{
 	GHashTable* user;
 	GTree* post;
@@ -49,8 +51,9 @@ struct TCD_community{
 	GHashTable* tags;	
 };
 
-// QUERIES
 
+
+// QUERIES
 
 TAD_community init(){
 	struct TCD_community* new = malloc(sizeof(struct TCD_community));
@@ -160,6 +163,8 @@ Post getPost(GTree* com_post, GHashTable* com_postAux,long id){
 
 	return post;
 }
+
+
 
 // USERS
 
@@ -399,6 +404,49 @@ void freePost (Post post) {
 	free(post);	
 }
 
+
+// PostKey
+
+// Init
+
+PostKey initPostKey(){
+	PostKey new = malloc(sizeof(struct postKey));
+
+	return new;
+}
+
+PostKey createPostKey(char* data, long id){
+	PostKey new = initPostKey();
+
+	setPostKeyDate(new, data);
+	setPostKeyID(new, id);
+
+	return new;
+}
+
+
+// Getters
+
+char* getPostKeyDate(PostKey post_key){
+	return mystrdup(post_key->data);
+}
+
+long getPostKeyID(PostKey post_key){
+	return post_key->id;
+}
+
+// Setters
+
+void setPostKeyDate(PostKey post_key, char* data){
+	post_key->data = mystrdup(data);
+}
+
+void setPostKeyID(PostKey post_key, long id){
+	post_key->id = id;
+}
+
+
+
 // PostAux
 
 // Init
@@ -490,3 +538,5 @@ void freeTags (Tag tag) {
 	free(tag->name);
 	free(tag);
 } 
+
+
