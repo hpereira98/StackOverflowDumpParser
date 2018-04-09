@@ -69,10 +69,253 @@ TAD_community init(){
 }
 
 
-TAD_community load(TAD_community com, char* dump_path){
-	load_aux(com->user,com->post,com->postAux,com->tags,dump_path);
-	return com;
-}  
+// Funcoes auxiliares ao load. Transformam cada doc_xml em dados inseridos na estrutura.
+// Recebem a root do documento e procedem ao processamento dos nodos.
+
+// USERS 
+
+void usersXmlToTAD(TAD_community com, xmlNodePtr doc_root){
+	xmlNodePtr cur = doc_root->xmlChildrenNode; 
+	/* Debuggin */ int i = 0;
+
+	while(cur){
+
+   		xmlChar* id = xmlGetProp(cur, (const xmlChar *)"Id");
+   		xmlChar* rep = xmlGetProp(cur, (const xmlChar *)"Reputation");
+   		xmlChar* name = xmlGetProp(cur, (const xmlChar *)"DisplayName");
+		xmlChar* bio = xmlGetProp(cur, (const xmlChar *)"AboutMe");
+
+   		if(id != NULL){
+
+   			long* idUser = malloc(sizeof(long));
+   			int* repUser = malloc(sizeof(int));
+				
+   			User new = initUser(); 
+   				
+   			// Nome
+   			setUserDisplayName(new, (char*)name); 
+
+   			// ID
+   			sscanf((const char*)id, "%li", idUser); 
+   			setUserID(new,*idUser);
+   			
+   			// Reputação
+   			sscanf((const char*)rep,"%d", repUser); 
+   			setUserReputacao(new,*repUser); 	
+				
+			// Nº perguntas/respostas
+			setUserNRespostas(new,0);
+			setUserNPosts(new,0);
+			setUserNPerguntas(new,0);
+
+			// Bio			
+			setUserShortBio(new,(char*)bio); 
+				
+			// User's Posts 
+			initUserPosts(new);
+			 
+   			// Inserir conforme o ID
+   			g_hash_table_insert(com->user, idUser, new); i++;			
+   		}
+
+		xmlFree(id);
+		xmlFree(name);
+		xmlFree(rep);
+		xmlFree(bio);
+
+		cur = cur->next;
+	}
+	/* Debuggin */ printf("Users: %d\n", i);
+}
+
+// POSTS
+
+void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
+	xmlNodePtr cur = doc_root->xmlChildrenNode; 
+	/* Debuggin */ int i = 0;
+
+	while(cur){
+		xmlChar* post_type_id = xmlGetProp(cur, (const xmlChar *)"PostTypeId");	
+
+		if(post_type_id!=NULL){
+
+	   		xmlChar* post_id = xmlGetProp(cur, (const xmlChar *)"Id");
+	   		xmlChar* user_id = xmlGetProp(cur, (const xmlChar *)"OwnerUserId");
+	   		xmlChar* user_display_name = xmlGetProp(cur, (const xmlChar *)"OwnerDisplayName");
+	   		xmlChar* titulo = xmlGetProp(cur, (const xmlChar *)"Title");
+	   		xmlChar* parent_id = xmlGetProp(cur, (const xmlChar *)"ParentId");
+			xmlChar* data = xmlGetProp(cur, (const xmlChar *)"CreationDate");
+			xmlChar* tags = xmlGetProp(cur, (const xmlChar *)"Tags");
+			xmlChar* score_xml = xmlGetProp(cur, (const xmlChar *)"Score");
+			xmlChar* comments = xmlGetProp(cur, (const xmlChar *)"CommentCount");
+			xmlChar* answer = xmlGetProp(cur, (const xmlChar *)"AcceptedAnswerId");
+
+	   		long* idOwner = malloc(sizeof(long));
+	   		long* idPost = malloc(sizeof(long));
+	   		long* idParent = malloc(sizeof(long));
+	   		int* idType = malloc(sizeof(int));
+	   		int* score = malloc(sizeof(int));
+	   		int* n_comms = malloc(sizeof(int));
+
+	   		Post newPost = initPost();
+	   		PostAux newPostAux = initPostAux();
+	   				
+	   		// Titulo
+	   		setPostTitle(newPost,(char*)titulo);
+
+	   		// Owner ID 
+	   		sscanf((const char*)user_id, "%li", idOwner);
+	   		setPostOwnerID(newPost,*idOwner);
+	   			
+
+	   		// Owner Reputation
+	   		User user = (User)g_hash_table_lookup(com->user,idOwner);
+	   		if (user!=NULL)
+	   			setPostOwnerRep(newPost,getUserReputacao(user));
+
+	   		// Count User's questions and answers 			
+			if (user!=NULL) {
+				if (*idType == 1) setUserNPerguntas(user,getUserNPerguntas(user)+1);
+				else if (*idType == 2) setUserNRespostas(user,getUserNRespostas(user)+1);
+				setUserNPosts(user,getUserNPosts(user)+1);
+			}
+
+	   		// Post ID 
+			sscanf((const char*)post_id, "%li", idPost); 
+			setPostID(newPost,*idPost);
+
+	   			
+
+	   		// Type ID
+	   		sscanf((const char*)post_type_id, "%d", idType); 
+	   		setPostTypeID(newPost,*idType);
+	   			
+
+	   		// Parent ID
+	   		if(parent_id) {
+	   			sscanf((const char*)parent_id, "%li", idParent); 
+	   			setPostParentID(newPost,*idParent);
+	   				
+	   		}
+	   		else setPostParentID(newPost,-2);   			
+
+	   		// Data
+	   		setPostDate(newPost, (char*)data);
+	   		setPostAuxDate(newPostAux,(char*)data);
+
+			// Accepted answer - debugging q10 : COLOCAR EM COMENTÁRIO QUANDO NÃO FOR NECESSÁRIO!! 
+	   		/*
+	   		if (answer && new->type_id==1) {
+	   			sscanf((const char*)answer,"%d", acptd);
+	   			new->accepted_answer = *acptd;
+	   		}
+	   		else new->accepted_answer=-2;	
+	   		*/
+
+	   		// Tags   = "<tag><tag>"  
+	   		setPostTags(newPost,(char*)tags);
+	   			
+	   		// Score
+			sscanf((const char*)score_xml, "%d", score); 
+	   		setPostScore(newPost,*score);
+	   			
+
+	   		// Nº Upvotes
+	   		setPostAuxNUpVotes(newPostAux,0);
+
+	   		// Nº Downvotes
+	   		setPostAuxNDownVotes(newPostAux,0);
+
+	   		// Nº Comments
+	   		sscanf((const char*)comments,"%d", n_comms);
+	   		setPostNComments(newPost,*n_comms);
+
+	   		// Nº Respostas
+	   		if(getPostTypeID(newPost)==1){
+	   			xmlChar* answercount = xmlGetProp(cur, (const xmlChar *)"AnswerCount");
+	   			int* awnsers = malloc(sizeof(int));
+
+	   			sscanf((const char*)answercount, "%d", awnsers); 
+	   			setPostNRespostas(newPost,*awnsers);
+	   		}
+	   		else setPostNRespostas(newPost,-1);
+
+	   		// Add Post to User !! ver se ao aplicar encapsulamento nao compensa passar apenas os ids
+			if (user!=NULL){
+				g_array_append_val(getUserPosts(user),newPost);
+			}
+
+			char* keyDate = mystrdup((char*)data);
+			char* keyID = mystrdup((char*)post_id);
+
+	   		STR_pair key = create_str_pair(keyDate,keyID);
+				
+	   		// Inserir conforme a Data
+	   		g_tree_insert(com->post, key, newPost);
+	   		g_hash_table_insert(com->postAux,idPost,newPostAux);
+	   		/*Debugging*/ //printf("Inserido %d\n", i);
+	   		i++;
+
+	   			
+			xmlFree(post_id);
+			xmlFree(user_id);
+			xmlFree(titulo);
+			xmlFree(parent_id);
+			xmlFree(data);
+			xmlFree(tags);
+			xmlFree(score_xml);
+			xmlFree(comments);
+			xmlFree(answer);
+			xmlFree(user_display_name);
+		}
+		xmlFree(post_type_id);
+		cur = cur->next;
+	}
+	/*Debugging*/ printf("Posts: %d\n", i);
+}
+
+// TAGS 
+
+void tagsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
+	xmlNodePtr cur = doc_root->xmlChildrenNode; 
+	/* Debugging */ int i = 0;
+
+	while(cur){
+
+		xmlChar* tag_id = xmlGetProp(cur, (const xmlChar *)"Id");
+
+	   	if(tag_id){
+
+	   		xmlChar* tag_name = xmlGetProp(cur, (const xmlChar *)"TagName");
+		   	Tag new = initTag();
+
+		   	// ID		
+			long* tagID = malloc(sizeof(long));
+			sscanf((const char*)tag_id, "%li", tagID);
+				
+			setTagID(new, *tagID);
+
+			// Name
+			setTagName(new, (char*)tag_name);
+
+			// Ocorrencias
+			setTagOcor(new, 0);
+
+	   		// Inserir conforme a Tag ID
+	   		g_hash_table_insert(com->tags, tag_name, new);
+				
+			i++;
+			xmlFree(tag_name);
+				
+		}
+		xmlFree(tag_id);
+ 
+		cur = cur->next;
+	}
+	/* Debugging */ printf("Tags: %d\n", i);
+}
+
+
 
 // query 1
 STR_pair info_from_post(TAD_community com, long id){

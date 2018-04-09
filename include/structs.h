@@ -10,6 +10,12 @@ typedef struct tag* Tag;
 
 #include "toInclude.h"
 
+//Xml to TAD
+
+void usersXmlToTAD(TAD_community com, xmlNodePtr doc_root);
+void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root);
+void tagsXmlToTAD(TAD_community com, xmlNodePtr doc_root);
+
 //Post
 
 Post getPost(GTree* com_post, GHashTable* com_postAux,long id);
