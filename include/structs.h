@@ -6,7 +6,7 @@ typedef struct user* User;
 typedef struct post* Post;
 typedef struct postAux* PostAux;
 typedef struct tag* Tag;
-
+typedef struct postKey* PostKey;
 
 #include "toInclude.h"
 
@@ -18,7 +18,7 @@ void tagsXmlToTAD(TAD_community com, xmlNodePtr doc_root);
 
 //Post
 
-Post getPost(GTree* com_post, GHashTable* com_postAux,long id);
+Post getPost(GTree* com_post, GHashTable* com_postAux, long id);
 
 // Inits 
 User initUser();
@@ -80,6 +80,17 @@ void setPostNRespostas(Post post, int n_respostas);
 
 // Cleaner
 void freePost (Post post);
+
+// PostKey
+PostKey initPostKey();
+PostKey createPostKey(char* data, long id);
+
+char* getPostKeyDate(PostKey post_key);
+long getPostKeyID(PostKey post_key);
+
+void setPostKeyDate(PostKey post_key, char* data);
+void setPostKeyID(PostKey post_key, long id);
+
 
 // Getters para PostAux
 char* getPostAuxDate(PostAux postAux);
