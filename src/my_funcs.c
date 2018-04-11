@@ -76,7 +76,7 @@ int insertDate(Date* array, Date elem, int size){
 	}
 
 	array[pos] = elem;
-	/*printf("inseriu em %d\n",pos );
+	printf("inseriu em %d\n",pos );
 	for(int j = 0; j<20;j++)
 		printf("%d ",array[j] ); printf("E\n");
 	return pos;
@@ -107,7 +107,21 @@ char* envolveTag(char* tag){
 
 }
 
+char* nextTag(char* tags, int *i){
+	char* new_tag = malloc(strlen(tags));
+	int k = (*i); 
+	int j=0;
 
+	if(tags[k] == '<') k++;
+	for(j=j; tags[k]!= '>'; j++, k++){
+		new_tag[j] = tags[k];
+	}
+	new_tag[j] = '\0';
+
+	(*i) += j+1;
+
+	return new_tag;
+}
 
 
 

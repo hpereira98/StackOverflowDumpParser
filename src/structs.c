@@ -20,7 +20,7 @@ struct post{
 	int type_id;
 	long parent_id;
 	char* data;
-	char* tags;
+	GArray* tags;
 	int score;
 	int n_comments;
 	int n_respostas;
@@ -215,8 +215,19 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 	   		else new->accepted_answer=-2;	
 	   		*/
 
-	   		// Tags   = "<tag><tag>"  
-	   		setPostTags(newPost,(char*)tags);
+	   		// Tags   = "<tag><tag>" 
+	   		if(tags){ 
+		   		int j = 0;
+		   		GArray* new = g_array_new(FALSE, FALSE, sizeof(char*));
+				while(tags[j]!='\0'){
+		   			char* next_tag = mystrdup(nextTag((char*)tags, &j));	   			
+					if(next_tag[0]!='\0'){
+						g_array_append_val(new, next_tag);
+						//printf("%s\n", next_tag);
+					}
+		   		}
+		   	}
+	   		
 	   			
 	   		// Score
 			sscanf((const char*)score_xml, "%d", score); 
@@ -335,12 +346,12 @@ LONG_list top_most_active(TAD_community com, int N){
 LONG_pair total_posts(TAD_community com, Date begin, Date end){
 	return total_posts_aux(com->post,begin,end);
 }
-
+*/
 // query 4
 LONG_list questions_with_tag(TAD_community com, char* tag, Date begin, Date end){
 	return questions_with_tag_aux(com->post,tag,begin,end);
 }
-
+/*
 // query 5
 USER get_user_info(TAD_community com, long id){
 	return get_user_info_aux(com->user,id);
@@ -372,12 +383,12 @@ LONG_list both_participated(TAD_community com, long id1, long id2, int N){
 long better_answer(TAD_community com, long id){
 	return better_answer_aux(com->post,id);
 }
-
+*/
 // query 11
 LONG_list most_used_best_rep(TAD_community com, int N, Date begin, Date end){
 	return most_used_best_rep_aux(com->user,com->tags,N,begin,end);
 }
-*/
+
 
 // Hash PostAux para Post 
 
@@ -575,8 +586,8 @@ Date getPostSimpleDate(Post post){ // "AAAA-MM-DD"
 }
 
 
-char* getPostTags(Post post){
-	return mystrdup(post->tags);
+GArray* getPostTags(Post post){
+	return post->tags;
 }
 
 int getPostScore(Post post){
@@ -621,8 +632,8 @@ void setPostDate(Post post, char* data){
 	post->data = mystrdup(data);
 }
 
-void setPostTags(Post post, char* tags){
-	post->tags = mystrdup(tags); 
+void setPostTags(Post post, GArray* tags){
+	post->tags = tags; 
 }
 
 void setPostScore(Post post, int score){

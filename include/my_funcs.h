@@ -13,7 +13,7 @@ int insert(int* array, int elem, int size);
 int insertDate(Date* array, Date elem, int size);
 void insereId(long* v, long x, int i, int n);
 char* envolveTag(char* tag);
-
+char* nextTag(char* tags, int *i);
 void ver_melhor_resposta (gpointer key, gpointer post, gpointer user_data);
 
 #endif
