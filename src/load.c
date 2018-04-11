@@ -27,12 +27,12 @@ TAD_community load(TAD_community com, char* dump_path){
 	
 	for(int i=0; i<3; i++){
 
-	/*Debugging*/ clock_t doc_begin = clock();
+	DEBUG(clock_t doc_begin = clock());
 	xmlDocPtr xml_doc = xmlParseFile(xml_docs_path[i]);
 	if(!xml_doc){
 		printf("Document at %s not parsed successfully\n", xml_docs_path[i]);
 	}
-	/*Debugging*/ clock_t doc_opened = clock();	
+	DEBUG(clock_t doc_opened = clock());	
 	
 	xmlNodePtr doc_root = xmlDocGetRootElement(xml_doc);
 
@@ -57,9 +57,9 @@ TAD_community load(TAD_community com, char* dump_path){
 
 		}
 
-	/*Debugging*/ clock_t doc_end = clock(); 
-	/*Debugging*/ printf("Tempo abrir %s' = %f\n", xml_docs_path[i] , (double)(doc_opened-doc_begin)/CLOCKS_PER_SEC);
-	/*Debugging*/ printf("Tempo processar %s' = %f\n",  xml_docs_path[i], (double)(doc_end-doc_opened)/CLOCKS_PER_SEC);
+	DEBUG( clock_t doc_end = clock() ); 
+	DEBUG( printf("Tempo abrir %s' = %f\n", xml_docs_path[i] , (double)(doc_opened-doc_begin)/CLOCKS_PER_SEC));
+	DEBUG( printf("Tempo processar %s' = %f\n",  xml_docs_path[i], (double)(doc_end-doc_opened)/CLOCKS_PER_SEC));
 
 	xmlFreeDoc(xml_doc);
 

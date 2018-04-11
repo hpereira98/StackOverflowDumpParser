@@ -93,7 +93,7 @@ void usersXmlToTAD(TAD_community com, xmlNodePtr doc_root){
    			long* idUser = malloc(sizeof(long));
    			int* repUser = malloc(sizeof(int));
 				
-   			User new = initUser(); 
+   			User new = initUser();  
    				
    			// Nome
    			setUserDisplayName(new, (char*)name); 
