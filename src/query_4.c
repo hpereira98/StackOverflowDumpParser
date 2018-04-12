@@ -2,24 +2,26 @@
 
 gboolean adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer info){ // info = {tree, tag, inicio, fim}
 	Post post = (Post) post_pointer;
-	char* tag = ((char*)(info))[1];
+	char* tag = ((char**)(info))[1];
 	Date begin = ((Date*)(info))[2];
 	Date end = ((Date*)(info))[3]; 
 	GTree* tree = ((GTree**)(info))[0]; 
-	Date post_date = getPostDate(post);
+	Date post_date = getPostSimpleDate(post);
 	int added = 0;
 
-	if(comparaDatas(begin, end, post_date) == 0){ 
+	if(comparaDatas(begin, end, post_date) == 0){
 		GArray* post_tags = getPostTags(post);
-		for(int i = 0; i<post_tags->len && !added; i++){
-			char* tag_temp = g_array_index(post_tags, char*, i);
-
-			if(strcmp(tag_temp, tag) == 0){
-				long postID = getPostID(post);
-				g_tree_insert(tree, (gpointer)post_date, (gpointer)(&postID));
-				added++;
+		if(post_tags != NULL){
+			for(int i = 0; i<post_tags->len && !added; i++){
+				char* tag_temp = g_array_index(post_tags, char*, i);
+				if(strcmp(tag_temp, tag) == 0){
+					long postID = getPostID(post);
+					g_tree_insert(tree, (gpointer)post_date, (gpointer)(&postID));
+					added++;
+				}
 			}
 		}
+		
 	}
 
 	else if(comparaDatas(begin, end, post_date) == -1) return TRUE;

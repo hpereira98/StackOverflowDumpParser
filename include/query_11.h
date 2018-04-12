@@ -1,6 +1,7 @@
 #ifndef __QUERY11_H__
 #define __QUERY11_H__
 
+#define DEBUG_MODE
 #include "toInclude.h"
 
 int sortByRep(User* a,User *b);

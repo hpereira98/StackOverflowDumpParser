@@ -223,10 +223,12 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 		   			char* next_tag = mystrdup(nextTag((char*)tags, &j));	   			
 					if(next_tag[0]!='\0'){
 						g_array_append_val(new, next_tag);
-						//printf("%s\n", next_tag);
+						//DEBUG(printf("%s\n", next_tag););
 					}
 		   		}
+		   		setPostTags(newPost, new);
 		   	}
+		   	else setPostTags(newPost, NULL);
 	   		
 	   			
 	   		// Score
@@ -386,7 +388,7 @@ long better_answer(TAD_community com, long id){
 */
 // query 11
 LONG_list most_used_best_rep(TAD_community com, int N, Date begin, Date end){
-	return most_used_best_rep_aux(com->user,com->tags,N,begin,end);
+	return most_used_best_rep_aux(com->user, com->tags, N, begin, end);
 }
 
 

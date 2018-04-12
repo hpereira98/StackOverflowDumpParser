@@ -124,7 +124,6 @@ int main(){
 
 	//g_hash_table_foreach(teste->tags,(GHFunc)printTagsHT,NULL);
 
-	
 	clock_t begin11 = clock();
 	LONG_list new11 = most_used_best_rep(teste, 100000, inicio, fim);
 	clock_t end11 = clock();

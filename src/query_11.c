@@ -25,10 +25,12 @@ int sortByTagOcor(Tag* a, Tag* b){
 
 int elemTag(GArray* array, char* name){
 	int i;
+	DEBUG(printf("%s\n", name));
 
 	for(i=0; i<array->len; i++){
 		Tag tag = g_array_index(array, Tag, i);
 
+		DEBUG(printf("%s - %s\n", name, getTagName(tag)));
 		if(g_strcmp0(name, getTagName(tag))==0) return i;
 	}
 	
@@ -39,34 +41,54 @@ void adicionaTag(GArray* array, GArray* tags, GHashTable* com_tags){
 	int x;
 	Tag tag;
 
-	for(int i=0; i<tags->len; i++){
-		char* name = g_array_index(tags, char*, i);
+	for(int i = 0; i<tags->len; i++){
+		char* next_tag = g_array_index(tags, char*, i);
+		//DEBUG(printf("Para contabilizar - %s\n", next_tag));
+		x = elemTag(array, next_tag);
+		//DEBUG(printf("%d\n", x));			
+		if(x != -1){
+			//DEBUG(printf("A adicionar na posição %d\n", x));
 
-		if((x = elemTag(array, name)) != -1){
 			tag = g_array_index(array, Tag, x); 
 			setTagOcor(tag, getTagOcor(tag) + 1);
 		}
 		else{
-			tag = g_hash_table_lookup(com_tags, name); 
-			Tag new_tag = createTag(name, getTagID(tag), 1); 
-			g_array_append_val(array, new_tag);					
-		}	
-	}	
-	
+			//DEBUG(printf("A contabilizar - %d\n", x));
+
+			tag = g_hash_table_lookup(com_tags, next_tag); 
+			//DEBUG(printf("HASHTAG: %s - %ld - %d\n", getTagName(tag), getTagID(tag), getTagOcor(tag))); 
+
+			if(tag){
+				Tag new_tag = createTag(next_tag, getTagID(tag), 1);
+				DEBUG(printf("TAG: %s - %ld - %d\n", getTagName(new_tag), getTagID(new_tag), getTagOcor(new_tag))); 
+				g_array_append_val(array, new_tag);	
+			}
+							
+		}
+		//DEBUG(printf("Contabilizado\n"));
+	}		
+
 }
 
 
 LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int N, Date begin, Date end){
-	GArray* users = g_array_new(FALSE,FALSE,sizeof(User));
+	GArray* users = g_array_new(FALSE, FALSE, sizeof(User));
 
 	void* info = (void*)users;
 	
 	// Filtra os melhores N users por reputação
 	g_hash_table_foreach(com_user, insereUsers, info); 
+	
+	DEBUG(
+		printf("Vai procurar\n");
+		Tag new_tag_ = g_hash_table_lookup(com_tags, "android"); 
+		printf("TAG: %s - %ld - %d\n", getTagName(new_tag_), getTagID(new_tag_), getTagOcor(new_tag_));
+
+	);
 
  	g_array_sort(users, (GCompareFunc)sortByRep);
 
-	GArray* tags = g_array_new(FALSE, TRUE,sizeof(Tag));
+	GArray* tags = g_array_new(FALSE, FALSE, sizeof(Tag));
 
 	for(int i = 0; i<N; i++){ 
 		User user = g_array_index(users, User, i);	
@@ -75,14 +97,14 @@ LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int
 		for(int j = 0; j<user_posts->len; j++){
 			Post post = g_array_index(user_posts, Post, j);			
 			Date data = getPostSimpleDate(post);
-			// Debugging  printf("Data: %d-%d-%d\n", get_day(data), get_month(data), get_year(data));
-			//  Debugging  printf("6 %d %d\n", i, j);
+
 			if(comparaDatas(begin, end, data) == 0){
-				adicionaTag(tags, getPostTags(post), com_tags);	
-				// Debugging printf("7\n");	
+				GArray* post_tags = getPostTags(post);
+				if(post_tags != NULL) adicionaTag(tags, post_tags, com_tags);
 			}
 		}
 	}
+
 	// Ordena GArray por ocorrencias
 	g_array_sort(tags, (GCompareFunc)sortByTagOcor);
 
@@ -98,11 +120,15 @@ LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int
 
 	LONG_list r = create_list(size);
 
-	for(int i=0; i<size; i++){
-		Tag tag = g_array_index(tags, Tag, i);
-		printf("%li %d\n", getTagID(tag), getTagOcor(tag)); //para verificar se esta a correto o resultado
-		set_list(r, i, getTagID(tag));	
-	} 
+	DEBUG(
+		for(int i=0; i<size; i++){
+			Tag tag = g_array_index(tags, Tag, i);
+			printf("%s %li %d\n", getTagName(tag), getTagID(tag), getTagOcor(tag)); //para verificar se esta a correto o resultado
+			set_list(r, i, getTagID(tag));	
+		}
+	);
+
+	DEBUG(printf("SIZE = %d\n", size));
 
 	return r;
 
