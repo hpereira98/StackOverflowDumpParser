@@ -144,6 +144,19 @@ void printPostAuxHT(gpointer key, gpointer value, gpointer user_data){
  	
 }
 
+void printTagHTAux(gpointer key, gpointer value, gpointer user_data){
+	Tag tag = (Tag)value;
+	int* i = ((int*)user_data);
+	printf("%d %s %s %ld %d\n", (*i)++, (char*)key, getTagName(tag), getTagID(tag), getTagOcor(tag));
+ 	
+}
+
+void printTagHT(GHashTable* com_tag){
+	int i=0;
+	g_hash_table_foreach(com_tag, printTagHTAux, &i);
+	printf("%d",i);
+}
+
 /* Funcao para Debugging de UserHashT */
 /*
 void printUserHT(gpointer key, gpointer value, gpointer user_data){

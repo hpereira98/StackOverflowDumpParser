@@ -6,7 +6,7 @@ int sortByNPosts(User* a,User *b){
 	return nposts2-nposts1;
 }
 
-void insertionSort (gpointer key, gpointer user_pointer, gpointer info){
+void appendUserToArray (gpointer key, gpointer user_pointer, gpointer info){
 	
 	User user = (User)user_pointer;
 	GArray* users = (GArray*)info;
@@ -22,7 +22,7 @@ LONG_list top_most_active_aux(GHashTable* com_user, int N) {
 	User user; 
 	int i, size;
 
-	g_hash_table_foreach(com_user, insertionSort, users);
+	g_hash_table_foreach(com_user, appendUserToArray, users);
 
 	g_array_sort(users,(GCompareFunc)sortByNPosts);
 
@@ -36,7 +36,6 @@ LONG_list top_most_active_aux(GHashTable* com_user, int N) {
 	for (i=0;i<size;i++){
 		user = g_array_index(users,User,i);
 		set_list(res,i,getUserID(user));
-
 	}
 
 	return res;

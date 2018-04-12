@@ -9,6 +9,7 @@ int ordena(gconstpointer a,gconstpointer b);
 void printUserHT(gpointer key, gpointer value, gpointer user_data);
 gboolean printPostTree(gpointer key, gpointer value, gpointer user_data);
 void printPostAuxHT(gpointer key, gpointer value, gpointer user_data);
+void printTagHT(GHashTable* com_tag);
 int insert(int* array, int elem, int size);
 int insertDate(Date* array, Date elem, int size);
 void insereId(long* v, long x, int i, int n);

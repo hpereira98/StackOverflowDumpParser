@@ -317,18 +317,20 @@ void tagsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 			// Ocorrencias
 			setTagOcor(new, 0);
 
-	   		// Inserir conforme a Tag ID
+	   		// Inserir conforme Tag Name
+
 	   		g_hash_table_insert(com->tags, tag_name, new);
 				
 			i++;
-			xmlFree(tag_name);
 				
 		}
+
 		xmlFree(tag_id);
  
 		cur = cur->next;
 	}
 	/* Debugging */ printf("Tags: %d\n", i);
+
 }
 
 

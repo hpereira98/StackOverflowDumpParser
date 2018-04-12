@@ -25,7 +25,7 @@
 #include "query_11.h"
 #include <time.h> // remover depois 
 
-#ifdef DEBUG_MODE
+#ifndef DEBUG_MODE
 #define DEBUG(X) X
 #else
 #define DEBUG(X)

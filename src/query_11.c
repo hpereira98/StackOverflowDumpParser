@@ -73,6 +73,7 @@ void adicionaTag(GArray* array, GArray* tags, GHashTable* com_tags){
 
 LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int N, Date begin, Date end){
 	GArray* users = g_array_new(FALSE, FALSE, sizeof(User));
+	int n_Users;
 
 	void* info = (void*)users;
 	
@@ -81,7 +82,7 @@ LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int
 	
 	DEBUG(
 		printf("Vai procurar\n");
-		Tag new_tag_ = g_hash_table_lookup(com_tags, "android"); 
+		Tag new_tag_ = g_hash_table_lookup(com_tags, "ruu"); 
 		printf("TAG: %s - %ld - %d\n", getTagName(new_tag_), getTagID(new_tag_), getTagOcor(new_tag_));
 
 	);
@@ -90,7 +91,10 @@ LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int
 
 	GArray* tags = g_array_new(FALSE, FALSE, sizeof(Tag));
 
-	for(int i = 0; i<N; i++){ 
+	if(users->len < N) n_Users = users->len;
+	else n_Users = N;
+	
+	for(int i = 0; i< n_Users; i++){ 
 		User user = g_array_index(users, User, i);	
 		GArray* user_posts = getUserPosts(user);
 

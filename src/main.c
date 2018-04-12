@@ -62,7 +62,7 @@ int main(){
 	printf("Tempo '3 - total_posts' = %f\n", (double)(end3-begin3)/CLOCKS_PER_SEC);
 
 	clock_t begin4 = clock();
-	LONG_list new4 = questions_with_tag(teste, "android", inicio, fim);
+	//LONG_list new4 = questions_with_tag(teste, "android", inicio, fim);
 	clock_t end4 = clock();
 
 	printf("Tempo '4 - questions_with_tag' = %f\n", (double)(end4-begin4)/CLOCKS_PER_SEC);
@@ -125,7 +125,7 @@ int main(){
 	//g_hash_table_foreach(teste->tags,(GHFunc)printTagsHT,NULL);
 
 	clock_t begin11 = clock();
-	LONG_list new11 = most_used_best_rep(teste, 100000, inicio, fim);
+	LONG_list new11 = most_used_best_rep(teste, 600000, inicio, fim);
 	clock_t end11 = clock();
 
 	printf("Tempo '11 - most_used_best_rep' = %f\n", (double)(end11-begin11)/CLOCKS_PER_SEC);
