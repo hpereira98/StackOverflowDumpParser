@@ -340,7 +340,7 @@ STR_pair info_from_post(TAD_community com, long id){
 	return info_from_post_aux(com->post, com->postAux, com->user, id);
 } 
  
-/*
+
 // query 2
 LONG_list top_most_active(TAD_community com, int N){
 	return top_most_active_aux(com->user,N);
@@ -350,18 +350,18 @@ LONG_list top_most_active(TAD_community com, int N){
 LONG_pair total_posts(TAD_community com, Date begin, Date end){
 	return total_posts_aux(com->post,begin,end);
 }
-*/
+
 // query 4
 LONG_list questions_with_tag(TAD_community com, char* tag, Date begin, Date end){
 	return questions_with_tag_aux(com->post,tag,begin,end);
 }
-/*
+
 // query 5
 USER get_user_info(TAD_community com, long id){
 	return get_user_info_aux(com->user,id);
 }
-*/
-/*
+
+
 // query 6
 LONG_list most_voted_answers(TAD_community com, int N, Date begin, Date end){
 	return most_voted_answers_aux(com->post,N,begin,end);
@@ -371,7 +371,7 @@ LONG_list most_voted_answers(TAD_community com, int N, Date begin, Date end){
 LONG_list most_answered_questions(TAD_community com, int N, Date begin, Date end){
 	return most_answered_questions_aux(com->post,N,begin,end);
 }
-*/
+
 /*
 // query 8
 LONG_list contains_word(TAD_community com, char* word, int N){
@@ -567,26 +567,9 @@ char* getPostDate(Post post){
 	return mystrdup(post->data);
 }
 
-Date getPostSimpleDate(Post post){ // "AAAA-MM-DD"
+char* getPostSimpleDate(Post post){ // "AAAA-MM-DD"
 	char* date = getPostDate(post);
-
-	char* ano_str = malloc(5);
-	char* mes_str = malloc(3);
-	char* dia_str = malloc(3);
-	int ano, mes, dia;
-
-	strncpy(ano_str, date, 4);
-	ano_str[4]='\0';
-	strncpy(mes_str, date+5, 2);
-	mes_str[2]='\0';
-	strncpy(dia_str, date+8, 2);
-	dia_str[2]='\0';
-
-	ano=atoi(ano_str);
-	mes=atoi(mes_str);
-	dia=atoi(dia_str);
-
-	return (createDate(dia, mes, ano));
+	return g_strndup(date,10);
 }
 
 

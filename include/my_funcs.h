@@ -3,8 +3,10 @@
 
 #include "toInclude.h"
 
+
+char* dateToString(Date date);
 int cmpTreeKey(STR_pair a, STR_pair b);
-int comparaDatas(Date a, Date b, Date c);
+int comparaDatas(char* a, char* b, char* c);
 int ordena(gconstpointer a,gconstpointer b);
 void printUserHT(gpointer key, gpointer value, gpointer user_data);
 gboolean printPostTree(gpointer key, gpointer value, gpointer user_data);

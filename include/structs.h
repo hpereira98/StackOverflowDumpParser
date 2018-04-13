@@ -57,7 +57,7 @@ int getPostOwnerRep(Post post);
 int getPostTypeID(Post post);
 long getPostParentID(Post post);
 char* getPostDate(Post post);
-Date getPostSimpleDate(Post post);
+char* getPostSimpleDate(Post post);
 GArray* getPostTags(Post post);
 int getPostScore(Post post);
 int getPostNComments(Post post);

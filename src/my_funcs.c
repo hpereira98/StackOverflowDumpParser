@@ -18,21 +18,26 @@ int cmpTreeKey(STR_pair a, STR_pair b){
 	return (-1)*r; // inverter ordem cronologica
 }
 
-int comparaDatas(Date a, Date b, Date c){ // se a primeira for mais pequena que a segunda retorna -1
+char* dateToString(Date date){
 
-	// Compara o ano
-	if(get_year(c) < get_year(a)) return -1;
-	else if(get_year(b) < get_year(c)) return 1;
+	int year = get_year(date);
+	int month = get_month(date);
+	int day = get_day(date);
 
-	// Compara o mês - se chegaram aqui é proque o ano é o mesmo
-	if(get_month(c) < get_month(a)) return -1;
-	else if(get_month(b) < get_month(c)) return 1;
+	GDateTime* date_aux = g_date_time_new_utc(year,month,day,0,0,0);
+	char* date_res = g_date_time_format(date_aux,"%F");
+	
+	return date_res;
+}
 
-	// Compara o dia - se chegaram aqui é porque o ano e o mês são os mesmos
-	if(get_day(c) < get_day(a)) return -1;
-	else if(get_day(b) < get_day(c)) return 1;
+int comparaDatas(char* begin, char* end, char* post_date){ 
 
-	return 0;
+	if(strcmp(post_date,end)>0) 
+		return 1; // ainda nao entrou no intervalo de tempo (na travessia)
+	if(strcmp(begin,post_date)>0) 
+		return -1; // dataPost fora do limite inferior(Return True na travessia)
+	else 
+		return 0; // esta dentro do intervalo 
 }
 
 int ordena(gconstpointer a,gconstpointer b){

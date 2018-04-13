@@ -75,6 +75,9 @@ LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int
 	GArray* users = g_array_new(FALSE, FALSE, sizeof(User));
 	int n_Users;
 
+	char* date_begin = dateToString(begin);
+	char* date_end = dateToString(end);
+
 	void* info = (void*)users;
 	
 	// Filtra os melhores N users por reputação
@@ -100,9 +103,9 @@ LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int
 
 		for(int j = 0; j<user_posts->len; j++){
 			Post post = g_array_index(user_posts, Post, j);			
-			Date data = getPostSimpleDate(post);
+			char* data = getPostSimpleDate(post);
 
-			if(comparaDatas(begin, end, data) == 0){
+			if(comparaDatas(date_begin, date_end, data) == 0){
 				GArray* post_tags = getPostTags(post);
 				if(post_tags != NULL) adicionaTag(tags, post_tags, com_tags);
 			}

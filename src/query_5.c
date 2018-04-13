@@ -1,13 +1,14 @@
 #include <query_5.h>
 
 USER get_user_info_aux(GHashTable* com_user, long id){
-	User user = (User)g_hash_table_lookup(com_user,&id);
-	int i, size; long posts[10];
+	int i, size; long postsID[10];
 	Post post; 
 	USER res = NULL;
+	
+	User user = (User)g_hash_table_lookup(com_user,&id);
 
 	if(user!=NULL){
-		GArray* userPosts = getClonedUserPosts(user);
+		GArray* userPosts = getUserPosts(user);
 		
 		g_array_sort (userPosts,ordena);
 		
@@ -19,10 +20,10 @@ USER get_user_info_aux(GHashTable* com_user, long id){
 				post = g_array_index(userPosts,Post,i);
 
 				if(post!=NULL)
-					posts[i] = getPostID(post);
-				else posts[i] = -2;
+					postsID[i] = getPostID(post);
+				else postsID[i] = -2;
 		}
-		res = create_user( getUserShortBio(user),posts);
+		res = create_user( getUserShortBio(user),postsID);
 	}
 
 	return res;
