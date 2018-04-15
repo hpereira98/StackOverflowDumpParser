@@ -1,15 +1,37 @@
 %% RELATÓRIO DO PROJETO EM C DE LI3
 
-\documentclass[a4paper, 11pt, oneside]{book}
+\documentclass[a4paper, 11pt, oneside]{article}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc} 
-\usepackage{fouriernc}
+\usepackage[portuguese]{babel}
 \usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+%% DEFINIÇÃO DOS SNIPPETS EM C
+\usepackage{listings}
+\lstdefinestyle{customc}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  language=C,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{green!40!black},
+  commentstyle=\itshape\color{purple!40!black},
+  identifierstyle=\color{blue},
+  stringstyle=\color{orange},
+}
+
+\lstset{escapechar=@,style=customc}
+
+
+%%RELATÓRIO
 
 \begin{document} 
 
 \begin{titlepage}
+
 
 	\centering 
 	
@@ -55,6 +77,70 @@
 	2018
 
 \end{titlepage}
+
+%% ÌNDICE
+
+\tableofcontents
+\lstlistoflistings
+
+\newpage
+
+%% INTRODUÇÃO
+
+\section{Introdução}
+
+No âmbito da unidade curricular \underline{Laboratórios de Informática III}, do 2º ano do Mestrado Integrado em Engenharia Informática, foi-nos proposta a realização de um projeto. Projeto este que consistia no desenvolvimento de um sistema capaz de processar ficheiros XML, armazenando as várias informações utilizadas pelo Stack Overflow (uma das comunidades de perguntas e respostas mais utilizadas atualmente por programadores em todo o mundo). Além disso, após o tratamento da informação, o sistema teria que ser capaz de responder eficientemente a um conjunto de interrogações (explicitado na secção \ref{queries}). Esta aplicação teria que ser obrigatoriamente desenvolvida em \textit{C}.
+
+Ora, perante este enunciado, decidimos utilizar na estruturação do nosso sistema as definições da biblioteca \href{https://developer.gnome.org/glib}{GLib}, mais propriamente as GHashTables, as GTrees e os GArrays (e respetivas funções). As estruturas por nós definidas serão apresentadas e justificadas na secção \ref{structs}.
+
+%% ESTRUTURAS
+
+\newpage
+\section{Estrutura}
+\label{structs}
+
+\begin{lstlisting}[caption= exemplo código]
+#include <stdio.h>
+#include <stdlib.h>
+
+void exemplo () {
+for (int i=0; i<1904; i++) printf("ola\n");
+typedef struct Swag = malloc(sizeof(int)*N);
+return;
+}
+\end{lstlisting}
+
+%% QUERIES
+\newpage
+\section{Interrogações e abordagem}
+\label{queries}
+
+
+\subsection{Info From Post}
+
+\subsection{Top Most Active}
+
+\subsection{Total Posts}
+
+\subsection{Questions with Tag}
+
+\subsection{Get User Info}
+
+\subsection{Most Voted Answers}
+
+\subsection{Most Answered Questions}
+
+\subsection{Contains Word}
+
+\subsection{Both Participated}
+
+\subsection{Better Answer}
+
+\subsection{Most Used Best Rep}
+
+%% CONCLUSÃO
+\newpage
+\section{Conclusão}
 
 
 \end{document}
