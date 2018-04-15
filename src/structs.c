@@ -20,7 +20,7 @@ struct post{
 	int type_id;
 	long parent_id;
 	char* data;
-	char* tags;
+	GArray* tags;
 	int score;
 	int n_comments;
 	int n_respostas;
@@ -215,8 +215,21 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 	   		else new->accepted_answer=-2;	
 	   		*/
 
-	   		// Tags   = "<tag><tag>"  
-	   		setPostTags(newPost,(char*)tags);
+	   		// Tags   = "<tag><tag>" 
+	   		if(tags){ 
+		   		int j = 0;
+		   		GArray* new = g_array_new(FALSE, FALSE, sizeof(char*));
+				while(tags[j]!='\0'){
+		   			char* next_tag = mystrdup(nextTag((char*)tags, &j));	   			
+					if(next_tag[0]!='\0'){
+						g_array_append_val(new, next_tag);
+						//DEBUG(printf("%s\n", next_tag););
+					}
+		   		}
+		   		setPostTags(newPost, new);
+		   	}
+		   	else setPostTags(newPost, NULL);
+	   		
 	   			
 	   		// Score
 			sscanf((const char*)score_xml, "%d", score); 
@@ -304,18 +317,20 @@ void tagsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 			// Ocorrencias
 			setTagOcor(new, 0);
 
-	   		// Inserir conforme a Tag ID
+	   		// Inserir conforme Tag Name
+
 	   		g_hash_table_insert(com->tags, tag_name, new);
 				
 			i++;
-			xmlFree(tag_name);
 				
 		}
+
 		xmlFree(tag_id);
  
 		cur = cur->next;
 	}
 	/* Debugging */ printf("Tags: %d\n", i);
+
 }
 
 
@@ -325,7 +340,7 @@ STR_pair info_from_post(TAD_community com, long id){
 	return info_from_post_aux(com->post, com->postAux, com->user, id);
 } 
  
-/*
+
 // query 2
 LONG_list top_most_active(TAD_community com, int N){
 	return top_most_active_aux(com->user,N);
@@ -345,8 +360,8 @@ LONG_list questions_with_tag(TAD_community com, char* tag, Date begin, Date end)
 USER get_user_info(TAD_community com, long id){
 	return get_user_info_aux(com->user,id);
 }
-*/
-/*
+
+
 // query 6
 LONG_list most_voted_answers(TAD_community com, int N, Date begin, Date end){
 	return most_voted_answers_aux(com->post,N,begin,end);
@@ -356,7 +371,7 @@ LONG_list most_voted_answers(TAD_community com, int N, Date begin, Date end){
 LONG_list most_answered_questions(TAD_community com, int N, Date begin, Date end){
 	return most_answered_questions_aux(com->post,N,begin,end);
 }
-*/
+
 /*
 // query 8
 LONG_list contains_word(TAD_community com, char* word, int N){
@@ -372,12 +387,12 @@ LONG_list both_participated(TAD_community com, long id1, long id2, int N){
 long better_answer(TAD_community com, long id){
 	return better_answer_aux(com->post,id);
 }
-
+*/
 // query 11
 LONG_list most_used_best_rep(TAD_community com, int N, Date begin, Date end){
-	return most_used_best_rep_aux(com->user,com->tags,N,begin,end);
+	return most_used_best_rep_aux(com->user, com->tags, N, begin, end);
 }
-*/
+
 
 // Hash PostAux para Post 
 
@@ -552,31 +567,14 @@ char* getPostDate(Post post){
 	return mystrdup(post->data);
 }
 
-Date getPostSimpleDate(Post post){ // "AAAA-MM-DD"
+char* getPostSimpleDate(Post post){ // "AAAA-MM-DD"
 	char* date = getPostDate(post);
-
-	char* ano_str = malloc(5);
-	char* mes_str = malloc(3);
-	char* dia_str = malloc(3);
-	int ano, mes, dia;
-
-	strncpy(ano_str, date, 4);
-	ano_str[4]='\0';
-	strncpy(mes_str, date+5, 2);
-	mes_str[2]='\0';
-	strncpy(dia_str, date+8, 2);
-	dia_str[2]='\0';
-
-	ano=atoi(ano_str);
-	mes=atoi(mes_str);
-	dia=atoi(dia_str);
-
-	return (createDate(dia, mes, ano));
+	return g_strndup(date,10);
 }
 
 
-char* getPostTags(Post post){
-	return mystrdup(post->tags);
+GArray* getPostTags(Post post){
+	return post->tags;
 }
 
 int getPostScore(Post post){
@@ -621,8 +619,8 @@ void setPostDate(Post post, char* data){
 	post->data = mystrdup(data);
 }
 
-void setPostTags(Post post, char* tags){
-	post->tags = mystrdup(tags); 
+void setPostTags(Post post, GArray* tags){
+	post->tags = tags; 
 }
 
 void setPostScore(Post post, int score){

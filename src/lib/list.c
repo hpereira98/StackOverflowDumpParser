@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "list.h"
+#include <stdio.h>
 
 struct llist {
   int size;
@@ -15,6 +16,7 @@ LONG_list create_list(int size) {
 }
 
 long get_list(LONG_list l, int index) {
+
     return l->list[index]; 
 }
 
