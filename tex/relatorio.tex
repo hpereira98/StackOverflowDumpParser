@@ -8,6 +8,7 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{xcolor}
+\usepackage{multicol}
 
 %% DEFINIÇÃO DOS SNIPPETS EM C
 \usepackage{listings}
@@ -93,21 +94,74 @@ No âmbito da unidade curricular \underline{Laboratórios de Informática III}, 
 
 Ora, perante este enunciado, decidimos utilizar na estruturação do nosso sistema as definições da biblioteca \href{https://developer.gnome.org/glib}{GLib}, mais propriamente as GHashTables, as GTrees e os GArrays (e respetivas funções). As estruturas por nós definidas serão apresentadas e justificadas na secção \ref{structs}.
 
+O grupo decidiu organizar o trabalho, separando o código em diferentes ficheiros, isto é, um ficheiro para as estruturas por nós definidas e utilizadas (\textit{structs.c}) e respetivos acessos (getters e setters, como forma de garantir o encapsulamento), um para o parser do ficheiro XML (\textit{load.c}), um para cada interrogação (\textit{query\_*.c}), um para as funções auxiliares (\textit{my\_funcs.c}) e outro para a \textit{main.c}.
+
+Um ponto fulcral deste trabalho era conciliar a eficiência com o encapsulamento, sem comprometer nenhum destes.
+
 %% ESTRUTURAS
 
 \newpage
 \section{Estrutura}
 \label{structs}
 
-\begin{lstlisting}[caption= exemplo código]
-#include <stdio.h>
-#include <stdlib.h>
+Para a realização do projeto, tivemos que definir vária estruturas de dados em \textit{C}, de maneira a respeitarmos o enunciado, no que toca aos tipos concretos e abstratos de dados. Foi-nos dada a seguinte definição abstrata de uma comunidade do Stack Overflow:
 
-void exemplo () {
-for (int i=0; i<1904; i++) printf("ola\n");
-typedef struct Swag = malloc(sizeof(int)*N);
-return;
-}
+\begin{lstlisting}[caption=Definição da TAD\_community]
+typedef struct TCD_community * TAD_community;
+\end{lstlisting}
+
+Assim sendo, tivemos como desafio criar a nossa própria definição concreta da comunidade. Após ponderarmos em grupo, tendo em conta as interrogações que nos apresentaram, a eficiência e o encapsulamento, decidimos organizar a nossa \textit{TCD\_community} da seguinte maneira (utilizando as definições da biblioteca GLib):
+\begin{itemize}
+\item Uma tabela de Hash para os Utilizadores
+\item Uma tabela de Hash para informações auxiliares sobre os Posts
+\item Uma tabela de Hash para as Tags
+\item Uma árvore para os Posts
+\end{itemize}
+
+Ou seja, o código para tal é o seguinte:
+\begin{lstlisting}[caption=Definição da TCD\_community]
+struct TCD_community{
+	GHashTable* user;
+	GTree* post;
+	GHashTable* postAux;
+	GHashTable* tags;	
+};
+\end{lstlisting}
+
+Por sua vez, definimos também uma estrutura para os Utilizadores, para os Posts e para as Tags, com o intuito de as "guardar" em cada elemento das tabelas/árvore acima descritas.
+
+\begin{lstlisting}[caption=Definição de estruturas internas]
+struct user{
+	long id; // id do utilizador
+	char* display_name; // username
+	int n_perguntas; // numero de perguntas do utilizador
+	int n_respostas; // numero de respostas do utilizador
+	int n_posts; // numero total de posts deste utilizador
+	int reputacao; // reputacao
+	char* short_bio; // descricao do utilizador
+	GArray* userPosts; // array com os posts de cada utilizador
+
+};
+
+struct post{
+	long id; // id do post
+	char* titulo; // titulo do post
+	long owner_id; // id do criador do post
+	int owner_rep; // reputacao do criador do post
+	int type_id; // tipo do post
+	long parent_id; // "pai" do post (se este for resposta)
+	char* data; // data do post
+	GArray* tags; // tags do post
+	int score; // score do post
+	int n_comments; // numero de comentarios do post
+	int n_respostas; // numero de respostas do post (se este for pergunta)
+};
+
+struct tag{
+	char* name; // nome da tag
+	long id; // id da tag
+	int ocorrencias; // ocorrencias da tag
+};
 \end{lstlisting}
 
 %% QUERIES
@@ -142,5 +196,17 @@ return;
 \newpage
 \section{Conclusão}
 
+\begin{lstlisting}[caption= exemplo código]
+#include <stdio.h>
+#include <stdlib.h>
+
+//codigo
+
+void exemplo () {
+for (int i=0; i<1904; i++) printf("ola\n");
+typedef struct Swag = malloc(sizeof(int)*N);
+return;
+}
+\end{lstlisting}
 
 \end{document}
