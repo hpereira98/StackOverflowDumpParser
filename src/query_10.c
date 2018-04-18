@@ -40,7 +40,7 @@ long better_answer_aux(GTree* com_post, GHashTable* com_postAux, long id){
 	*max=0;
 
 	long *answerId = malloc(sizeof(long));
-	answerId=NULL;
+	*answerId=-2;
 
 	char *data = getPostDate(post);
 
@@ -48,9 +48,7 @@ long better_answer_aux(GTree* com_post, GHashTable* com_postAux, long id){
 
 	g_tree_foreach(com_post, (GTraverseFunc)bestAnswer, info);
 
-	if(answerId==NULL){
+	if(answerId==-2)
 		printf("The post with ID %li has no answers.\n",id);
-		return -2;
-	}
-	else return *answerId;
+	return *answerId;
 }
