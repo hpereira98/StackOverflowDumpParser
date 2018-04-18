@@ -255,8 +255,8 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 	   			setPostNRespostas(newPost,*awnsers);
 	   		}
 	   		else setPostNRespostas(newPost,-1);
-
-	   		// Add Post to User !! ver se ao aplicar encapsulamento nao compensa passar apenas os ids
+		
+			// Add Post to User !! ver se ao aplicar encapsulamento nao compensa passar apenas os ids
 			if (user!=NULL){
 				g_array_append_val(getUserPosts(user),newPost);
 			}
@@ -382,12 +382,12 @@ LONG_list contains_word(TAD_community com, char* word, int N){
 LONG_list both_participated(TAD_community com, long id1, long id2, int N){
 	return both_participated_aux(com->user, com->post,id1,id2,N);
 }
-
+*/
 // query 10
 long better_answer(TAD_community com, long id){
-	return better_answer_aux(com->post,id);
+	return better_answer_aux(com->post,com->postAux,id);
 }
-*/
+
 // query 11
 LONG_list most_used_best_rep(TAD_community com, int N, Date begin, Date end){
 	return most_used_best_rep_aux(com->user, com->tags, N, begin, end);
@@ -622,6 +622,7 @@ void setPostDate(Post post, char* data){
 void setPostTags(Post post, GArray* tags){
 	post->tags = tags; 
 }
+
 
 void setPostScore(Post post, int score){
 	post->score = score;
