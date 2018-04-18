@@ -38,7 +38,7 @@ LONG_list questions_with_tag_aux(GTree* com_post, char* tag, Date begin, Date en
 	char* date_begin = dateToString(begin);
 	char* date_end = dateToString(end);
 
-	GArray* questionsID = g_array_new(FALSE,FALSE,sizeof(long));
+	GArray* questionsID = g_array_new(FALSE, FALSE, sizeof(long));
 	void* info[4] = {(void*)questionsID, (void*)tag, (void*)date_begin, (void*)date_end};
 
 	// Constroi a tree com os posts com a tag e dentro da data

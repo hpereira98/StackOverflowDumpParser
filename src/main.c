@@ -110,7 +110,7 @@ int main(){
 	printf("Tempo '8 - contains_word' = %f\n", (double)(end8-begin8)/CLOCKS_PER_SEC);
 
 	clock_t begin9 = clock();
-	//LONG_list new9 = both_participated(teste,16575,1465, 10); // ids aleatórios
+	LONG_list new9 = both_participated(teste,16575,1465, 10); // ids aleatórios
 	clock_t end9 = clock();
 
 	//for(int i=0;i<10;i++) printf("%d: %li\n",i+1,get_list(new9,i));

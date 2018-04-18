@@ -3,7 +3,10 @@
 
 // Datas
 
+int searchFunc(STR_pair a, STR_pair b){
 
+	return cmpTreeKey(a,b)*(-1);
+}
 
 int cmpTreeKey(STR_pair a, STR_pair b){
 
