@@ -377,12 +377,12 @@ LONG_list most_answered_questions(TAD_community com, int N, Date begin, Date end
 LONG_list contains_word(TAD_community com, char* word, int N){
 	return contains_word_aux(com->post,word,N);
 }
-
+*/
 // query 9
 LONG_list both_participated(TAD_community com, long id1, long id2, int N){
-	return both_participated_aux(com->user, com->post,id1,id2,N);
+	return both_participated_aux(com->user, com->post, com->postAux, id1, id2, N);
 }
-
+/*
 // query 10
 long better_answer(TAD_community com, long id){
 	return better_answer_aux(com->post,id);
@@ -396,12 +396,12 @@ LONG_list most_used_best_rep(TAD_community com, int N, Date begin, Date end){
 
 // Hash PostAux para Post 
 
-Post getPost(GTree* com_post, GHashTable* com_postAux,long id){
+Post getPost(GTree* com_post, GHashTable* com_postAux, long id){
 	Post post  = NULL;
 
 	PostAux postAux = (PostAux)g_hash_table_lookup(com_postAux, &id);
 
-	/* Debugging */ if(!postAux) printf("PostAux not found\n");
+	/* Debugging */ if(!postAux) printf("PostAux with ID: %ld not found\n",id);
 	
 	if(postAux){
 
@@ -410,13 +410,13 @@ Post getPost(GTree* com_post, GHashTable* com_postAux,long id){
 		char  postID[50]; 
 		sprintf (postID, "%lu", id);
 
-		STR_pair postKey = create_str_pair(postDate,postID);
+		STR_pair postKey = create_str_pair(postDate, postID);
 
 		/* Debugging */ // printf("%s %s\n",get_fst_str(postKey),get_snd_str(postKey) );
 
-		post = (Post)g_tree_lookup(com_post, postKey);
+		post = (Post)g_tree_search(com_post, (GCompareFunc)searchFunc, postKey);
 
-		/* Debugging */ if(!post) printf("Post not found\n");
+		/* Debugging */ if(!post) printf("Post %ld - %s not found\n", id, postDate);
 	}
 
 	return post;
