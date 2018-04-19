@@ -62,6 +62,7 @@ GArray* getPostTags(Post post);
 int getPostScore(Post post);
 int getPostNComments(Post post);
 int getPostNRespostas(Post post);
+GArray* getPostRespostas(Post post);
 
 // Setters para Post
 void setPostID(Post post, long id);
@@ -77,6 +78,7 @@ void setPostNComments(Post post, int n_comments);
 void setPostNDownVotes(Post post, int n_downvotes);
 void setPostNUpVotes(Post post, int n_upvotes);
 void setPostNRespostas(Post post, int n_respostas);
+void setPostRespostas(Post post, GArray* respostas);
 
 // Cleaner
 void freePost (Post post);

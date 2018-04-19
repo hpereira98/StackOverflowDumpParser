@@ -68,4 +68,4 @@ LONG_list both_participated_aux(GHashTable* com_user, GTree* com_post, GHashTabl
 
 	return r;
 
-} 
+}

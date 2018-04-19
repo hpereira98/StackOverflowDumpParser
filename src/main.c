@@ -119,8 +119,9 @@ int main(){
 
 
 	clock_t begin10 = clock();
-	//long new10 = better_answer(teste,216); //escolher id para teste e verificar pelos prints em baixo
+	long new10 = better_answer(teste,103409); //escolher id para teste e verificar pelos prints em baixo
 	clock_t end10 = clock();
+	printf("melhor resposta: %li\n",new10);
 
 	printf("Tempo '10 - better_answer' = %f\n", (double)(end10-begin10)/CLOCKS_PER_SEC);
 
