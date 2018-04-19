@@ -50,70 +50,9 @@ int ordena(gconstpointer a,gconstpointer b){
 }
 
 
-// Ordenar Arrays
-
-int insert(int* array, int elem, int size){
-	int i = 0;
-	int pos = -1;
-
-	for(i = 0; i<size && pos==-1; i++){
-		if(array[i]<elem) pos = i;
-	}
-	for(i = size-1; i>pos; i--){
-		array[i] = array[i-1];
-	}
-
-	array[pos] = elem;
-	/*printf("inseriu em %d\n",pos );
-	for(int j = 0; j<20;j++)
-		printf("%d ",array[j] ); printf("E\n"); */
-	return pos;
-}
-
-/*
-// para propósitos temporários (q9)
-int insertDate(Date* array, Date elem, int size){
-	int i = 0;
-	int pos = -1;
-
-	for(i = 0; i<size && pos==-1; i++){
-		if(comparaDatas(array[i],elem)==-1) pos=i;
-	}
-	for(i = size-1; i>pos; i--){
-		array[i] = array[i-1];
-	}
-
-	array[pos] = elem;
-	printf("inseriu em %d\n",pos );
-	for(int j = 0; j<20;j++)
-		printf("%d ",array[j] ); printf("E\n");
-	return pos;
-}*/
-
-void insereId(long* v, long x, int i, int n){
-
-	for(n=n-1; n>i; n--){
-		v[n] = v[n-1];
-	}
-
-	v[i] = x;
-}
-
-
 
 // String
 
-char* envolveTag(char* tag){
-	char* aux = malloc(strlen(tag) + 2);
-	int i;
-	
-	aux[0] = '<';
-	for(i = 1; i<strlen(tag) + 1; i++) aux[i] = tag[i-1];
-	aux[i] = '>';
-
-	return aux;
-
-}
 
 char* nextTag(char* tags, int *i){
 	char* new_tag = malloc(strlen(tags));
