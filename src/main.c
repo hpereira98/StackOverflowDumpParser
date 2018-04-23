@@ -28,7 +28,7 @@ int compare_ints(gpointer a, gpointer b) {
 
 int main(){
 	struct TCD_community* teste = init();
-	char* path = "../../dumpexemplo/android/";
+	char* path = "../../dumpexemplo/ubuntu/";
 	Date inicio = createDate(01,01,2010);
 	Date fim = createDate(31,1,2020);
 
@@ -119,16 +119,15 @@ int main(){
 
 
 	clock_t begin10 = clock();
-	long new10 = better_answer(teste,103409); //escolher id para teste e verificar pelos prints em baixo
+	long new10 = better_answer(teste,27); //escolher id para teste e verificar pelos prints em baixo
 	clock_t end10 = clock();
 	printf("melhor resposta: %li\n",new10);
 
 	printf("Tempo '10 - better_answer' = %f\n", (double)(end10-begin10)/CLOCKS_PER_SEC);
 
-	//g_hash_table_foreach(teste->tags,(GHFunc)printTagsHT,NULL);
 
 	clock_t begin11 = clock();
-	//LONG_list new11 = most_used_best_rep(teste, 600000, inicio, fim);
+	LONG_list new11 = most_used_best_rep(teste, 600000, inicio, fim);
 	clock_t end11 = clock();
 
 	printf("Tempo '11 - most_used_best_rep' = %f\n", (double)(end11-begin11)/CLOCKS_PER_SEC);

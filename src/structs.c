@@ -388,12 +388,12 @@ LONG_list both_participated(TAD_community com, long id1, long id2, int N){
 long better_answer(TAD_community com, long id){
 	return better_answer_aux(com->post,com->postAux,id);
 }
-/*
+
 // query 11
 LONG_list most_used_best_rep(TAD_community com, int N, Date begin, Date end){
 	return most_used_best_rep_aux(com->user, com->tags, N, begin, end);
 }
-*/
+
 
 // Hash PostAux para Post 
 
@@ -402,7 +402,7 @@ Post getPost(GTree* com_post, GHashTable* com_postAux, long id){
 
 	PostAux postAux = (PostAux)g_hash_table_lookup(com_postAux, &id);
 
-	/* Debugging */ if(!postAux) printf("PostAux with ID: %ld not found\n",id);
+	/* Debugging */ //if(!postAux) printf("PostAux with ID: %ld not found\n",id);
 	
 	if(postAux){
 

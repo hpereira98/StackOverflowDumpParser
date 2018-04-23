@@ -46,6 +46,10 @@ int comparaDatas(char* begin, char* end, char* post_date){
 int ordena(gconstpointer a,gconstpointer b){
 	Post post1 = *((Post*)(a));
 	Post post2 = *((Post*)(b));
+
+	char* date_a = getPostDate(post1);
+	char* date_b = getPostDate(post2);
+	//printf("a comparar %s com %s e o resultado é %d\n",date_a,date_b,strcmp(date_b, date_a));
 	return strcmp(getPostDate(post1),getPostDate(post2))*(-1);
 }
 
