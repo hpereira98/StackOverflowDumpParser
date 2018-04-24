@@ -1,5 +1,15 @@
 #include <query_11.h>
 
+int cmpInt(long *a, long* b){
+	return *a - *b;
+}
+
+int sortMSet(LONG_pair* a, LONG_pair* b){
+	long ocur_a = get_snd_long(*a);
+	long ocur_b = get_snd_long(*b);
+
+	return (-1) * cmpInt(&ocur_a, &ocur_b);
+}
 
 int sortByRep(User* a,User *b){
 	int rep_a = getUserReputacao(*a);
@@ -16,56 +26,41 @@ void insereUsers(gpointer key_pointer, gpointer user_pointer, gpointer info){
 
 }
 
-int sortByTagOcor(Tag* a, Tag* b){
-	int ocor_a = getTagOcor(*a);
-	int ocor_b = getTagOcor(*b);
+GArray* tagsIdToMSet(GArray* tagsId){
+	GArray* mSetTagsID = g_array_new(FALSE, FALSE, sizeof(LONG_pair));
+	long id;
+	int count, i=0;
 
-	return ocor_b - ocor_a;
-}
+	while(i< tagsId->len){
+		count = 1;
+		id = g_array_index(tagsId, long, i);
 
-int elemTag(GArray* array, char* name){
-	int i;
-	DEBUG(printf("%s\n", name));
+		while( id == g_array_index(tagsId, long,++i) )
+			count++;
+		
 
-	for(i=0; i<array->len; i++){
-		Tag tag = g_array_index(array, Tag, i);
-
-		DEBUG(printf("%s - %s\n", name, getTagName(tag)));
-		if(g_strcmp0(name, getTagName(tag))==0) return i;
+		LONG_pair new = create_long_pair(id,count);
+		g_array_append_val(mSetTagsID,new);
 	}
-	
-	return -1;
+
+	return mSetTagsID;
 }
 
-void adicionaTag(GArray* array, GArray* tags, GHashTable* com_tags){
-	int x;
+
+void addTagId(GArray* tagsId, GArray* postTags, GHashTable* com_tags){
+	long id;
 	Tag tag;
 
-	for(int i = 0; i<tags->len; i++){
-		char* next_tag = g_array_index(tags, char*, i);
-		//DEBUG(printf("Para contabilizar - %s\n", next_tag));
-		x = elemTag(array, next_tag);
-		//DEBUG(printf("%d\n", x));			
-		if(x != -1){
-			//DEBUG(printf("A adicionar na posição %d\n", x));
-
-			tag = g_array_index(array, Tag, x); 
-			setTagOcor(tag, getTagOcor(tag) + 1);
+	for(int i = 0; i<postTags->len; i++){
+		char* next_tag = g_array_index(postTags, char*, i);
+		
+		tag = g_hash_table_lookup(com_tags, next_tag); 
+		
+		if(tag){
+			id = getTagID(tag);			
+			g_array_append_val(tagsId, id);	
 		}
-		else{
-			//DEBUG(printf("A contabilizar - %d\n", x));
-
-			tag = g_hash_table_lookup(com_tags, next_tag); 
-			//DEBUG(printf("HASHTAG: %s - %ld - %d\n", getTagName(tag), getTagID(tag), getTagOcor(tag))); 
-
-			if(tag){
-				Tag new_tag = createTag(next_tag, getTagID(tag), 1);
-				DEBUG(printf("TAG: %s - %ld - %d\n", getTagName(new_tag), getTagID(new_tag), getTagOcor(new_tag))); 
-				g_array_append_val(array, new_tag);	
-			}
-							
-		}
-		//DEBUG(printf("Contabilizado\n"));
+										
 	}		
 
 }
@@ -73,26 +68,17 @@ void adicionaTag(GArray* array, GArray* tags, GHashTable* com_tags){
 
 LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int N, Date begin, Date end){
 	GArray* users = g_array_new(FALSE, FALSE, sizeof(User));
-	int n_Users;
+	int n_Users, size;
 
 	char* date_begin = dateToString(begin);
 	char* date_end = dateToString(end);
 
 	void* info = (void*)users;
-	
-	// Filtra os melhores N users por reputação
 	g_hash_table_foreach(com_user, insereUsers, info); 
 	
-	DEBUG(
-		printf("Vai procurar\n");
-		Tag new_tag_ = g_hash_table_lookup(com_tags, "ruu"); 
-		printf("TAG: %s - %ld - %d\n", getTagName(new_tag_), getTagID(new_tag_), getTagOcor(new_tag_));
-
-	);
-
  	g_array_sort(users, (GCompareFunc)sortByRep);
 
-	GArray* tags = g_array_new(FALSE, FALSE, sizeof(Tag));
+	GArray* tagsId = g_array_new(TRUE, FALSE, sizeof(long));
 
 	if(users->len < N) n_Users = users->len;
 	else n_Users = N;
@@ -107,33 +93,29 @@ LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int
 
 			if(comparaDatas(date_begin, date_end, data) == 0){
 				GArray* post_tags = getPostTags(post);
-				if(post_tags != NULL) adicionaTag(tags, post_tags, com_tags);
+				if(post_tags != NULL) addTagId(tagsId, post_tags, com_tags);
 			}
 		}
 	}
 
-	// Ordena GArray por ocorrencias
-	g_array_sort(tags, (GCompareFunc)sortByTagOcor);
+	g_array_sort(tagsId, (GCompareFunc)cmpInt);
 
+	GArray* mSetTagsId = tagsIdToMSet(tagsId);
+	g_array_sort(mSetTagsId, (GCompareFunc)sortMSet);
 
-
-	// Copia tags
-	int size;
-
-	if(tags->len < N)
-		size = tags->len; 
+	if(mSetTagsId->len < N)
+		size = mSetTagsId->len; 
 	else 
 		size = N;
 
 	LONG_list r = create_list(size);
 
-	DEBUG(
-		for(int i=0; i<size; i++){
-			Tag tag = g_array_index(tags, Tag, i);
-			printf("%s %li %d\n", getTagName(tag), getTagID(tag), getTagOcor(tag)); //para verificar se esta a correto o resultado
-			set_list(r, i, getTagID(tag));	
-		}
-	);
+	for(int i=0; i<size; i++){
+		LONG_pair aux = g_array_index(mSetTagsId, LONG_pair, i);
+		set_list(r, i, get_fst_long(aux));	
+		/* debugging */ // printf("%ld %ld\n",get_fst_long(aux),get_snd_long(aux));
+	}
+	
 
 	DEBUG(printf("SIZE = %d\n", size));
 

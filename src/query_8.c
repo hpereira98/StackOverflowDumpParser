@@ -28,11 +28,11 @@ LONG_list contains_word_aux(GTree* com_post, char* word, int N){
 
 	g_tree_foreach(com_post, (GTraverseFunc)word_lookup, info);
 
-	g_array_sort(postArray,ordena);	
+	g_array_sort(postArray, (GCompareFunc)sortByDate);	
 	
 	if(postArray->len < N) size = postArray->len;
 	else size = N;
-	printf("%d\n", postArray->len);
+	// printf("%d\n", postArray->len);
 	LONG_list postList = create_list(size);
 
 	for(i = 0; i < size; i++){

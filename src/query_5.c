@@ -10,7 +10,7 @@ USER get_user_info_aux(GHashTable* com_user, long id){
 	if(user!=NULL){
 		GArray* userPosts = getUserPosts(user);
 		
-		g_array_sort (userPosts,ordena);
+		g_array_sort (userPosts,(GCompareFunc)sortByDate);
 		
 		if(userPosts->len >= 10) 
 			size = 10;

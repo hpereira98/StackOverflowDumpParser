@@ -3,22 +3,18 @@
 
 // Datas
 
-int searchFunc(STR_pair a, STR_pair b){
 
-	return cmpTreeKey(a,b)*(-1);
-}
+int cmpTreeKey(PostKey a, PostKey b){
 
-int cmpTreeKey(STR_pair a, STR_pair b){
-
-	/* Debugging */ // printf("(%s %s) e (%s %s)\n",get_fst_str(a),get_snd_str(a), get_fst_str(b),get_snd_str(b) );
 	
-	if(strcmp(get_snd_str(a), get_snd_str(b)) == 0) return 0; // caso os posts tenham o mesmo id para a procura
-
-	int r = strcmp(get_fst_str(a), get_fst_str(b));
-
-	if(r==0) r = 1; // evitar que posts com strings de data iguais nao deixem de ser inseridos na btree
+	if(getPostKeyID(a) == getPostKeyID(b)) 
+		return 0; // caso os posts tenham o mesmo id para a procura
 	
-	return (-1)*r; // inverter ordem cronologica
+	int r = (-1) * strcmp(getPostKeyDate(a), getPostKeyDate(b));
+
+	if(r==0) r = getPostKeyID(a)-getPostKeyID(b); // evitar que posts com strings de data iguais nao deixem de ser inseridos na btree
+	
+	return r; 
 }
 
 char* dateToString(Date date){
@@ -43,77 +39,21 @@ int comparaDatas(char* begin, char* end, char* post_date){
 		return 0; // esta dentro do intervalo 
 }
 
-int ordena(gconstpointer a,gconstpointer b){
+/*
+int ordena(gconstpointer a,gconstpointer b){ // é usada?? ----------------------------------------------------------------------------------------------------------------
 	Post post1 = *((Post*)(a));
 	Post post2 = *((Post*)(b));
+
+	char* date_a = getPostDate(post1);
+	char* date_b = getPostDate(post2);
+	//printf("a comparar %s com %s e o resultado é %d\n",date_a,date_b,strcmp(date_b, date_a));
 	return strcmp(getPostDate(post1),getPostDate(post2))*(-1);
-}
-
-
-// Ordenar Arrays
-
-int insert(int* array, int elem, int size){
-	int i = 0;
-	int pos = -1;
-
-	for(i = 0; i<size && pos==-1; i++){
-		if(array[i]<elem) pos = i;
-	}
-	for(i = size-1; i>pos; i--){
-		array[i] = array[i-1];
-	}
-
-	array[pos] = elem;
-	/*printf("inseriu em %d\n",pos );
-	for(int j = 0; j<20;j++)
-		printf("%d ",array[j] ); printf("E\n"); */
-	return pos;
-}
-
-/*
-// para propósitos temporários (q9)
-int insertDate(Date* array, Date elem, int size){
-	int i = 0;
-	int pos = -1;
-
-	for(i = 0; i<size && pos==-1; i++){
-		if(comparaDatas(array[i],elem)==-1) pos=i;
-	}
-	for(i = size-1; i>pos; i--){
-		array[i] = array[i-1];
-	}
-
-	array[pos] = elem;
-	printf("inseriu em %d\n",pos );
-	for(int j = 0; j<20;j++)
-		printf("%d ",array[j] ); printf("E\n");
-	return pos;
 }*/
-
-void insereId(long* v, long x, int i, int n){
-
-	for(n=n-1; n>i; n--){
-		v[n] = v[n-1];
-	}
-
-	v[i] = x;
-}
 
 
 
 // String
 
-char* envolveTag(char* tag){
-	char* aux = malloc(strlen(tag) + 2);
-	int i;
-	
-	aux[0] = '<';
-	for(i = 1; i<strlen(tag) + 1; i++) aux[i] = tag[i-1];
-	aux[i] = '>';
-
-	return aux;
-
-}
 
 char* nextTag(char* tags, int *i){
 	char* new_tag = malloc(strlen(tags));
@@ -131,9 +71,9 @@ char* nextTag(char* tags, int *i){
 	return new_tag;
 }
 
+/*
 
-
-/* Funcao para Debugging de PostHashT */
+// Funcao para Debugging de PostHashT
 
 gboolean printPostTree(gpointer key, gpointer value, gpointer user_data){
 	Post post = (Post)value;
@@ -164,6 +104,7 @@ void printTagHT(GHashTable* com_tag){
 	g_hash_table_foreach(com_tag, printTagHTAux, &i);
 	printf("%d",i);
 }
+*/
 
 /* Funcao para Debugging de UserHashT */
 /*

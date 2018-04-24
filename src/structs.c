@@ -261,12 +261,8 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 				g_array_append_val(getUserPosts(user),newPost);
 			}
 
-			char* keyDate = mystrdup((char*)data);
-			char* keyID = mystrdup((char*)post_id);
-
-	   		STR_pair key = create_str_pair(keyDate,keyID);
+			PostKey key = createPostKey( (char*)data, *idPost);
 				
-	   		// Inserir conforme a Data
 	   		g_tree_insert(com->post, key, newPost);
 	   		g_hash_table_insert(com->postAux,idPost,newPostAux);
 	   		/*Debugging*/ //printf("Inserido %d\n", i);
@@ -346,15 +342,18 @@ LONG_list top_most_active(TAD_community com, int N){
 	return top_most_active_aux(com->user,N);
 }
 
+
 // query 3
 LONG_pair total_posts(TAD_community com, Date begin, Date end){
 	return total_posts_aux(com->post,begin,end);
 }
 
+
 // query 4
 LONG_list questions_with_tag(TAD_community com, char* tag, Date begin, Date end){
 	return questions_with_tag_aux(com->post,tag,begin,end);
 }
+
 
 // query 5
 USER get_user_info(TAD_community com, long id){
@@ -367,17 +366,19 @@ LONG_list most_voted_answers(TAD_community com, int N, Date begin, Date end){
 	return most_voted_answers_aux(com->post,N,begin,end);
 }
 
+
 // query 7
 LONG_list most_answered_questions(TAD_community com, int N, Date begin, Date end){
 	return most_answered_questions_aux(com->post,N,begin,end);
 }
 
-/*
+
 // query 8
 LONG_list contains_word(TAD_community com, char* word, int N){
 	return contains_word_aux(com->post,word,N);
 }
-*/
+
+
 // query 9
 LONG_list both_participated(TAD_community com, long id1, long id2, int N){
 	return both_participated_aux(com->user, com->post, com->postAux, id1, id2, N);
@@ -388,12 +389,13 @@ LONG_list both_participated(TAD_community com, long id1, long id2, int N){
 long better_answer(TAD_community com, long id){
 	return better_answer_aux(com->post,com->postAux,id);
 }
-/*
+
+
 // query 11
 LONG_list most_used_best_rep(TAD_community com, int N, Date begin, Date end){
 	return most_used_best_rep_aux(com->user, com->tags, N, begin, end);
 }
-*/
+
 
 // Hash PostAux para Post 
 
@@ -402,7 +404,7 @@ Post getPost(GTree* com_post, GHashTable* com_postAux, long id){
 
 	PostAux postAux = (PostAux)g_hash_table_lookup(com_postAux, &id);
 
-	/* Debugging */ if(!postAux) printf("PostAux with ID: %ld not found\n",id);
+	/* Debugging */ //if(!postAux) printf("PostAux with ID: %ld not found\n",id);
 	
 	if(postAux){
 
@@ -411,11 +413,11 @@ Post getPost(GTree* com_post, GHashTable* com_postAux, long id){
 		char  postID[50]; 
 		sprintf (postID, "%lu", id);
 
-		STR_pair postKey = create_str_pair(postDate, postID);
+		PostKey key = createPostKey( postDate, id);
 
 		/* Debugging */ // printf("%s %s\n",get_fst_str(postKey),get_snd_str(postKey) );
 
-		post = (Post)g_tree_search(com_post, (GCompareFunc)searchFunc, postKey);
+		post = (Post)g_tree_lookup(com_post, key);
 
 		/* Debugging */ if(!post) printf("Post %ld - %s not found\n", id, postDate);
 	}

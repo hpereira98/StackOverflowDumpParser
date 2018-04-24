@@ -3,21 +3,19 @@
 int sortByNPosts(User* a,User *b){
 	int nposts1 = getUserNPosts(*a);
 	int nposts2 = getUserNPosts(*b);
+	
 	return nposts2-nposts1;
 }
 
-void appendUserToArray (gpointer key, gpointer user_pointer, gpointer info){
-	
+void appendUserToArray (gpointer key_pointer, gpointer user_pointer, gpointer info){	
 	User user = (User)user_pointer;
 	GArray* users = (GArray*)info;
 
 	g_array_append_val(users,user);
-
 }
 
 
 LONG_list top_most_active_aux(GHashTable* com_user, int N) {
-
 	GArray* users = g_array_new(FALSE,FALSE,sizeof(User));
 	User user; 
 	int i, size;
@@ -26,10 +24,8 @@ LONG_list top_most_active_aux(GHashTable* com_user, int N) {
 
 	g_array_sort(users,(GCompareFunc)sortByNPosts);
 
-
 	if(users->len>N) size = N;
 	else size = users->len;
-
 
 	LONG_list res = create_list(size);
 
@@ -39,5 +35,4 @@ LONG_list top_most_active_aux(GHashTable* com_user, int N) {
 	}
 
 	return res;
-
 }
