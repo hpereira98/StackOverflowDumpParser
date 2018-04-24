@@ -28,8 +28,8 @@ int compare_ints(gpointer a, gpointer b) {
 
 int main(){
 	struct TCD_community* teste = init();
-	char* path = "../../dumpexemplo/ubuntu/";
-	Date inicio = createDate(01,01,2010);
+	char* path = "../../dumpexemplo/android/";
+	Date inicio = createDate(01,01,2017);
 	Date fim = createDate(31,1,2020);
 
 	
@@ -48,7 +48,7 @@ int main(){
 	printf("Tempo '1 - info_from_post' = %f\n", (double)(end1-begin1)/CLOCKS_PER_SEC);
 	
 	clock_t begin2 = clock();
-	LONG_list new2 = top_most_active(teste,1000);
+	//LONG_list new2 = top_most_active(teste,1000);
 	/*for (int it=0;it<1000;it++){
 		printf("%dº: %li\n",(it+1),get_list(new2,it));
 	}*/
@@ -57,14 +57,14 @@ int main(){
 	printf("Tempo '2 - top_most_active' = %f\n", (double)(end2-begin2)/CLOCKS_PER_SEC);
 
 	clock_t begin3 = clock();
-	LONG_pair new3 = total_posts(teste,inicio,fim);
+	//LONG_pair new3 = total_posts(teste,inicio,fim);
 	//printf("%ld %ld\n",get_fst_long(new1),get_snd_long(new1));
 	clock_t end3 = clock();
 
 	printf("Tempo '3 - total_posts' = %f\n", (double)(end3-begin3)/CLOCKS_PER_SEC);
 
 	clock_t begin4 = clock();
-	LONG_list new4 = questions_with_tag(teste, "android", inicio, fim);
+	//LONG_list new4 = questions_with_tag(teste, "android", inicio, fim);
 	clock_t end4 = clock();
 
 	printf("Tempo '4 - questions_with_tag' = %f\n", (double)(end4-begin4)/CLOCKS_PER_SEC);
@@ -72,13 +72,13 @@ int main(){
 
 	clock_t begin5 = clock();
 	long id = 9;
-	USER new5 = get_user_info(teste,id);
+	//USER new5 = get_user_info(teste,id);
 	clock_t end5 = clock();
 
 	printf("Tempo '5 - get_user_info' = %f\n",(double)(end5-begin5)/CLOCKS_PER_SEC);
 
 	clock_t begin6 = clock();
-	LONG_list new6 = most_voted_answers(teste, 10000, inicio, fim);
+	//LONG_list new6 = most_voted_answers(teste, 10000, inicio, fim);
 	//for(int i=0;i<100;i++) printf("%ld\n",get_list(new6, i));
 	clock_t end6 = clock();
 
@@ -86,7 +86,7 @@ int main(){
 
 
 	clock_t begin7 = clock();
-	LONG_list new7 = most_answered_questions(teste, 10000, inicio, fim);
+	//LONG_list new7 = most_answered_questions(teste, 10000, inicio, fim);
 	//for(int i=0;i<100;i++) printf("%ld\n",get_list(new5, i));
 	clock_t end7 = clock();
 
@@ -119,15 +119,15 @@ int main(){
 
 
 	clock_t begin10 = clock();
-	long new10 = better_answer(teste,27); //escolher id para teste e verificar pelos prints em baixo
+	//long new10 = better_answer(teste,27); //escolher id para teste e verificar pelos prints em baixo
 	clock_t end10 = clock();
-	printf("melhor resposta: %li\n",new10);
+	//printf("melhor resposta: %li\n",new10);
 
 	printf("Tempo '10 - better_answer' = %f\n", (double)(end10-begin10)/CLOCKS_PER_SEC);
 
 
 	clock_t begin11 = clock();
-	LONG_list new11 = most_used_best_rep(teste, 600000, inicio, fim);
+	//LONG_list new11 = most_used_best_rep(teste, 2, inicio, fim);
 	clock_t end11 = clock();
 
 	printf("Tempo '11 - most_used_best_rep' = %f\n", (double)(end11-begin11)/CLOCKS_PER_SEC);

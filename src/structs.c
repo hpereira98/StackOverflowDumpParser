@@ -261,12 +261,8 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 				g_array_append_val(getUserPosts(user),newPost);
 			}
 
-			char* keyDate = mystrdup((char*)data);
-			char* keyID = mystrdup((char*)post_id);
-
-	   		STR_pair key = create_str_pair(keyDate,keyID);
+			PostKey key = createPostKey( (char*)data, *idPost);
 				
-	   		// Inserir conforme a Data
 	   		g_tree_insert(com->post, key, newPost);
 	   		g_hash_table_insert(com->postAux,idPost,newPostAux);
 	   		/*Debugging*/ //printf("Inserido %d\n", i);
@@ -411,11 +407,11 @@ Post getPost(GTree* com_post, GHashTable* com_postAux, long id){
 		char  postID[50]; 
 		sprintf (postID, "%lu", id);
 
-		STR_pair postKey = create_str_pair(postDate, postID);
+		PostKey key = createPostKey( postDate, id);
 
 		/* Debugging */ // printf("%s %s\n",get_fst_str(postKey),get_snd_str(postKey) );
 
-		post = (Post)g_tree_search(com_post, (GCompareFunc)searchFunc, postKey);
+		post = (Post)g_tree_lookup(com_post, key);
 
 		/* Debugging */ if(!post) printf("Post %ld - %s not found\n", id, postDate);
 	}

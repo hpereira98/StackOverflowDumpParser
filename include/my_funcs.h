@@ -3,9 +3,9 @@
 
 #include "toInclude.h"
 
-int searchFunc(STR_pair a, STR_pair b);
+
 char* dateToString(Date date);
-int cmpTreeKey(STR_pair a, STR_pair b);
+int cmpTreeKey(PostKey a, PostKey b);
 int comparaDatas(char* a, char* b, char* c);
 int ordena(gconstpointer a,gconstpointer b);
 void printUserHT(gpointer key, gpointer value, gpointer user_data);

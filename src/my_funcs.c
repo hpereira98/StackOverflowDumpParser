@@ -3,22 +3,18 @@
 
 // Datas
 
-int searchFunc(STR_pair a, STR_pair b){
 
-	return cmpTreeKey(a,b)*(-1);
-}
+int cmpTreeKey(PostKey a, PostKey b){
 
-int cmpTreeKey(STR_pair a, STR_pair b){
-
-	/* Debugging */ // printf("(%s %s) e (%s %s)\n",get_fst_str(a),get_snd_str(a), get_fst_str(b),get_snd_str(b) );
 	
-	if(strcmp(get_snd_str(a), get_snd_str(b)) == 0) return 0; // caso os posts tenham o mesmo id para a procura
-
-	int r = strcmp(get_fst_str(a), get_fst_str(b));
-
-	if(r==0) r = 1; // evitar que posts com strings de data iguais nao deixem de ser inseridos na btree
+	if(getPostKeyID(a) == getPostKeyID(b)) 
+		return 0; // caso os posts tenham o mesmo id para a procura
 	
-	return (-1)*r; // inverter ordem cronologica
+	int r = (-1) * strcmp(getPostKeyDate(a), getPostKeyDate(b));
+
+	if(r==0) r = getPostKeyID(a)-getPostKeyID(b); // evitar que posts com strings de data iguais nao deixem de ser inseridos na btree
+	
+	return r; 
 }
 
 char* dateToString(Date date){
