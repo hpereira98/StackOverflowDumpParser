@@ -7,3 +7,4 @@ Estrutura do repositório:
 - pasta `src`: contém o código realizado pelo grupo (ficheiros `.c`)
 - pasta `src/lib`: contém as definições dos tipos que constam na definição da interface do programa
 - pastas `src/obj` e `src/obj/lib`: conterão os ficheiros `.o` quando o programa for compilado
+- pasta `tex`: contém o código em LaTeX do relatório

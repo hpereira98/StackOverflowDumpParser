@@ -19,8 +19,8 @@
   showstringspaces=false,
   basicstyle=\footnotesize\ttfamily,
   keywordstyle=\bfseries\color{green!40!black},
+  morekeywords={GArray,GHashTable,GTree,STR_pair,LONG_list,LONG_pair,USER,TCD_community, User,Post, Tag},keywordstyle=\bfseries\color{green!40!black},
   commentstyle=\itshape\color{purple!40!black},
-  identifierstyle=\color{blue},
   stringstyle=\color{orange},
 }
 
@@ -92,7 +92,7 @@
 
 No âmbito da unidade curricular \underline{Laboratórios de Informática III}, do 2º ano do Mestrado Integrado em Engenharia Informática, foi-nos proposta a realização de um projeto. Projeto este que consistia no desenvolvimento de um sistema capaz de processar ficheiros XML, armazenando as várias informações utilizadas pelo Stack Overflow (uma das comunidades de perguntas e respostas mais utilizadas atualmente por programadores em todo o mundo). Além disso, após o tratamento da informação, o sistema teria que ser capaz de responder eficientemente a um conjunto de interrogações (explicitado na secção \ref{queries}). Esta aplicação teria que ser obrigatoriamente desenvolvida em \textit{C}.
 
-Ora, perante este enunciado, decidimos utilizar na estruturação do nosso sistema as definições da biblioteca \href{https://developer.gnome.org/glib}{GLib}, mais propriamente as GHashTables, as GTrees e os GArrays (e respetivas funções). As estruturas por nós definidas serão apresentadas e justificadas na secção \ref{structs}.
+Ora, perante este enunciado, decidimos utilizar na estruturação do nosso sistema as definições da biblioteca \href{https://developer.gnome.org/glib}{GLib} (versão 2.56.1), mais propriamente as GHashTables, as GTrees e os GArrays (e respetivas funções). As estruturas por nós definidas serão apresentadas e justificadas na secção \ref{structs}.
 
 O grupo decidiu organizar o trabalho, separando o código em diferentes ficheiros, isto é, um ficheiro para as estruturas por nós definidas e utilizadas (\textit{structs.c}) e respetivos acessos (getters e setters, como forma de garantir o encapsulamento), um para o parser do ficheiro XML (\textit{load.c}), um para cada interrogação (\textit{query\_*.c}), um para as funções auxiliares (\textit{my\_funcs.c}) e outro para a \textit{main.c}.
 
@@ -113,9 +113,9 @@ typedef struct TCD_community * TAD_community;
 Assim sendo, tivemos como desafio criar a nossa própria definição concreta da comunidade. Após ponderarmos em grupo, tendo em conta as interrogações que nos apresentaram, a eficiência e o encapsulamento, decidimos organizar a nossa \textit{TCD\_community} da seguinte maneira (utilizando as definições da biblioteca GLib):
 \begin{itemize}
 \item Uma tabela de Hash para os Utilizadores
-\item Uma tabela de Hash para informações auxiliares sobre os Posts
+\item Uma árvore binária balanceada para os Posts
+\item Uma tabela de Hash para acesso direto à data dos Posts pelo seu ID
 \item Uma tabela de Hash para as Tags
-\item Uma árvore para os Posts
 \end{itemize}
 
 Ou seja, o código para tal é o seguinte:
@@ -164,15 +164,46 @@ struct tag{
 };
 \end{lstlisting}
 
+A nossa decisão de utilizar as tabelas de Hash vai de encontro ao propósito de aceder diretamente à informação por nós pretendida (seja de um Utilizador ou de uma Tag), a partir de um ID. Porém, para os Posts, decidimos utilizar uma estrutura diferente, neste caso uma árvore binária balanceada, pois necessitávamos de uma ordem (neste caso cronológica) de recolha da informação dos Posts da estrutura. Assim, como é mais eficiente iterar numa árvore tendo em mente a sua ordenação, decidimos utilizar uma estrutura diferente. Além disso, desenvolvemos também duas estruturas auxiliares: uma tabela de Hash, contendo a data de cada Post (uma vez que lidamos variadas vezes com estes de forma cronológica), e uma estrutura \textit{postKey} apenas contendo a data e o ID do Post de forma a facilitar a sua inserção na árvore.
+
 %% QUERIES
 \newpage
 \section{Interrogações e abordagem}
 \label{queries}
-
+Nesta secção, iremos explicitar a nossa abordagem às interrogações descritas no enunciado, mostrando algumas partes do código que achamos importante incluir de forma a facilitar a justificação da abordagem referida. Como o encapsulamento foi algo que sempre quisemos preservar ao longo do desenvolvimento do projeto, separamos os ficheiros de modo a que cada ficheiro \textit{query\_*.c} contém uma função auxiliar que será chamada no seio da função original da query definida no \textit{interface.h}.
 
 \subsection{Info From Post}
+A primeira interrogação tinha como objetivo definir uma função que retornasse o título do post e o nome do autor dado um ID de um Post. Se o Post for uma resposta, a função deverá retornar informações (título e utilizador) da pergunta correspondente. O resultado teria que ser um \textit{STR\_pair}, par de Strings definido no repositório que nos foi dado.
+
+\begin{lstlisting}[caption=Tipo função auxiliar da Query 1]
+STR_pair info_from_post_aux(GTree* com_post, GHashTable* com_postAux, GHashTable* com_user, long id);
+\end{lstlisting}
+
+Ora, isto foi bastante simples, uma vez que apenas foi necessário ir buscar o Post com o dado ID (ou, no caso desse Post ser uma resposta, ir buscar a respetiva pergunta) e o autor do mesmo (ou da pergunta, na situação referida) e, de seguida, colocar no \textit{STR\_pair} o título do Post e o nome do autor, como pretendido. Para fazer a procura na tabela de Hash utilizamos a função \textit{g\_hash\_table\_lookup}, dada pela \textit{GLib}.
 
 \subsection{Top Most Active}
+Na segunda interrogação era-nos pedida uma função que criasse uma lista com os N utilizadores mais ativos, isto é, com o maior número de Posts. Essa lista seria, portanto, uma \textit{LONG\_list}.
+
+Para tal, criamos um \textit{GArray} (array dinâmico definido na \textit{GLib}) para guardarmos todos os utilizadores presentes na respetiva tabela de Hash e para, depois, os ordenarmos mais facilmente pelo número de Posts com a função \textit{g\_array\_sort}.
+\begin{lstlisting}[caption=Tipo da função auxiliar da Query 2]
+LONG_list top_most_active_aux(GHashTable* com_user, int N);
+\end{lstlisting}
+
+Para iterarmos a tabela de Hash e colocarmos os utilizadores consoante o seu número de Posts, utilizamos as funções \textit{g\_hash\_table\_foreach} e as seguintes por nós definidas:
+\begin{lstlisting}[caption=Funções auxiliares utilizadas na Query 2]
+int sortByNPosts(User* a,User *b){
+	int nposts1 = getUserNPosts(*a);
+	int nposts2 = getUserNPosts(*b);
+	
+	return nposts2-nposts1;
+}
+void appendUserToArray (gpointer key_pointer, gpointer user_pointer, gpointer info){	
+	User user = (User)user_pointer;
+	GArray* users = (GArray*)info;
+
+	g_array_append_val(users,user);
+}
+\end{lstlisting}
 
 \subsection{Total Posts}
 
