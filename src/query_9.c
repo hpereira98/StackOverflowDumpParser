@@ -1,12 +1,12 @@
 #include <query_9.h>
 
+
 int sortByDate(Post* a, Post* b){
 	char* date_a = getPostDate(*a);
 	char* date_b = getPostDate(*b);
 	
 	return strcmp(date_b, date_a);
 }
-
 
 void swapAnswerPID (GTree* com_post, GHashTable* com_postAux, GArray* posts) {
 	Post post, newPost; 
@@ -29,7 +29,8 @@ void swapAnswerPID (GTree* com_post, GHashTable* com_postAux, GArray* posts) {
 LONG_list both_participated_aux(GHashTable* com_user, GTree* com_post, GHashTable* com_postAux, long id1, long id2, int N){
 	GArray* aux = g_array_new(FALSE, FALSE, sizeof(long));
 	Post post1, post2;
-	long id; int size;
+	long id; 
+	int size;
 
 	User user1 = g_hash_table_lookup(com_user, &id1); 
 	User user2 = g_hash_table_lookup(com_user, &id2);

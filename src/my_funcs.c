@@ -39,7 +39,8 @@ int comparaDatas(char* begin, char* end, char* post_date){
 		return 0; // esta dentro do intervalo 
 }
 
-int ordena(gconstpointer a,gconstpointer b){
+/*
+int ordena(gconstpointer a,gconstpointer b){ // é usada?? ----------------------------------------------------------------------------------------------------------------
 	Post post1 = *((Post*)(a));
 	Post post2 = *((Post*)(b));
 
@@ -47,7 +48,7 @@ int ordena(gconstpointer a,gconstpointer b){
 	char* date_b = getPostDate(post2);
 	//printf("a comparar %s com %s e o resultado é %d\n",date_a,date_b,strcmp(date_b, date_a));
 	return strcmp(getPostDate(post1),getPostDate(post2))*(-1);
-}
+}*/
 
 
 
@@ -70,9 +71,9 @@ char* nextTag(char* tags, int *i){
 	return new_tag;
 }
 
+/*
 
-
-/* Funcao para Debugging de PostHashT */
+// Funcao para Debugging de PostHashT
 
 gboolean printPostTree(gpointer key, gpointer value, gpointer user_data){
 	Post post = (Post)value;
@@ -103,6 +104,7 @@ void printTagHT(GHashTable* com_tag){
 	g_hash_table_foreach(com_tag, printTagHTAux, &i);
 	printf("%d",i);
 }
+*/
 
 /* Funcao para Debugging de UserHashT */
 /*

@@ -12,19 +12,16 @@ gboolean inserePosts(gpointer key_pointer, gpointer post_pointer, gpointer info)
 	Post post = (Post) post_pointer; 
 
 	if(getPostTypeID(post) == 1){
-
 		char* begin = ((char**)info)[0]; 
 		char* end = ((char**)info)[1]; 
 		char* post_date = getPostSimpleDate(post);
-
 		GArray* posts = ((GArray**)info)[2];
 
 		int dateCheck = comparaDatas(begin, end, post_date);
 
-		if( dateCheck == -1) return TRUE;
+		if(dateCheck == -1) return TRUE;
 
-		if( dateCheck == 0)
-			g_array_append_val(posts, post);
+		if(dateCheck == 0) g_array_append_val(posts, post);
 	}	
 
 	return FALSE;
@@ -38,7 +35,6 @@ LONG_list most_answered_questions_aux(GTree* com_post, int N, Date begin, Date e
 
 	char* date_begin = dateToString(begin);
 	char* date_end = dateToString(end);
-
 
 	void* info[3] = {(void*)date_begin, (void*)date_end, (void*)posts};
 	

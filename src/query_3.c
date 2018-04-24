@@ -1,18 +1,14 @@
 #include <query_3.h>
 
-gboolean posts_count(gpointer key, gpointer post_pointer, gpointer info){
-	int dateCheck;
-	
+gboolean posts_count(gpointer key_pointer, gpointer post_pointer, gpointer info){
 	Post post = (Post) post_pointer;
 	char* post_date = getPostSimpleDate(post);
-
 	char* date_begin = ((char**)(info))[0];
 	char* date_end = ((char**)(info))[1];
-
 	int* numQuestions = ((int**)(info))[2];
 	int* numAnswers = ((int**)(info))[3];
 	
-	dateCheck = comparaDatas(date_begin, date_end, post_date);
+	int dateCheck = comparaDatas(date_begin, date_end, post_date);
 
 	if(dateCheck == -1) return TRUE; // parar a travessia caso tenha sido passada a data inferior
 

@@ -1,6 +1,12 @@
 #ifndef __TO_INCLUDE__
 #define __TO_INCLUDE__
 
+/**
+	@file toInclude.h
+   
+	Definição...
+*/
+
 #include <gmodule.h>
 #include <glib.h>
 #include <stdlib.h>

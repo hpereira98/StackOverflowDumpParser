@@ -1,6 +1,6 @@
 #include <query_6.h>
 
-int sortByScore(Post* a, Post *b){
+int sortByScore(Post *a, Post *b){
 	int score_a = getPostScore(*a);
 	int score_b = getPostScore(*b);
 	return score_b - score_a;

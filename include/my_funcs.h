@@ -1,18 +1,55 @@
 #ifndef __MYFUNCS_H__
 #define __MYFUNCS_H__
 
+/**
+	@file my_funcs.h
+   
+	Definição...
+*/
+
 #include "toInclude.h"
 
+/** \brief ola.
 
-char* dateToString(Date date);
+	sou eu.
+	@param a
+	@param b
+
+	@returns
+*/
 int cmpTreeKey(PostKey a, PostKey b);
-int comparaDatas(char* a, char* b, char* c);
-int ordena(gconstpointer a,gconstpointer b);
-void printUserHT(gpointer key, gpointer value, gpointer user_data);
-gboolean printPostTree(gpointer key, gpointer value, gpointer user_data);
-void printPostAuxHT(gpointer key, gpointer value, gpointer user_data);
-void printTagHT(GHashTable* com_tag);
+
+
+/** \brief ola.
+
+	sou eu.
+	@param date
+
+	@returns
+*/
+char* dateToString(Date date);
+
+
+/** \brief ola.
+
+	sou eu.
+	@param *begin
+	@param *end
+	@param *post_date
+
+	@returns
+*/
+int comparaDatas(char* begin, char* end, char* post_date);
+
+
+/** \brief ola.
+
+	sou eu.
+	@param *tags
+	@param *i
+
+	@returns
+*/
 char* nextTag(char* tags, int *i);
-void ver_melhor_resposta (gpointer key, gpointer post, gpointer user_data);
 
 #endif
