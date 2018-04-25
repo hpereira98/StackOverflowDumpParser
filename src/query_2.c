@@ -12,6 +12,7 @@ void appendUserToArray (gpointer key_pointer, gpointer user_pointer, gpointer in
 	GArray* users = (GArray*)info;
 
 	g_array_append_val(users,user);
+
 }
 
 
@@ -32,7 +33,9 @@ LONG_list top_most_active_aux(GHashTable* com_user, int N) {
 	for (i=0;i<size;i++){
 		user = g_array_index(users,User,i);
 		set_list(res,i,getUserID(user));
+		/*****************/ printf("Pos: %d Id: %ld NumPosts %d\n",i ,getUserID(user),getUserNPosts(user));
 	}
+
 
 	return res;
 }

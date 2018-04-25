@@ -28,7 +28,7 @@ int compare_ints(gpointer a, gpointer b) {
 
 int main(){
 	struct TCD_community* teste = init();
-	char* path = "../../dumpexemplo/android/";
+	char* path = "../../dumpexemplo/ubuntu/";
 	Date inicio = createDate(01,01,2010);
 	Date fim = createDate(31,1,2020);
 
@@ -41,7 +41,7 @@ int main(){
 	printf("Tempo '0 - load' = %f\n----------------------------------\n", (double)(end-begin)/CLOCKS_PER_SEC);
 
 	clock_t begin1 = clock();
-	STR_pair new1 = info_from_post(teste, 187246);
+	STR_pair new1 = info_from_post(teste, 801049);
 	printf("%s -- %s\n",get_fst_str(new1),get_snd_str(new1) );
 	clock_t end1 = clock();
 
@@ -49,30 +49,33 @@ int main(){
 	
 	clock_t begin2 = clock();
 	LONG_list new2 = top_most_active(teste,10);
-	for (int it=0;it<10;it++){
-		printf("%dº: %li\n",(it+1),get_list(new2,it));
-	}
 	clock_t end2 = clock();
 
 	printf("Tempo '2 - top_most_active' = %f\n----------------------------------\n", (double)(end2-begin2)/CLOCKS_PER_SEC);
 
+	Date inicio3 = createDate(01,07,2016);
+	Date fim3 = createDate(31,07,2016);
+
 	clock_t begin3 = clock();
-	LONG_pair new3 = total_posts(teste, inicio, fim);
-	printf("%ld -- %ld\n",get_fst_long(new1),get_snd_long(new1));
+	LONG_pair new3 = total_posts(teste, inicio3, fim3);
+	printf("NPerguntas %ld -- NRespostas %ld\n",get_fst_long(new3),get_snd_long(new3));
 	clock_t end3 = clock();
 
 	printf("Tempo '3 - total_posts' = %f\n----------------------------------\n", (double)(end3-begin3)/CLOCKS_PER_SEC);
+	Date inicio4 = createDate(01,03,2013);
+	Date fim4 = createDate(31,03,2013);
 
 	clock_t begin4 = clock();
-	LONG_list new4 = questions_with_tag(teste, "twrp", inicio, fim);
+	LONG_list new4 = questions_with_tag(teste, "package-management", inicio4, fim4);
 	clock_t end4 = clock();
+	
 
 	printf("Tempo '4 - questions_with_tag' = %f\n----------------------------------\n", (double)(end4-begin4)/CLOCKS_PER_SEC);
 
 
 	clock_t begin5 = clock();
-	long id = 9;
-	USER new5 = get_user_info(teste, 241593);
+	
+	USER new5 = get_user_info(teste, 314961);
 	long *post_history;
 	post_history = get_10_latest_posts(new5);
 	printf("10_latest_posts:\n");
@@ -82,65 +85,52 @@ int main(){
 	clock_t end5 = clock();
 
 	printf("Tempo '5 - get_user_info' = %f\n----------------------------------\n",(double)(end5-begin5)/CLOCKS_PER_SEC);
+	Date inicio6 = createDate(01,11,2015);
+	Date fim6 = createDate(30,11,2015);
 
 	clock_t begin6 = clock();
-	LONG_list new6 = most_voted_answers(teste, 5, inicio, fim);
-	for(int i=0;i<5;i++) printf("%ld\n",get_list(new6, i));
+	LONG_list new6 = most_voted_answers(teste, 5, inicio6, fim6);
 	clock_t end6 = clock();
 
 	printf("Tempo '6 - most_voted_answers' = %f\n----------------------------------\n", (double)(end6-begin6)/CLOCKS_PER_SEC);
-
+	Date inicio7 = createDate(01,8,2014);
+	Date fim7 = createDate(11,8,2014);
 
 	clock_t begin7 = clock();
-	LONG_list new7 = most_answered_questions(teste, 10, inicio, fim);
-	for(int i=0;i<10;i++) printf("%ld\n",get_list(new5, i));
+	LONG_list new7 = most_answered_questions(teste, 10, inicio7, fim7);
 	clock_t end7 = clock();
 
 	printf("Tempo '7 - most_answered_questions' = %f\n----------------------------------\n", (double)(end7-begin7)/CLOCKS_PER_SEC);
 
 
 	clock_t begin8 = clock();
-	LONG_list new8 = contains_word(teste, "Nexus", 2);
-  	for(int i=0;i<2;i++){
-    	printf("%ld\n",get_list(new8,i));
-  	}
-	/*
-	for(int aux=0;aux<43691;aux++) {
-		int id = get_list(new8,aux);
-		printf("%d %d ",aux,id);
-		Post post = g_hash_table_lookup(teste->post,&id); Date data = getPostDate(post);
-		printf("%d %d %d\n",get_day(data),get_month(data),get_year(data));
-	}
-	*/
+	LONG_list new8 = contains_word(teste, "kde", 10);
 	
 	clock_t end8 = clock();
 
 	printf("Tempo '8 - contains_word' = %f\n----------------------------------\n", (double)(end8-begin8)/CLOCKS_PER_SEC);
 
 	clock_t begin9 = clock();
-	LONG_list new9 = both_participated(teste, 241679, 23340, 2); // ids aleatórios
+	LONG_list new9 = both_participated(teste, 87, 5691, 10); // ids aleatórios
 	clock_t end9 = clock();
-  	for(int i=0;i<2;i++){
-    	printf("%ld\n",get_list(new9,i));
-  	}
+  	
 
 	printf("Tempo '9 - both_participated' = %f\n----------------------------------\n", (double)(end9-begin9)/CLOCKS_PER_SEC);
 
 
 	clock_t begin10 = clock();
-	long new10 = better_answer(teste, 2342); //escolher id para teste e verificar pelos prints em baixo
+	long new10 = better_answer(teste, 30334); //escolher id para teste e verificar pelos prints em baixo
 	clock_t end10 = clock();
 	printf("%li\n",new10);
 
 	printf("Tempo '10 - better_answer' = %f\n----------------------------------\n", (double)(end10-begin10)/CLOCKS_PER_SEC);
-
+	Date inicio11 = createDate(01,11,2013);
+	Date fim11 = createDate(30,11,2013);
 
 	clock_t begin11 = clock();
-	LONG_list new11 = most_used_best_rep(teste, 3, inicio, fim);
+	LONG_list new11 = most_used_best_rep(teste, 5, inicio11, fim11);
 	clock_t end11 = clock();
-  	for(int i=0;i<3;i++){
-    	printf("%ld\n",get_list(new11,i));
-  	}
+ 
 	printf("Tempo '11 - most_used_best_rep' = %f\n----------------------------------\n", (double)(end11-begin11)/CLOCKS_PER_SEC);
 
 

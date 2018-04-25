@@ -53,7 +53,7 @@ void addTagId(GArray* tagsId, GArray* postTags, GHashTable* com_tags){
 
 	for(int i = 0; i<postTags->len; i++){
 		char* next_tag = g_array_index(postTags, char*, i);
-		
+		printf("Tag usada : %s\n",next_tag );
 		tag = g_hash_table_lookup(com_tags, next_tag); 
 		
 		if(tag){
@@ -94,6 +94,7 @@ LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int
 			if(comparaDatas(date_begin, date_end, data) == 0){
 				GArray* post_tags = getPostTags(post);
 				if(post_tags != NULL) addTagId(tagsId, post_tags, com_tags);
+				
 			}
 		}
 	}
@@ -111,9 +112,9 @@ LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int
 	LONG_list r = create_list(size);
 
 	for(int i=0; i<size; i++){
-		LONG_pair aux = g_array_index(mSetTagsId, LONG_pair, i);
+		LONG_pair aux = g_array_index(mSetTagsId, LONG_pair, i);	
 		set_list(r, i, get_fst_long(aux));	
-		/* debugging */ // printf("%ld %ld\n",get_fst_long(aux),get_snd_long(aux));
+		/* debugging */ printf("Pos: %d tagId: %ld numVezesUsada: %ld\n",i,get_fst_long(aux),get_snd_long(aux));
 	}
 	
 

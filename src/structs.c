@@ -128,6 +128,8 @@ void usersXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 
 		cur = cur->next;
 	}
+	long id_aux = -1;
+	g_hash_table_remove(com->user, &id_aux);
 	/* Debuggin */ printf("Users: %d\n", i);
 }
 
@@ -205,16 +207,7 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 	   		// Data
 	   		setPostDate(newPost, (char*)data);
 	   		setPostAuxDate(newPostAux,(char*)data);
-
-			// Accepted answer - debugging q10 : COLOCAR EM COMENTÁRIO QUANDO NÃO FOR NECESSÁRIO!! 
-	   		/*
-	   		if (answer && new->type_id==1) {
-	   			sscanf((const char*)answer,"%d", acptd);
-	   			new->accepted_answer = *acptd;
-	   		}
-	   		else new->accepted_answer=-2;	
-	   		*/
-
+	   		
 	   		// Tags   = "<tag><tag>" 
 	   		if(tags){ 
 		   		int j = 0;

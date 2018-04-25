@@ -18,7 +18,7 @@
 
 	@returns 
 */
-void word_lookup(gpointer key_pointer, gpointer post_pointer, gpointer info);
+gboolean word_lookup(gpointer key_pointer, gpointer post_pointer, gpointer info);
 
 
 /** \brief ola.

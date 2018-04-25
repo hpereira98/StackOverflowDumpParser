@@ -51,6 +51,7 @@ LONG_list questions_with_tag_aux(GTree* com_post, char* tag, Date begin, Date en
 	for(int i=0; i<size; i++){
 		long id = g_array_index(questionsID,long,i);
 		set_list(result, i, id);
+		/*******/ printf("Pos: %d postId: %ld\n",i,id);
 	}
 
 	return result;
