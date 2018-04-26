@@ -13,39 +13,6 @@
 /** \brief ola.
 
 	sou eu.
-	@param *a
-	@param *b
-
-	@returns
-*/
-int cmpInt(long *a, long* b);
-
-
-/** \brief ola.
-
-	sou eu.
-	@param *a
-	@param *b
-
-	@returns
-*/
-int sortMSet(LONG_pair* a, LONG_pair* b);
-
-
-/** \brief ola.
-
-	sou eu.
-	@param *a
-	@param *b
-
-	@returns
-*/
-int sortByRep(User* a,User *b);
-
-
-/** \brief ola.
-
-	sou eu.
 	@param key_pointer
 	@param user_pointer
 	@param info

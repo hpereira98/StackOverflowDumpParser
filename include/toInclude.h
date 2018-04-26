@@ -15,7 +15,10 @@
 #include <stdio.h>
 #include "interface.h"
 #include "common.h"
+#include "structPost.h"
 #include "structs.h"
+#include "structUser.h"
+#include "structTag.h"
 #include "my_funcs.h"
 #include "load.h"
 #include "query_1.h"

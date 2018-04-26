@@ -12,17 +12,6 @@
 /** \brief ola.
 
 	sou eu.
-	@param *a
-	@param *b
-
-	@returns
-*/
-int sortByScore(Post *a, Post *b);
-
-
-/** \brief ola.
-
-	sou eu.
 	@param *com_post
 	@param begin
 	@param end

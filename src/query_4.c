@@ -1,6 +1,6 @@
 #include <query_4.h>
 
-gboolean adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer info){ // info = {tree, tag, inicio, fim}
+gboolean adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer info){ 
 
 	GArray* questionsID = ((GArray**)(info))[0];
 	Post post = (Post) post_pointer;
@@ -15,13 +15,20 @@ gboolean adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer in
 
 	if(dateCheck == -1) return TRUE;
 
-	if(dateCheck == 0){
-		GArray* post_tags = getPostTags(post);
+	long postID;
+	char* tag_temp;
+	GArray* post_tags;
+
+	if(dateCheck == 0 && getPostTypeID(post) == 1){
+		post_tags = getPostTags(post);
+
 		if(post_tags != NULL){
+
 			for(int i = 0; i<post_tags->len && !added; i++){
-				char* tag_temp = g_array_index(post_tags, char*, i);
+				tag_temp = g_array_index(post_tags, char*, i);
+				
 				if(strcmp(tag_temp, tag) == 0){
-					long postID = getPostID(post);
+					postID = getPostID(post);
 					g_array_append_val(questionsID, postID);
 					added++;
 				}
@@ -39,11 +46,9 @@ LONG_list questions_with_tag_aux(GTree* com_post, char* tag, Date begin, Date en
 	char* date_end = dateToString(end);
 
 	GArray* questionsID = g_array_new(FALSE, FALSE, sizeof(long));
-	void* info[4] = {(void*)questionsID, (void*)tag, (void*)date_begin, (void*)date_end};
+	void* info[4] = {questionsID, tag, date_begin, date_end};
 
-	// Constroi a tree com os posts com a tag e dentro da data
-	g_tree_foreach(com_post, (GTraverseFunc)adicionaComTag, (gpointer)info);
-
+	g_tree_foreach(com_post, (GTraverseFunc)adicionaComTag, info);
 
 	int size = questionsID->len;
 	LONG_list result = create_list(size);

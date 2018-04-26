@@ -64,5 +64,10 @@ TAD_community load(TAD_community com, char* dump_path){
 	xmlFreeDoc(xml_doc);
 
 	}
+
+	free(users_path);
+	free(posts_path);
+	free(tags_path);
+	
 	return com;	
 }

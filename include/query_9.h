@@ -12,17 +12,6 @@
 /** \brief ola.
 
 	sou eu.
-	@param *a
-	@param *b
-
-	@returns
-*/
-int sortByDate(Post* a, Post* b);
-
-
-/** \brief ola.
-
-	sou eu.
 	@param *com_post
 	@param *com_postAux
 	@param *posts

@@ -1,30 +1,5 @@
 #include <query_11.h>
 
-int cmpInt(long *a, long* b){
-	return *a - *b;
-}
-
-int sortMSet(LONG_pair* a, LONG_pair* b){
-	long ocur_a = get_snd_long(*a);
-	long ocur_b = get_snd_long(*b);
-
-	return (-1) * cmpInt(&ocur_a, &ocur_b);
-}
-
-int sortByRep(User* a,User *b){
-	int rep_a = getUserReputacao(*a);
-	int rep_b = getUserReputacao(*b);
-	
-	return rep_b - rep_a;
-}
-
-void insereUsers(gpointer key_pointer, gpointer user_pointer, gpointer info){
-	User user = (User)user_pointer;
-	GArray* users = (GArray*)info;
-
-	g_array_append_val(users, user);
-
-}
 
 GArray* tagsIdToMSet(GArray* tagsId){
 	GArray* mSetTagsID = g_array_new(FALSE, FALSE, sizeof(LONG_pair));
@@ -67,14 +42,12 @@ void addTagId(GArray* tagsId, GArray* postTags, GHashTable* com_tags){
 
 
 LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int N, Date begin, Date end){
-	GArray* users = g_array_new(FALSE, FALSE, sizeof(User));
 	int n_Users, size;
 
 	char* date_begin = dateToString(begin);
 	char* date_end = dateToString(end);
 
-	void* info = (void*)users;
-	g_hash_table_foreach(com_user, insereUsers, info); 
+	GArray* users = usersHashToGArray(com_user);
 	
  	g_array_sort(users, (GCompareFunc)sortByRep);
 
@@ -104,12 +77,9 @@ LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int
 	GArray* mSetTagsId = tagsIdToMSet(tagsId);
 	g_array_sort(mSetTagsId, (GCompareFunc)sortMSet);
 
-	if(mSetTagsId->len < N)
-		size = mSetTagsId->len; 
-	else 
-		size = N;
+	size = selectSize(mSetTagsId->len, N);
 
-	LONG_list r = create_list(size);
+	LONG_list r = create_list(size); 	
 
 	for(int i=0; i<size; i++){
 		LONG_pair aux = g_array_index(mSetTagsId, LONG_pair, i);	

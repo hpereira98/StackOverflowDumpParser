@@ -2,7 +2,7 @@
 
 
 double answer_score (int score, int rep, int comments) {
-	return ((score*0.45) + (rep*0.25) + (score*0.2) + (comments*0.1)); // score * 0.65 ??
+	return ((score*0.45) + (rep*0.25) + (score*0.2) + (comments*0.1)); 
 }
 
 gboolean bestAnswer (gpointer key_pointer, gpointer post_pointer, gpointer info) {
@@ -14,7 +14,7 @@ gboolean bestAnswer (gpointer key_pointer, gpointer post_pointer, gpointer info)
 	long* answerId = ((long**)info)[2];
 	char* data = ((char**)info)[3];
 
-	if(strcmp(getPostDate(post),data)<0) return TRUE; 
+	if(strcmp(getPostDate(post),data) < 0) return TRUE; 
 	
 	if( getPostTypeID(post) == 2 && getPostParentID(post) == *parentId){
 		score = answer_score(getPostScore(post), getPostOwnerRep(post), getPostNComments(post));

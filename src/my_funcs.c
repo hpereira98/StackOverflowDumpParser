@@ -1,21 +1,128 @@
 #include <my_funcs.h>
 
+// Funcoes sobre Posts 
+
+Post getPost(GTree* com_post, GHashTable* com_postAux, long id){
+	Post post  = NULL;
+
+	PostAux postAux = (PostAux)g_hash_table_lookup(com_postAux, &id);
+	
+	if(postAux){
+
+		char* postDate = getPostAuxDate(postAux);
+
+		PostKey key = createPostKey( postDate, id);
+
+		post = (Post)g_tree_lookup(com_post, key);
+	}
+
+	return post;
+}
+
+
+gboolean addPostsToGArray(gpointer key_pointer, gpointer post_pointer, gpointer info){
+	Post post = (Post) post_pointer; 
+	int* typeId = ((int**)info)[3];
+
+	if(getPostTypeID(post) == *typeId){
+		char* begin = ((char**)info)[0]; 
+		char* end = ((char**)info)[1]; 
+		char* post_date = getPostSimpleDate(post);
+		GArray* posts = ((GArray**)info)[2];
+
+		int dateCheck = comparaDatas(begin, end, post_date);
+
+		if(dateCheck == -1) return TRUE;
+
+		if(dateCheck == 0) g_array_append_val(posts, post);
+	}	
+
+	return FALSE;
+}
+
+GArray* filterPostsByTypeID(GTree* com_post, char* date_begin, char* date_end, int typeId){
+	GArray* posts = g_array_new(FALSE, FALSE, sizeof(Post));
+
+	void* info[4] = {date_begin, date_end, posts, &typeId};
+
+	g_tree_foreach(com_post, (GTraverseFunc)addPostsToGArray, info);
+
+	return posts;
+}
+
+
+// Funções sobre Hash dos User 
+
+User getUser(GHashTable* com_user, long id){
+	long* userId = malloc(sizeof(User));
+	*userId = id;
+
+	return  (User)g_hash_table_lookup(com_user, userId);
+}
+
+GArray* usersHashToGArray(GHashTable* com_user){
+	GArray* users = g_array_new(FALSE,FALSE,sizeof(User));
+
+	g_hash_table_foreach(com_user, appendUserToArray, users);
+
+	return users;
+}
+
+void appendUserToArray (gpointer key_pointer, gpointer user_pointer, gpointer info){	
+	User user = (User)user_pointer;
+	GArray* users = (GArray*)info;
+
+	g_array_append_val(users,user);
+}
+
+// Funções para ordenação 
+
+int sortByNPosts(User* a,User *b){
+	int nposts1 = getUserNPosts(*a);
+	int nposts2 = getUserNPosts(*b);
+	
+	return nposts2-nposts1;
+}
+
+int sortByRep(User* a,User *b){
+	int rep_a = getUserReputacao(*a);
+	int rep_b = getUserReputacao(*b);
+	
+	return rep_b - rep_a;
+}
+
+int sortByScore(Post *a, Post *b){
+	int score_a = getPostScore(*a);
+	int score_b = getPostScore(*b);
+	return score_b - score_a;
+}
+
+int sortByNRespostas(Post* a, Post *b){
+	int n_resp_a = getPostNRespostas(*a);
+	int n_resp_b = getPostNRespostas(*b);
+	
+	return n_resp_b - n_resp_a;
+}
+
+int sortByDate(Post* a, Post* b){
+	char* date_a = getPostDate(*a);
+	char* date_b = getPostDate(*b);
+	
+	return strcmp(date_b, date_a);
+}
+
+int sortMSet(LONG_pair* a, LONG_pair* b){
+	long ocur_a = get_snd_long(*a);
+	long ocur_b = get_snd_long(*b);
+
+	return (-1) * cmpInt(&ocur_a, &ocur_b);
+}
+
+int cmpInt(long *a, long* b){
+	return *a - *b;
+}
 
 // Datas
-
-
-int cmpTreeKey(PostKey a, PostKey b){
-
-	
-	if(getPostKeyID(a) == getPostKeyID(b)) 
-		return 0; // caso os posts tenham o mesmo id para a procura
-	
-	int r = (-1) * strcmp(getPostKeyDate(a), getPostKeyDate(b));
-
-	if(r==0) r = getPostKeyID(a)-getPostKeyID(b); // evitar que posts com strings de data iguais nao deixem de ser inseridos na btree
-	
-	return r; 
-}
 
 char* dateToString(Date date){
 
@@ -39,21 +146,9 @@ int comparaDatas(char* begin, char* end, char* post_date){
 		return 0; // esta dentro do intervalo 
 }
 
-/*
-int ordena(gconstpointer a,gconstpointer b){ // é usada?? ----------------------------------------------------------------------------------------------------------------
-	Post post1 = *((Post*)(a));
-	Post post2 = *((Post*)(b));
-
-	char* date_a = getPostDate(post1);
-	char* date_b = getPostDate(post2);
-	//printf("a comparar %s com %s e o resultado é %d\n",date_a,date_b,strcmp(date_b, date_a));
-	return strcmp(getPostDate(post1),getPostDate(post2))*(-1);
-}*/
 
 
-
-// String
-
+// Funções auxiliares para processamento das tags
 
 char* nextTag(char* tags, int *i){
 	char* new_tag = malloc(strlen(tags));
@@ -71,79 +166,15 @@ char* nextTag(char* tags, int *i){
 	return new_tag;
 }
 
-/*
+// Função para determinar tamanho da LONG_list a devolver 
 
-// Funcao para Debugging de PostHashT
+int selectSize(int garraySize, int n){
+	int size;
 
-gboolean printPostTree(gpointer key, gpointer value, gpointer user_data){
-	Post post = (Post)value;
-	
-	int* i = ((int*)user_data);
-	printf("%d %s %ld %s\n",(*i)++,getPostDate(post),getPostID(post),getPostTitle(post));
- 	
-	return FALSE;
-}
+	if(garraySize > n) 
+		size = n;
+	else 
+		size = garraySize;	
 
-void printPostAuxHT(gpointer key, gpointer value, gpointer user_data){
-	PostAux postAux = (PostAux)value;
-	
-	int* i = ((int*)user_data);
-	printf("%d %d %s\n",(*i)++,*((int*)key),getPostAuxDate(postAux));
- 	
+	return size;
 }
-
-void printTagHTAux(gpointer key, gpointer value, gpointer user_data){
-	Tag tag = (Tag)value;
-	int* i = ((int*)user_data);
-	printf("%d %s %s %ld %d\n", (*i)++, (char*)key, getTagName(tag), getTagID(tag), getTagOcor(tag));
- 	
-}
-
-void printTagHT(GHashTable* com_tag){
-	int i=0;
-	g_hash_table_foreach(com_tag, printTagHTAux, &i);
-	printf("%d",i);
-}
-*/
-
-/* Funcao para Debugging de UserHashT */
-/*
-void printUserHT(gpointer key, gpointer value, gpointer user_data){
-	User aux = (User)value;
-	int* keyId = (int* )key;
-	printf("%d %d %s %d %d %d %d\n%s\n",*keyId, getUserID(aux), 
-		   getUserDisplayName(aux),
-		   getUserReputacao(aux),
-		   getUserNPerguntas(aux),
-		   getUserNRespostas(aux),
-		   getUserNPosts(aux),
-		   getUserShortBio(aux));
-}
-*/
-/* Funcao para verificar procura na UserHashT */ 
-/*
-void testeAcessoUserHT(TAD_community com, int id){
-	int* aux = malloc(sizeof(int));
-	*aux=id;
-	User user = initUser();
-	user = (User)g_hash_table_lookup(com->user, aux);
-	if(user) printf("%d %s\n",getUserID(user),getUserDisplayName(user));
-	 else printf("user not found\n");
-}
-*/
-// Função para verificar contagem do nº posts
-/*
-void ver_num (gpointer key, gpointer value, gpointer user_data){
-	User aux = (User)value;
-	int* keyId = (int* )key;
-	printf(user_data,*keyId, getUserNRespostas(aux),getUserNPerguntas(aux));
-}
-*/
-/*
-// Função para seleção da melhor resposta
-void ver_melhor_resposta (gpointer key, gpointer post, gpointer user_data){
-	struct Post* aux = (struct Post*)post;
-	int* keyId = (int* )key;
-	if (aux!=NULL && aux->type_id==1) printf(user_data,*keyId, aux->accepted_answer);
-}
-*/

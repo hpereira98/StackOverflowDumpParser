@@ -1,22 +1,16 @@
 #include <query_9.h>
 
 
-int sortByDate(Post* a, Post* b){
-	char* date_a = getPostDate(*a);
-	char* date_b = getPostDate(*b);
-	
-	return strcmp(date_b, date_a);
-}
-
 void swapAnswerPID (GTree* com_post, GHashTable* com_postAux, GArray* posts) {
 	Post post, newPost; 
+	long parentId;
 	/* Debugging */ int nao_encontrados = 0;
 
 	for (int i=0; i<posts->len; i++){
 		post = g_array_index(posts, Post, i);
 		if (getPostTypeID(post)==2){
-			long pid = getPostParentID(post);
-			newPost = getPost(com_post, com_postAux, pid);
+			parentId = getPostParentID(post);
+			newPost = getPost(com_post, com_postAux, parentId);
 
 			g_array_remove_index(posts, i);
 			if(newPost != NULL) g_array_insert_val(posts, i, newPost); // acho que assim os postsAux não encontrados são mais
@@ -32,8 +26,8 @@ LONG_list both_participated_aux(GHashTable* com_user, GTree* com_post, GHashTabl
 	long id; 
 	int size;
 
-	User user1 = g_hash_table_lookup(com_user, &id1); 
-	User user2 = g_hash_table_lookup(com_user, &id2);
+	User user1 = getUser(com_user, id1); 
+	User user2 = getUser(com_user, id2); 
 
 	if(!user1 || !user2) return NULL;
 
@@ -57,8 +51,7 @@ LONG_list both_participated_aux(GHashTable* com_user, GTree* com_post, GHashTabl
 		}
 	}
 
-	if(aux->len < N) size = aux->len;
-	else size = N;
+	size = selectSize(aux->len,N);
 
 	LONG_list result = create_list(size);
 
@@ -67,6 +60,8 @@ LONG_list both_participated_aux(GHashTable* com_user, GTree* com_post, GHashTabl
 		set_list(result, i, id); 
 		/**********/ printf("Post: %d postID: %ld Data: %s\n",i,id, getPostDate(getPost(com_post, com_postAux, id)));
 	}
+
+	g_array_free(aux, TRUE);
 
 	return result;
 

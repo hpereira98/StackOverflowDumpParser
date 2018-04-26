@@ -15,7 +15,7 @@ STR_pair info_from_post_aux(GTree* com_post, GHashTable* com_postAux, GHashTable
 		}
 
 		long ownerID = getPostOwnerID(post);
-		User user = (User)g_hash_table_lookup(com_user, &ownerID); 	
+		User user =getUser(com_user, ownerID); 	
 
 		set_fst_str(result, getPostTitle(post));
 		set_snd_str(result, getUserDisplayName(user));		

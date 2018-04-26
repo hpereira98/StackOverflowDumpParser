@@ -4,31 +4,11 @@
 #include <query_5.h>
 #include <my_funcs.h>
 
-/*NOTAS:
-&#xA - \n codificado
-&quot - "
-&apos - '
-&lt - <
-&gt - >
-&amp - &
-*/
-
-/*void printTagsHT(gpointer key, gpointer tag, gpointer info){
-	Tag tag1 = (Tag)tag;
-
-	printf("%s %li\n",(char*)key,getTagID(tag));
-}*/
-
-int compare_ints(gpointer a, gpointer b) {
- 		int* x = (int*)a;
- 		int* y = (int*)b;
- 		return (-1) * (*x - *y);
-	}
 
 
 int main(){
 	struct TCD_community* teste = init();
-	char* path = "../../dumpexemplo/ubuntu/";
+	char* path = "../../dumpexemplo/android/";
 	Date inicio = createDate(01,01,2010);
 	Date fim = createDate(31,1,2020);
 
@@ -75,16 +55,16 @@ int main(){
 
 	clock_t begin5 = clock();
 	
-	USER new5 = get_user_info(teste, 314961);
-	long *post_history;
+	//USER new5 = get_user_info(teste, 314961);
+	/*long *post_history;
 	post_history = get_10_latest_posts(new5);
 	printf("10_latest_posts:\n");
 	for(int i=0;i<10;i++){
 	   printf("%ld\n", post_history[i]);
 	}
 	clock_t end5 = clock();
-
-	printf("Tempo '5 - get_user_info' = %f\n----------------------------------\n",(double)(end5-begin5)/CLOCKS_PER_SEC);
+	*/
+	//printf("Tempo '5 - get_user_info' = %f\n----------------------------------\n",(double)(end5-begin5)/CLOCKS_PER_SEC);
 	Date inicio6 = createDate(01,11,2015);
 	Date fim6 = createDate(30,11,2015);
 

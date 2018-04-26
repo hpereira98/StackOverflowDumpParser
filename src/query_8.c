@@ -32,8 +32,7 @@ LONG_list contains_word_aux(GTree* com_post, char* word, int N){
 
 	g_array_sort(postArray, (GCompareFunc)sortByDate);	
 	
-	if(postArray->len < N) size = postArray->len;
-	else size = N;
+	size = selectSize(postArray->len, N);
 	
 	LONG_list postList = create_list(size);
 
