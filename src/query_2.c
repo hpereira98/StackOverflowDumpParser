@@ -17,6 +17,7 @@ LONG_list top_most_active_aux(GHashTable* com_user, int N) {
 		/*****************/ printf("Pos: %d Id: %ld NumPosts %d\n",i ,getUserID(user),getUserNPosts(user));
 	}
 
+	g_array_free(users, TRUE);
 
 	return result;
 }

@@ -34,6 +34,9 @@ LONG_pair total_posts_aux(GTree* com_posts, Date begin, Date end){
 	
 	LONG_pair totalPost = create_long_pair(numQuestions,numAnswers);
 	
+	free(date_begin);
+	free(date_end);
+	
 	return totalPost;
 	
 }

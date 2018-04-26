@@ -140,7 +140,7 @@ void setPostNRespostas(Post post, int n_respostas){
 void freePost (Post post) {
 	free(post->titulo);
 	free(post->data);
-	free(post->tags);
+	g_array_free(post->tags, TRUE);
 	free(post);	
 }
 

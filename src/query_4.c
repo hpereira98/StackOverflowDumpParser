@@ -36,6 +36,8 @@ gboolean adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer in
 		}	
 	}
 
+	free(post_date);
+
 	return FALSE;
 }
 
@@ -59,5 +61,9 @@ LONG_list questions_with_tag_aux(GTree* com_post, char* tag, Date begin, Date en
 		/*******/ printf("Pos: %d postId: %ld\n",i,id);
 	}
 
+	free(date_begin);
+	free(date_end);
+	g_array_free(questionsID, TRUE);
+	
 	return result;
 }

@@ -4,18 +4,17 @@
 /**
 	@file query_2.h
    
-	Definição...
+	Ficheiro .h definido para a Query 2
 */
 
 #include "toInclude.h"
 
-/** \brief ola.
+/** \brief Função que lista os utilizadores mais ativos da comunidade
 
-	sou eu.
-	@param *com_user
-	@param N
+	@param *com_user Tabela de Hash dos Utilizadores
+	@param N Número de utilizadores a listar
 
-	@returns
+	@returns LONG_list dos N utilizadores mais ativos
 */
 LONG_list top_most_active_aux(GHashTable* com_user, int N);
 
