@@ -14,10 +14,10 @@ struct TCD_community{
 TAD_community init(){
 	struct TCD_community* new = malloc(sizeof(struct TCD_community));
 
-  	GHashTable* new_user_hash = g_hash_table_new(g_int_hash, g_int_equal);
-  	GTree* new_post_tree = g_tree_new((GCompareFunc)cmpTreeKey);
+  	GHashTable* new_user_hash = g_hash_table_new_full(g_int_hash, g_int_equal, (GDestroyNotify)free, (GDestroyNotify)freeUser);
+  	GTree* new_post_tree = g_tree_new_full((GCompareFunc)cmpTreeKey, "", (GDestroyNotify)freePostKey, (GDestroyNotify)freePost);
   	GHashTable* new_postAux_hash = g_hash_table_new(g_int_hash, g_int_equal);
-	GHashTable* new_tags_hash = g_hash_table_new(g_str_hash, g_str_equal);
+	GHashTable* new_tags_hash = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify)free, (GDestroyNotify)freeTags);
   	
   	new->user = new_user_hash;
   	new->post = new_post_tree;
@@ -341,7 +341,11 @@ LONG_list most_used_best_rep(TAD_community com, int N, Date begin, Date end){
 	return most_used_best_rep_aux(com->user, com->tags, N, begin, end);
 }
 
+// clean
 
+TAD_community clean(TAD_community com){
+	return clean_aux(com->user, com->post, com->tags);
+}
 
 
 

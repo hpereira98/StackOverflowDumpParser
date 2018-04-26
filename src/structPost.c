@@ -164,6 +164,11 @@ PostKey createPostKey(char* data, long id){
 	return new;
 }
 
+void freePostKey(PostKey post_key){
+	free(post_key->data);
+	free(post_key);
+}
+
 
 // Getters
 

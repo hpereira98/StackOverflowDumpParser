@@ -259,6 +259,7 @@ void freePost (Post post);
 // PostKey
 PostKey initPostKey();
 PostKey createPostKey(char* data, long id);
+void freePostKey(PostKey post_key);
 
 char* getPostKeyDate(PostKey post_key);
 long getPostKeyID(PostKey post_key);

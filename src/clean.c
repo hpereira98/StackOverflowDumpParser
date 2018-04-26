@@ -1,6 +1,6 @@
-/*
 #include <clean.h>
 
+/*
 void cleanUser (gpointer key, gpointer user_pointer, gpointer info) {
 	User user = (User)user_pointer;
 	if (user!=NULL) freeUser(user);
@@ -15,16 +15,13 @@ void cleanTag (gpointer key, gpointer tag_pointer, gpointer info) {
 	Tag tag = (Tag)tag_pointer;
 	if (tag!=NULL) freeTags(tag);
 }
-
-
-TAD_community clean(TAD_community com) {
-
-	if (com!=NULL) {
-		g_hash_table_foreach(com->user, cleanUser,NULL);
-		g_hash_table_foreach(com->post, cleanPost,NULL);
-		g_hash_table_foreach(com->tags, cleanTag,NULL);
-	}
-
-	return com;
-}
 */
+
+
+TAD_community clean_aux(GHashTable* users, GTree* posts, GHashTable* tags) {
+	g_hash_table_remove_all(users);
+	g_tree_destroy(posts);
+	g_hash_table_remove_all(tags);
+
+	return NULL; 
+}
