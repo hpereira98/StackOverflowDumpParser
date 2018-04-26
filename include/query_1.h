@@ -4,20 +4,19 @@
 /**
 	@file query_1.h
    
-	Definição...
+	Ficheiro .h com o tipo da função auxiliar da Query 1
 */
 
 #include "toInclude.h"
 
-/** \brief ola.
+/** \brief Função que, dado o ID de um Post, devolve um Par com o título da pergunta correspondete ao Post e o nome do User.
 
-	sou eu.
-	@param *com_post teste1
-	@param *com_postAux teste2
-	@param *com_user teste3
-	@param id teste4
+	@param *com_post Árvore dos Posts
+	@param *com_postAux Tabela de Hash auxiliar dos Posts
+	@param *com_user Tabela de Hash dos Users
+	@param id Identificador do Post
 
-	@returns
+	@returns Par de Strings com o título da pergunta correspondente e nome do User que a criou
 */
 STR_pair info_from_post_aux(GTree* com_post, GHashTable* com_postAux, GHashTable* com_user, long id);
 

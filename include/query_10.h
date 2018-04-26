@@ -26,7 +26,7 @@ double answer_score (int score, int rep, int comments);
 
 	@param key_pointer Apontador para a chave
 	@param post_pointer Apontador para o Post
-	@param info Informações a guardar entre iterações
+	@param info Informações a partilhar entre iterações
 
 	@returns TRUE - quando a data do Post é anterior à data da Pergunta
 	@returns FALSE - enquanto a data do Post for posterior à data da Pergunta 
