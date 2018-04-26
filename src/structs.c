@@ -15,7 +15,7 @@ TAD_community init(){
 	struct TCD_community* new = malloc(sizeof(struct TCD_community));
 
   	GHashTable* new_user_hash = g_hash_table_new_full(g_int_hash, g_int_equal, (GDestroyNotify)free, (GDestroyNotify)freeUser);
-  	GTree* new_post_tree = g_tree_new_full((GCompareFunc)cmpTreeKey, "", (GDestroyNotify)freePostKey, (GDestroyNotify)freePost);
+  	GTree* new_post_tree = g_tree_new_full((GCompareDataFunc)cmpTreeKey, NULL, (GDestroyNotify)freePostKey, (GDestroyNotify)freePost);
   	GHashTable* new_postAux_hash = g_hash_table_new(g_int_hash, g_int_equal);
 	GHashTable* new_tags_hash = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify)free, (GDestroyNotify)freeTags);
   	
@@ -176,8 +176,10 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 						g_array_append_val(new, next_tag);
 						//DEBUG(printf("%s\n", next_tag););
 					}
+					free(next_tag);
 		   		}
 		   		setPostTags(newPost, new);
+		   		
 		   	}
 		   	else setPostTags(newPost, NULL);
 	   		
@@ -198,6 +200,7 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 
 	   			sscanf((const char*)answercount, "%d", &awnsers); 
 	   			setPostNRespostas(newPost, awnsers);
+	   			xmlFree(answercount);
 	   		}
 	   		else setPostNRespostas(newPost,-1);
 		
@@ -263,6 +266,8 @@ void tagsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 	   		g_hash_table_insert(com->tags, tag_name, new);
 				
 			i++;
+
+			xmlFree(tag_name);
 				
 		}
 

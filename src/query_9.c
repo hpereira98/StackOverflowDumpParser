@@ -58,7 +58,7 @@ LONG_list both_participated_aux(GHashTable* com_user, GTree* com_post, GHashTabl
 	for(int i=0; i<size; i++){
 		id = g_array_index(aux, long, i);
 		set_list(result, i, id); 
-		/**********/ printf("Post: %d postID: %ld Data: %s\n",i,id, getPostDate(getPost(com_post, com_postAux, id)));
+		/**********/ //printf("Post: %d postID: %ld Data: %s\n",i,id, getPostDate(getPost(com_post, com_postAux, id)));
 	}
 
 	g_array_free(aux, TRUE);

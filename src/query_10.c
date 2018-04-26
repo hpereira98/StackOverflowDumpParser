@@ -2,7 +2,7 @@
 
 
 double answer_score (int score, int rep, int comments) {
-	return ((score*0.45) + (rep*0.25) + (score*0.2) + (comments*0.1)); 
+	return ((score*0.65) + (rep*0.25) + (comments*0.1)); 
 }
 
 gboolean bestAnswer (gpointer key_pointer, gpointer post_pointer, gpointer info) {
@@ -13,8 +13,12 @@ gboolean bestAnswer (gpointer key_pointer, gpointer post_pointer, gpointer info)
 	double* max = ((double**)info)[1];
 	long* answerId = ((long**)info)[2];
 	char* data = ((char**)info)[3];
+	char* post_date = getPostDate(post);
 
-	if(strcmp(getPostDate(post),data) < 0) return TRUE; 
+	if(strcmp(post_date, data) < 0){
+		free(post_date);
+		return TRUE;
+	}
 	
 	if( getPostTypeID(post) == 2 && getPostParentID(post) == *parentId){
 		score = answer_score(getPostScore(post), getPostOwnerRep(post), getPostNComments(post));
@@ -25,6 +29,8 @@ gboolean bestAnswer (gpointer key_pointer, gpointer post_pointer, gpointer info)
 		}
 
 	}
+
+	free(post_date);
 
 	return FALSE;
 }

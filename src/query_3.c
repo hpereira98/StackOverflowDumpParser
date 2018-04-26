@@ -17,6 +17,8 @@ gboolean posts_count(gpointer key_pointer, gpointer post_pointer, gpointer info)
 			else if(getPostTypeID(post)==2) (*numAnswers)++;
 	}
 
+	free(post_date);
+	
 	return FALSE;
 }
 

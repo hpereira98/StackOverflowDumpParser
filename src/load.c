@@ -44,7 +44,7 @@ TAD_community load(TAD_community com, char* dump_path){
 			switch(i){
 
 				case 0 :
-					usersXmlToTAD(com, doc_root);
+					//usersXmlToTAD(com, doc_root);
 					break;
 
 				case 1 :

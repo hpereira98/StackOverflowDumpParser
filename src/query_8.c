@@ -41,7 +41,7 @@ LONG_list contains_word_aux(GTree* com_post, char* word, int N){
 	for(i = 0; i < size; i++){
 		post = g_array_index(postArray,Post,i);
 		set_list(postList, i, getPostID(post));
-		/*******/ printf("Pos: %d Id: %ld Titulo: %s\n", i,getPostID(post),getPostTitle(post));
+		/*******/ //printf("Pos: %d Id: %ld Titulo: %s\n", i,getPostID(post),getPostTitle(post));
 	}
 
 	g_array_free(postArray, TRUE);

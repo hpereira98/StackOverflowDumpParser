@@ -267,7 +267,7 @@ long getPostKeyID(PostKey post_key);
 void setPostKeyDate(PostKey post_key, char* data);
 void setPostKeyID(PostKey post_key, long id);
 
-int cmpTreeKey(PostKey a, PostKey b);
+int cmpTreeKey(PostKey a, PostKey b, gpointer user_data);
 
 // Getters para PostAux
 char* getPostAuxDate(PostAux postAux);

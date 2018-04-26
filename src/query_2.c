@@ -14,10 +14,10 @@ LONG_list top_most_active_aux(GHashTable* com_user, int N) {
 	for (i=0; i<N; i++){
 		user = g_array_index(users, User, i);
 		set_list(result, i, getUserID(user));
-		/*****************/ printf("Pos: %d Id: %ld NumPosts %d\n",i ,getUserID(user),getUserNPosts(user));
+		/*****************/ //printf("Pos: %d Id: %ld NumPosts %d\n",i ,getUserID(user),getUserNPosts(user));
 	}
 
-	g_array_free(users, TRUE);
+	//g_array_free(users, TRUE);
 
 	return result;
 }

@@ -18,6 +18,8 @@ int main(){
 	load(teste, path);
 	clock_t end = clock();
 	
+	clean(teste);
+	/*
 	printf("Tempo '0 - load' = %f\n----------------------------------\n", (double)(end-begin)/CLOCKS_PER_SEC);
 
 	clock_t begin1 = clock();
@@ -117,9 +119,9 @@ int main(){
 	printf("Tempo '11 - most_used_best_rep' = %f\n----------------------------------\n", (double)(end11-begin11)/CLOCKS_PER_SEC);
 
 
+	clean(teste);
 
-
-
+*/
 	/* Função para Debugging da Q10 */
 	//g_hash_table_foreach(teste->post,(GHFunc)ver_melhor_resposta,"Post:%d,Best Answer:%d\n");
 

@@ -33,7 +33,9 @@ gboolean adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer in
 					added++;
 				}
 			}
-		}	
+		}
+
+		//g_array_free(post_tags, TRUE);	
 	}
 
 	free(post_date);

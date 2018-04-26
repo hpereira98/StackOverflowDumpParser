@@ -70,6 +70,7 @@ LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int
 			}
 			free(data);
 		}
+		//g_array_free(user_posts, TRUE);
 	}
 
 	g_array_sort(tagsId, (GCompareFunc)cmpInt);

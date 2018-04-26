@@ -140,7 +140,7 @@ void setPostNRespostas(Post post, int n_respostas){
 void freePost (Post post) {
 	free(post->titulo);
 	free(post->data);
-	g_array_free(post->tags, TRUE);
+	//g_array_free(post->tags, TRUE);
 	free(post);	
 }
 
@@ -192,7 +192,7 @@ void setPostKeyID(PostKey post_key, long id){
 
 // Função para comparação de dois PostKeys
 
-int cmpTreeKey(PostKey a, PostKey b){
+int cmpTreeKey(PostKey a, PostKey b, gpointer user_data){
 
 	if(getPostKeyID(a) == getPostKeyID(b)) 
 		return 0; // caso os posts tenham o mesmo id para a procura
