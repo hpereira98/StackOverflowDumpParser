@@ -4,7 +4,7 @@
 /**
 	@file my_funcs.h
    
-	Definição...
+	Ficheiro .h com os tipos das funções auxiliares por nós definidas.
 */
 
 #include "toInclude.h"
@@ -12,173 +12,177 @@
 
 // Funcoes sobre Posts
 
-/** \brief ola.
+/** \brief Função que devolve um (Post) Post.
 
-	sou eu.
-	@param *a
-	@param *b
+	@param *com_post Árvore dos Posts
+	@param *com_postAux Tabela de Hash auxiliar dos Posts
+	@param id Identificador do Post a receber
 
-	@returns
+	@returns (Post) Post com o ID dado
 */
 Post getPost(GTree* com_post, GHashTable* com_postAux, long id);
 
-/** \brief ola.
+/** \brief Função que insere num array dinâmico os Posts com um determinado tipo.
 
-	sou eu.
-	@param *a
-	@param *b
+	Realiza as operações tendo em conta um dado intervalo de tempo.
+	@param *com_post Árvore dos Posts
+	@param date_begin Limite inferior do intervalo de tempo
+	@param date_end Limite superior do intervalo de tempo
+	@param typeId Tipo do Post
 
-	@returns
+	@returns Array dinâmico com os Posts do tipo dado
 */
 GArray* filterPostsByTypeID(GTree* com_post, char* date_begin, char* date_end, int typeId);
 
 // Funções sobre Hash User
 
-/** \brief ola.
+/** \brief Função que devolve um (User) User.
 
-	sou eu.
-	@param *a
-	@param *b
+	@param *com_user Tabela de Hash dos Users
+	@param id Identificador do User
 
-	@returns
+	@returns (User) User com o dado ID
 */
 User getUser(GHashTable* com_user, long id);
 
-/** \brief ola.
+/** \brief Função que passa os Users da Tabela de Hash para um Array dinâmico
 
-	sou eu.
-	@param *a
-	@param *b
+	@param *com_user Tabela de Hash dos Users
 
-	@returns
+	@returns Array dinâmico com os Users da tabela de Hash dada
 */
 GArray* usersHashToGArray(GHashTable* com_user);
 
-/** \brief ola.
+/** \brief Função que adiciona a um array dinâmico um User
 
-	sou eu.
-	@param *a
-	@param *b
+	@param key_pointer Apontador para a chave
+	@param user_pointer Apontador para o User
+	@param info Informação a ser partilhada entre iterações
 
-	@returns
 */
 void appendUserToArray (gpointer key_pointer, gpointer user_pointer, gpointer info);
 
 // Funções para ordenação 
 
-/** \brief ola.
+/** \brief Função de ordenação de Users pelo número de Posts
 
-	sou eu.
-	@param *a
-	@param *b
+	@param a Primeiro utilizador
+	@param b Segundo utilizador
 
-	@returns
+	@returns 0, caso o nº de Posts de ambos os Users seja igual
+	@returns <0, caso o nº de Posts do primeiro User seja superior ao do segundo User
+	@return >0, caso o nº de Posts do primeiro User seja inferior ao do segundo User
 */
 int sortByNPosts(User* a,User *b);
 
-/** \brief ola.
+/** \brief Função de ordenação de Users pela reputação
 
-	sou eu.
-	@param *a
-	@param *b
+	@param a Primeiro utilizador
+	@param b Segundo utilizador
 
-	@returns
+	@returns 0, caso a reputação de ambos os Users seja igual
+	@returns <0, caso a reputação do primeiro User seja superior ao do segundo User
+	@return >0, caso a reputação do primeiro User seja inferior ao do segundo User
 */
 int sortByRep(User* a,User *b);
 
-/** \brief ola.
+/** \brief Função de ordenação de Posts pelo Score
 
-	sou eu.
-	@param *a
-	@param *b
+	@param a Primeiro Post
+	@param b Segundo Post
 
-	@returns
+	@returns 0, caso o score de ambos os Posts seja igual
+	@returns <0, caso o score do primeiro Post seja superior ao do segundo Post
+	@return >0, caso o score do primeiro Post seja inferior ao do segundo Post
 */
 int sortByScore(Post *a, Post *b);
 
-/** \brief ola.
+/** \brief Função de ordenação de Posts pelo número de respostas
 
-	sou eu.
-	@param *a
-	@param *b
+	@param a Primeiro Post
+	@param b Segundo Post
 
-	@returns
+	@returns 0, caso o nº de respostas de ambos os Posts seja igual
+	@returns <0, caso o nº de respostas do primeiro Post seja superior ao do segundo Post
+	@return >0, caso o nº de respostas do primeiro Post seja inferior ao do segundo Post
 */
 int sortByNRespostas(Post* a, Post *b);
 
-/** \brief ola.
+/** \brief Função de ordenação de Posts pela Data
 
-	sou eu.
-	@param *a
-	@param *b
+	@param a Primeiro Post
+	@param b Segundo Post
 
-	@returns
+	@returns 0, caso a data de ambos os Posts seja igual
+	@returns <0, caso a data do primeiro Post seja mais recente que a do segundo Post
+	@return >0, caso a data do primeiro Post seja mais antiga que a do segundo Post
 */
 int sortByDate(Post* a, Post* b);
 
-/** \brief ola.
+/** \brief Função de ordenação de Pares(ID Tag,nº de ocorrências) pelo segundo elemento do par
 
-	sou eu.
-	@param *a
-	@param *b
+	@param a Primeiro Par
+	@param b Segundo Par
 
-	@returns
+	@returns 0, caso o número de ocorrências seja igual nos dois Pares
+	@returns <0, caso o número de ocorrências do primeiro Par seja superior ao do segundo Par 
+	@return >0, caso o número de ocorrências do primeiro Par seja inferior ao do segundo Post
 */
 int sortMSet(LONG_pair* a, LONG_pair* b);
 
-/** \brief ola.
+/** \brief Função de ordenação de inteiros (long)
 
-	sou eu.
-	@param *a
-	@param *b
+	@param a Primeiro inteiro
+	@param b Segundo inteiro
 
-	@returns
+	@returns 0, caso ambos sejam iguais
+	@returns <0, caso o primeiro seja menor que o segundo
+	@return >0, caso o primeiro seja maior que o segundo
 */
 int cmpInt(long *a, long* b);
 
 // Funções para tratamentos de datas
 
-/** \brief ola.
+/** \brief Função que transforma uma (Date) data numa String
 
-	sou eu.
-	@param date
+	@param date Data
 
-	@returns
+	@returns String representativa da data no formato AAAA-MM-DD.
 */
 char* dateToString(Date date);
 
+/** \brief Função que verifica se uma dada data está dentro de um dado intervalo de tempo
 
-/** \brief ola.
+	@param begin Limite inferior do intervalo de tempo
+	@param end Limite superior do intervalo de tempo
+	@param post_date Data a verificar
 
-	sou eu.
-	@param *begin
-	@param *end
-	@param *post_date
-
-	@returns
+	@returns 0, caso a Data esteja dentro do intervalo
+	@returns -1, caso a Data esteja fora do limite inferior do intervalo
+	@returns 1, caso a Data seja mais recente que o limite superior do intervalo
 */
 int comparaDatas(char* begin, char* end, char* post_date);
 
 
-/** \brief ola.
+/** \brief Função que retira a String de uma tag.
 
-	sou eu.
-	@param *tags
-	@param *i
+	Isto é, remove os caracteres '<' e '>'.
+	@param tags Tags
+	@param *i Apontador para a posição atual da iteração
 
-	@returns
+	@returns String contida na Tag
 */
 char* nextTag(char* tags, int *i);
 
 // Função para determinar tamanho da LONG_list a devolver 
 
-/** \brief ola.
+/** \brief Função que determina o tamanho da LONG_list a devolver como resultado nas Queries
 
-	sou eu.
-	@param *tags
-	@param *i
+	@param garraySize Tamanho do array dinâmico
+	@param n Número de elementos passado como argumento na função principal da Query
 
-	@returns
+	@returns Tamanho do array, caso seja inferior a N
+	@returns N, caso contrário
 */
 int selectSize(int garraySize, int n);
 
