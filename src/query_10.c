@@ -50,5 +50,7 @@ long better_answer_aux(GTree* com_post, GHashTable* com_postAux, long id){
 	if(answerId == -2)
 		printf("The post with ID %li has no answers.\n",id);
 
+	free(data);
+	
 	return answerId;
 }

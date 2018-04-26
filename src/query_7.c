@@ -22,5 +22,9 @@ LONG_list most_answered_questions_aux(GTree* com_post, int N, Date begin, Date e
 		/************/printf("Pos: %d Id: %ld Score: %d\n",i,getPostID(post),getPostNRespostas(post));
 	}
 
+	free(date_begin);
+	free(date_end);
+	g_array_free(questions, TRUE);
+
 	return result;
 }

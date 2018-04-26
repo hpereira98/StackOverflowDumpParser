@@ -62,6 +62,8 @@ LONG_list both_participated_aux(GHashTable* com_user, GTree* com_post, GHashTabl
 	}
 
 	g_array_free(aux, TRUE);
+	g_array_free(posts1, TRUE);
+	g_array_free(posts2, TRUE);
 
 	return result;
 

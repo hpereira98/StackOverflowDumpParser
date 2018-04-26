@@ -22,6 +22,11 @@ LONG_list most_voted_answers_aux(GTree* com_post, int N, Date begin, Date end){
 		set_list(result, i, getPostID(post));
 		/************/printf("Pos: %d Id: %ld Score: %d\n",i,getPostID(post),getPostScore(post));
 	}
+
+	free(date_begin);
+	free(date_end);
+	g_array_free(answers, TRUE);
+	
 	return result;
 }
 

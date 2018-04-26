@@ -8,13 +8,15 @@ gboolean word_lookup(gpointer key_pointer, gpointer post_pointer, gpointer info)
 		
 		GArray* postArray = ((GArray**)info)[0];
 
-		char* word = mystrdup(((char**)info)[1]);
+		char* word = ((char**)info)[1];
 
 		char* titulo = getPostTitle(post);
 
 		if(strstr(titulo,word)!=NULL ){
 			g_array_append_val(postArray,post);
 		}
+		
+		free(titulo);
 
 	}
 	return FALSE;
@@ -41,6 +43,8 @@ LONG_list contains_word_aux(GTree* com_post, char* word, int N){
 		set_list(postList, i, getPostID(post));
 		/*******/ printf("Pos: %d Id: %ld Titulo: %s\n", i,getPostID(post),getPostTitle(post));
 	}
+
+	g_array_free(postArray, TRUE);
 		
 	return postList;	
 }

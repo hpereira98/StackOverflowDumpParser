@@ -66,9 +66,9 @@ LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int
 
 			if(comparaDatas(date_begin, date_end, data) == 0){
 				GArray* post_tags = getPostTags(post);
-				if(post_tags != NULL) addTagId(tagsId, post_tags, com_tags);
-				
+				if(post_tags != NULL) addTagId(tagsId, post_tags, com_tags);		
 			}
+			free(data);
 		}
 	}
 
@@ -87,6 +87,10 @@ LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int
 		/* debugging */ printf("Pos: %d tagId: %ld numVezesUsada: %ld\n",i,get_fst_long(aux),get_snd_long(aux));
 	}
 	
+	free(date_begin);
+	free(date_end);
+	g_array_free(users, TRUE);
+	g_array_free(tagsId, TRUE);
 
 	DEBUG(printf("SIZE = %d\n", size));
 
