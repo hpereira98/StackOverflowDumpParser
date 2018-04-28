@@ -19,7 +19,7 @@ LONG_list most_answered_questions_aux(GTree* com_post, int N, Date begin, Date e
 	for(int i=0; i<size; i++){
 		post = g_array_index(questions, Post, i);
 		set_list(result, i, getPostID(post));
-		/************/printf("Pos: %d Id: %ld Score: %d\n",i,getPostID(post),getPostNRespostas(post));
+		/************///printf("Pos: %d Id: %ld Score: %d\n",i,getPostID(post),getPostNRespostas(post));
 	}
 
 	free(date_begin);

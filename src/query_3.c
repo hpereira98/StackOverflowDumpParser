@@ -10,14 +10,14 @@ gboolean posts_count(gpointer key_pointer, gpointer post_pointer, gpointer info)
 	
 	int dateCheck = comparaDatas(date_begin, date_end, post_date);
 
+	free(post_date);
+
 	if(dateCheck == -1) return TRUE; // parar a travessia caso tenha sido passada a data inferior
 
 	if(dateCheck == 0){
 		if(getPostTypeID(post)==1) (*numQuestions)++;
 			else if(getPostTypeID(post)==2) (*numAnswers)++;
 	}
-
-	free(post_date);
 	
 	return FALSE;
 }

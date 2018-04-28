@@ -14,6 +14,9 @@ Post getPost(GTree* com_post, GHashTable* com_postAux, long id){
 		PostKey key = createPostKey( postDate, id);
 
 		post = (Post)g_tree_lookup(com_post, key);
+
+		free(postDate);
+		freePostKey(key);
 	}
 
 	return post;
@@ -31,6 +34,8 @@ gboolean addPostsToGArray(gpointer key_pointer, gpointer post_pointer, gpointer 
 		GArray* posts = ((GArray**)info)[2];
 
 		int dateCheck = comparaDatas(begin, end, post_date);
+
+		free(post_date);
 
 		if(dateCheck == -1) return TRUE;
 
@@ -57,7 +62,11 @@ User getUser(GHashTable* com_user, long id){
 	long* userId = malloc(sizeof(User));
 	*userId = id;
 
-	return  (User)g_hash_table_lookup(com_user, userId);
+	User user = g_hash_table_lookup(com_user, userId);
+
+	free(userId);
+
+	return  user;
 }
 
 GArray* usersHashToGArray(GHashTable* com_user){
@@ -108,7 +117,13 @@ int sortByDate(Post* a, Post* b){
 	char* date_a = getPostDate(*a);
 	char* date_b = getPostDate(*b);
 	
-	return strcmp(date_b, date_a);
+	int result =  strcmp(date_b, date_a);
+	
+	free(date_a);
+	free(date_b);
+	
+	return result;
+
 }
 
 int sortMSet(LONG_pair* a, LONG_pair* b){
@@ -151,20 +166,27 @@ int comparaDatas(char* begin, char* end, char* post_date){
 // Funções auxiliares para processamento das tags
 
 char* nextTag(char* tags, int *i){
-	char* new_tag = malloc(strlen(tags));
-	int k = (*i); 
-	int j=0;
+	int j = (*i); 
+	int tagSize=0;
 
-	if(tags[k] == '<') k++;
-	for(j=j; tags[k]!= '>'; j++, k++){
-		new_tag[j] = tags[k];
+	while(tags[j] != '>') {
+		tagSize++;  j++; 
 	}
-	new_tag[j] = '\0';
+	
+	char* new_tag = g_strndup(tags + (*i), tagSize);
 
-	(*i) += j+1;
+	new_tag[tagSize] = '\0';
+
+	int newPosition = (*i) + tagSize + 2;
+
+	if ( newPosition <  strlen(tags) ) // avanca >< e posiciona no inicio da nova tag
+		*i = newPosition;
+	else 
+		*i = strlen(tags);
 
 	return new_tag;
 }
+
 
 // Função para determinar tamanho da LONG_list a devolver 
 

@@ -210,7 +210,7 @@ void setPostDate(Post post, char* data);
 	
 	@returns
 */
-void setPostTags(Post post, GArray* tags);
+void setPostTags(Post post, char* tags);
 
 /** \brief ola.
 
@@ -276,5 +276,6 @@ char* getPostAuxDate(PostAux postAux);
 // Setters para PostAux
 void setPostAuxDate(PostAux postAux, char* data);
 
+void freePostAux(PostAux postAux);
 
 #endif

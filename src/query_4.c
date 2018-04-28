@@ -13,6 +13,8 @@ gboolean adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer in
 	int added = 0;
 	int dateCheck = comparaDatas(begin, end, post_date);
 
+	free(post_date); // ja nao vai ser mais preciso
+
 	if(dateCheck == -1) return TRUE;
 
 	long postID;
@@ -26,7 +28,7 @@ gboolean adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer in
 
 			for(int i = 0; i<post_tags->len && !added; i++){
 				tag_temp = g_array_index(post_tags, char*, i);
-				
+	
 				if(strcmp(tag_temp, tag) == 0){
 					postID = getPostID(post);
 					g_array_append_val(questionsID, postID);
@@ -38,7 +40,6 @@ gboolean adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer in
 		//g_array_free(post_tags, TRUE);	
 	}
 
-	free(post_date);
 
 	return FALSE;
 }

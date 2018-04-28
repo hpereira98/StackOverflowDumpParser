@@ -6,6 +6,13 @@ struct TCD_community{
 	GHashTable* postAux;
 	GHashTable* tags;	
 };
+void freeIdKey(long* id){
+	free(id);
+}
+
+void freeTagKey(char* tagName){
+	free(tagName);
+}
 
 
 
@@ -13,16 +20,12 @@ struct TCD_community{
 
 TAD_community init(){
 	struct TCD_community* new = malloc(sizeof(struct TCD_community));
-
-  	GHashTable* new_user_hash = g_hash_table_new_full(g_int_hash, g_int_equal, (GDestroyNotify)free, (GDestroyNotify)freeUser);
-  	GTree* new_post_tree = g_tree_new_full((GCompareDataFunc)cmpTreeKey, NULL, (GDestroyNotify)freePostKey, (GDestroyNotify)freePost);
-  	GHashTable* new_postAux_hash = g_hash_table_new(g_int_hash, g_int_equal);
-	GHashTable* new_tags_hash = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify)free, (GDestroyNotify)freeTags);
-  	
-  	new->user = new_user_hash;
-  	new->post = new_post_tree;
-  	new->postAux = new_postAux_hash;
-  	new->tags = new_tags_hash;	
+  	//new->user = g_hash_table_new(g_int_hash, g_int_equal);
+  	new->user = g_hash_table_new_full(g_int_hash, g_int_equal, (GDestroyNotify)freeIdKey, (GDestroyNotify)freeUser);
+  	new->post = g_tree_new_full((GCompareDataFunc)cmpTreeKey, NULL, (GDestroyNotify)freePostKey, (GDestroyNotify)freePost);
+  	new->postAux = g_hash_table_new_full(g_int_hash, g_int_equal, (GDestroyNotify)freeIdKey, (GDestroyNotify)freePostAux);
+  	new->tags = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify)freeTagKey, (GDestroyNotify)freeTags);
+  		
 
   	return new;
 }
@@ -47,7 +50,7 @@ void usersXmlToTAD(TAD_community com, xmlNodePtr doc_root){
    		if(id != NULL){
 
    			long* idUser = malloc(sizeof(long));
-   			int* repUser = malloc(sizeof(int));
+   			int repUser;
 				
    			User new = initUser();  
    				
@@ -59,24 +62,15 @@ void usersXmlToTAD(TAD_community com, xmlNodePtr doc_root){
    			setUserID(new,*idUser);
    			
    			// Reputação
-   			sscanf((const char*)rep,"%d", repUser); 
-   			setUserReputacao(new,*repUser); 	
-				
-			// Nº perguntas/respostas
-			setUserNRespostas(new,0);
-			setUserNPosts(new,0);
-			setUserNPerguntas(new,0);
+   			sscanf((const char*)rep,"%d", &repUser);
+   			setUserReputacao(new, repUser);
 
 			// Bio			
 			setUserShortBio(new,(char*)bio); 
-				
-			// User's Posts 
-			initUserPosts(new);
 			 
    			// Inserir conforme o ID
    			g_hash_table_insert(com->user, idUser, new); i++;
-
-   			free(repUser);			
+			
    		}
 
 		xmlFree(id);
@@ -119,6 +113,7 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 	   		int idType = 0;
 	   		int score;
 	   		int n_comments ;
+	   		
 
 	   		Post newPost = initPost();
 	   		PostAux newPostAux = initPostAux();
@@ -133,14 +128,23 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 
 	   		// Owner Reputation
 	   		User user = (User)g_hash_table_lookup(com->user, &idOwner);
-	   		if (user!=NULL)
-	   			setPostOwnerRep(newPost, getUserReputacao(user));
+	   		if (user!=NULL){
+	   			int owner_rep = getUserReputacao(user);
+	   			setPostOwnerRep(newPost, owner_rep);
+	   		}
 
 	   		// Count User's questions and answers 			
 			if (user!=NULL) {
-				if (idType == 1) setUserNPerguntas(user, getUserNPerguntas(user)+1);
-				else if (idType == 2) setUserNRespostas(user, getUserNRespostas(user)+1);
-				setUserNPosts(user, getUserNPosts(user)+1);
+				if (idType == 1) {
+					int n_perguntas = getUserNPerguntas(user);
+					setUserNPerguntas(user, n_perguntas + 1);
+				}
+				else if (idType == 2){
+					int n_respostas = getUserNRespostas(user);
+					setUserNRespostas(user, n_respostas + 1);
+				}
+				int n_posts = getUserNPosts(user);
+				setUserNPosts(user, n_posts+1);
 			}
 
 	   		// Post ID 
@@ -166,23 +170,9 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 	   		setPostDate(newPost, (char*)data);
 	   		setPostAuxDate(newPostAux, (char*)data);
 	   		
-	   		// Tags   = "<tag><tag>" 
-	   		if(tags){ 
-		   		int j = 0;
-		   		GArray* new = g_array_new(FALSE, FALSE, sizeof(char*));
-				while(tags[j]!='\0'){
-		   			char* next_tag = mystrdup(nextTag((char*)tags, &j));	   			
-					if(next_tag[0]!='\0'){
-						g_array_append_val(new, next_tag);
-						//DEBUG(printf("%s\n", next_tag););
-					}
-					free(next_tag);
-		   		}
-		   		setPostTags(newPost, new);
-		   		
-		   	}
-		   	else setPostTags(newPost, NULL);
-	   		
+	   		// Tags  
+	   		setPostTags(newPost, (char*) tags);
+		   		   		
 	   			
 	   		// Score
 			sscanf((const char*)score_xml, "%d", &score); 
@@ -204,10 +194,10 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 	   		}
 	   		else setPostNRespostas(newPost,-1);
 		
-			// Add Post to User !! ver se ao aplicar encapsulamento nao compensa passar apenas os ids
-			if (user!=NULL){
-				g_array_append_val(getUserPosts(user), newPost);
-			}
+			// Add Post to User
+			
+			if(user) addUserPost(user, newPost);
+			
 
 			PostKey key = createPostKey( (char*)data, *idPost);
 				
@@ -250,20 +240,17 @@ void tagsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 		   	Tag new = initTag();
 
 		   	// ID		
-			long* tagID = malloc(sizeof(long));
-			sscanf((const char*)tag_id, "%li", tagID);
+			long tagID;
+			sscanf((const char*)tag_id, "%li", &tagID);
 				
-			setTagID(new, *tagID);
+			setTagID(new, tagID);
 
 			// Name
 			setTagName(new, (char*)tag_name);
 
-			// Ocorrencias
-			setTagOcor(new, 0);
-
 	   		// Inserir conforme Tag Name
 
-	   		g_hash_table_insert(com->tags, tag_name, new);
+	   		g_hash_table_insert(com->tags, mystrdup((char*)tag_name), new);
 				
 			i++;
 
@@ -348,8 +335,18 @@ LONG_list most_used_best_rep(TAD_community com, int N, Date begin, Date end){
 
 // clean
 
+void aux(long* key, User user, gpointer info){
+	free(key);
+	freeUser(user);
+}
+
 TAD_community clean(TAD_community com){
-	return clean_aux(com->user, com->post, com->tags);
+	g_hash_table_destroy(com->user);
+	g_hash_table_destroy(com->postAux);
+	g_tree_destroy(com->post);
+	g_hash_table_destroy(com->tags);
+	free(com);
+	return NULL;
 }
 
 

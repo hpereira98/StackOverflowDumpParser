@@ -54,7 +54,7 @@ long better_answer_aux(GTree* com_post, GHashTable* com_postAux, long id){
 	g_tree_foreach(com_post, (GTraverseFunc)bestAnswer, info);
 
 	if(answerId == -2)
-		printf("The post with ID %li has no answers.\n",id);
+		//printf("The post with ID %li has no answers.\n",id);
 
 	free(data);
 	

@@ -12,10 +12,10 @@ TAD_community load(TAD_community com, char* dump_path){
 	strcpy(posts_path, dump_path);
 	strcat(posts_path, posts);
 
-	char* votes = "Votes.xml";
+	/*char* votes = "Votes.xml";
 	char* votes_path = malloc(strlen(dump_path)+strlen(votes)+1);
 	strcpy(votes_path, dump_path);
-	strcat(votes_path, votes);
+	strcat(votes_path, votes);*/
 	
 	char* tags = "Tags.xml";
 	char* tags_path = malloc(strlen(dump_path)+strlen(tags)+1);
@@ -44,7 +44,7 @@ TAD_community load(TAD_community com, char* dump_path){
 			switch(i){
 
 				case 0 :
-					//usersXmlToTAD(com, doc_root);
+					usersXmlToTAD(com, doc_root);
 					break;
 
 				case 1 :

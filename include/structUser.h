@@ -164,6 +164,17 @@ void setUserNPosts(User user, int n_posts);
 	@returns
 */
 void setUserShortBio(User user, char* short_bio);
+
+/** \brief ola.
+
+	sou eu.
+	@param user
+	@param short_bio
+
+	@returns
+*/
+void addUserPost(User user, Post post);
+
 // Cleaner
 void freeUser (User user);
 

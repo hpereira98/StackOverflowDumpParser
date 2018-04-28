@@ -17,8 +17,14 @@ struct user{
 // Inits
 
 User initUser(){
-	User new = malloc(sizeof(struct user));
-	return new;
+	User newUser = malloc(sizeof(struct user));
+
+	newUser->userPosts = NULL;
+	newUser->n_respostas = 0;
+	newUser->n_perguntas = 0;
+	newUser->n_posts = 0;
+
+	return newUser;
 }
 
 void initUserPosts(User user){
@@ -104,12 +110,20 @@ void setUserShortBio(User user, char* short_bio){
 	 user->short_bio = mystrdup(short_bio);
 }
 
+// Add UserPost
+
+void addUserPost(User user, Post post){
+	if(!user->userPosts)
+		user->userPosts = g_array_new (FALSE,TRUE,sizeof(Post));
+	else 
+		g_array_append_val(user->userPosts, post);
+}
 
 // Cleaner
 
 void freeUser (User user) {
 	free(user->display_name);
 	free(user->short_bio);
-	g_array_free(user->userPosts,TRUE);
+	if(user->userPosts != NULL) g_array_free(user->userPosts,TRUE);
 	free(user);
 }

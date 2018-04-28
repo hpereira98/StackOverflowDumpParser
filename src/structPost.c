@@ -30,6 +30,7 @@ struct postKey{
 
 Post initPost(){
 	Post new = malloc(sizeof(struct post));
+	new->tags = NULL;
 	return new;
 }
 
@@ -67,7 +68,12 @@ char* getPostDate(Post post){
 
 char* getPostSimpleDate(Post post){ // "AAAA-MM-DD"
 	char* date = getPostDate(post);
-	return g_strndup(date,10);
+
+	char* simpleDate = g_strndup(date,10);
+
+	free(date);
+
+	return simpleDate;
 }
 
 
@@ -117,9 +123,19 @@ void setPostDate(Post post, char* data){
 	post->data = mystrdup(data);
 }
 
-void setPostTags(Post post, GArray* tags){
-	post->tags = tags; 
+void setPostTags(Post post, char* tags){
+	
+	if(tags){
+		int j = 1;
+		post->tags = g_array_new(FALSE, FALSE, sizeof(char*));
+
+		while(tags[j]!='\0'){
+		   	char* next_tag = nextTag((char*)tags, &j);	   			
+			g_array_append_val(post->tags, next_tag);
+		}
+	}	
 }
+
 
 
 void setPostScore(Post post, int score){
@@ -137,10 +153,17 @@ void setPostNRespostas(Post post, int n_respostas){
 
 // Cleaner
 
+void freePostTags(char** tag){
+	free(*tag);
+}
+
 void freePost (Post post) {
 	free(post->titulo);
 	free(post->data);
-	//g_array_free(post->tags, TRUE);
+	if(post->tags != NULL){
+		g_array_set_clear_func(post->tags, (GDestroyNotify)freePostTags);
+		g_array_free(post->tags, TRUE);
+	}
 	free(post);	
 }
 
@@ -197,10 +220,15 @@ int cmpTreeKey(PostKey a, PostKey b, gpointer user_data){
 	if(getPostKeyID(a) == getPostKeyID(b)) 
 		return 0; // caso os posts tenham o mesmo id para a procura
 	
-	int r = (-1) * strcmp(getPostKeyDate(a), getPostKeyDate(b));
+	char *datePostA = getPostKeyDate(a);
+	char *datePostB = getPostKeyDate(b);
+	int r = strcmp(datePostB, datePostA);
 
 	if(r==0) r = getPostKeyID(a)-getPostKeyID(b); // evitar que posts com strings de data iguais nao deixem de ser inseridos na btree
 	
+	free(datePostA);
+	free(datePostB);
+
 	return r; 
 }
 
@@ -217,6 +245,13 @@ PostAux initPostAux(){
 
 char* getPostAuxDate(PostAux postAux){
 	return mystrdup(postAux->data);
+}
+
+// Free
+
+void freePostAux(PostAux postAux){
+	free(postAux->data);
+	free(postAux);
 }
 
 

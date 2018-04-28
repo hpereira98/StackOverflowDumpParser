@@ -26,7 +26,7 @@ USER get_user_info_aux(GHashTable* com_user, long id){
 
 		res = create_user(short_bio, postsID);
 		/************/ //printf("%s\n", getUserShortBio(user));
-		//g_array_free(userPosts, TRUE);
+		g_array_free(userPosts, TRUE);
 		free(short_bio);
 	}
 
