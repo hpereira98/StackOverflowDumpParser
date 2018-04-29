@@ -7,175 +7,120 @@ typedef struct user* User;
 
 //Init User
 
+/** \Cria um novo User.
+
+	@returns Novo User criado.
+*/
 User initUser();
-void initUserPosts(User user); // funcao para fazer criar um garray de posts num dado user
 
 // Getters para user
 
-/** \brief ola.
+/** \Getter do ID de um User.
 
-	sou eu.
-	@param user
+	@param user Um user 
 
-	@returns
+	@returns ID do utilizador.
 */
 long getUserID(User user);
 
-/** \brief ola.
+/** \Getter do DisplayName de um User.
 
-	sou eu.
-	@param user
+	@param user Um User
 
-	@returns
+	@returns DisplayName do User
 */
 char* getUserDisplayName(User user);
 
-/** \brief ola.
+/** \Getter da Reputação de um User.
 
-	sou eu.
-	@param user
+	@param user Um User
 
-	@returns
+	@returns Reputação de um User.
 */
-int getUserReputacao(User user);
+int getUserReputation(User user);
 
-/** \brief ola.
+/** \Getter do Número de Posts de um User.
 
-	sou eu.
-	@param user
+	@param user Um User
 
-	@returns
-*/
-int getUserNPerguntas(User user);
-
-/** \brief ola.
-
-	sou eu.
-	@param user
-
-	@returns
-*/
-int getUserNRespostas(User user);
-
-/** \brief ola.
-
-	sou eu.
-	@param user
-
-	@returns
+	@returns Número de Posts de um User
 */
 int getUserNPosts(User user);
 
-/** \brief ola.
+/** \Getter da ShortBio de um User.
 
-	sou eu.
-	@param user
+	@param user Um User
 
-	@returns
+	@returns ShortBio do User.
 */
 char* getUserShortBio(User user);
 
-/** \brief ola.
+/** \Getter dos Posts efetuados por um User.
 
-	sou eu.
-	@param user
+	@param user Um User
 
 	@returns
 */
 GArray* getUserPosts(User user);
 
-/** \brief ola.
+/** \Getter dos Posts efetuados por um User.
+	
+ 	ShallowClone dos Posts de um User;
+	@param user Um User
 
-	sou eu.
-	@param user
-
-	@returns
+	@returns Novo array contendo os Posts do User
 */
 GArray* getClonedUserPosts(User user);
 
 // Setters para user
 
-/** \brief ola.
+/** \brief Setter para ID do User.
 
-	sou eu.
-	@param user
-	@param id
+	@param user Um user
+	@param id Id do User
 	
-	@returns
 */
 void setUserID(User user, long id);
 
-/** \brief ola.
+/** \brief Setter para DisplayName de um User.
 
-	sou eu.
-	@param user
-	@param display_name
+	@param user Um User
+	@param display_name DisplayName do User
 	
-	@returns
 */
 void setUserDisplayName(User user, char* display_name);
 
-/** \brief ola.
+/** \brief Setter para reputação de um User
 
-	sou eu.
-	@param user
-	@param reputacao
+	@param user Um User
+	@param reputacao Reputação de um User
 	
-	@returns
 */
-void setUserReputacao(User user, int reputacao);
+void setUserReputation(User user, int reputacao);
 
-/** \brief ola.
+/** \brief Setter para a ShortBio de um User
 
-	sou eu.
-	@param user
-	@param n_perguntas
-	
-	@returns
-*/
-void setUserNPerguntas(User user, int n_perguntas);
+	@param user Um User
+	@param short_bio ShortBio do User
 
-/** \brief ola.
-
-	sou eu.
-	@param user
-	@param n_respostas
-	
-	@returns
-*/
-void setUserNRespostas(User user,int n_respostas);
-
-/** \brief ola.
-
-	sou eu.
-	@param user
-	@param n_posts
-	
-	@returns
-*/
-void setUserNPosts(User user, int n_posts);
-
-/** \brief ola.
-
-	sou eu.
-	@param user
-	@param short_bio
-
-	@returns
 */
 void setUserShortBio(User user, char* short_bio);
 
-/** \brief ola.
+/** \brief Função para adicionar um Post a um User.
 
-	sou eu.
-	@param user
-	@param short_bio
+	@param user User owner do Post
+	@param post Post realizado pelo User
 
-	@returns
 */
 void addUserPost(User user, Post post);
 
 // Cleaner
+
+/** \brief Função para libertar o espaço ocupado por um User.
+
+	@param user User a libertar
+
+*/
 void freeUser (User user);
 
 #endif

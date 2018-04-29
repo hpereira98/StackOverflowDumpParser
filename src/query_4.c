@@ -1,9 +1,12 @@
 #include <query_4.h>
-
+/*
+ 	Função que verifica se um Post contém a tag passada como argumento à Query 4
+*/
 gboolean adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer info){ 
-
 	GArray* questionsID = ((GArray**)(info))[0];
+
 	Post post = (Post) post_pointer;
+
 	char* tag = ((char**)(info))[1];
 
 	char* post_date = getPostSimpleDate(post);
@@ -13,7 +16,7 @@ gboolean adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer in
 	int added = 0;
 	int dateCheck = comparaDatas(begin, end, post_date);
 
-	free(post_date); // ja nao vai ser mais preciso
+	free(post_date); 
 
 	if(dateCheck == -1) return TRUE;
 
@@ -36,11 +39,7 @@ gboolean adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer in
 				}
 			}
 		}
-
-		//g_array_free(post_tags, TRUE);	
 	}
-
-
 	return FALSE;
 }
 
@@ -61,7 +60,7 @@ LONG_list questions_with_tag_aux(GTree* com_post, char* tag, Date begin, Date en
 	for(int i=0; i<size; i++){
 		long id = g_array_index(questionsID,long,i);
 		set_list(result, i, id);
-		/*******/ printf("Pos: %d postId: %ld\n",i,id);
+		/*******/// printf("Pos: %d postId: %ld\n",i,id);
 	}
 
 	free(date_begin);

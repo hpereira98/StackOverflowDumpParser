@@ -8,274 +8,264 @@ typedef struct postKey* PostKey;
 #include "toInclude.h"
 
 // Init
-	Post initPost(); 
-	PostAux initPostAux();
+
+/** \brief Função que cria um novo Post.
+
+	@returns Novo Post criado.
+*/
+Post initPost(); 
+
 // Getters para Post
 
-/** \brief ola.
+/** \brief Getter para o ID de um Post
 
-	sou eu.
-	@param post
+	@param post Um Post
 
-	@returns
+	@returns ID do Post.
 */
 long getPostID(Post post);
 
-/** \brief ola.
+/** \brief Getter para o título de um Post
 
-	sou eu.
-	@param post
+	@param post Um Post
 
-	@returns
+	@returns O título do Post.
 */
 char* getPostTitle(Post post);
 
-/** \brief ola.
+/** \brief Getter para o ownerID de um Post
 
-	sou eu.
-	@param post
+	@param post Um Post 
 
-	@returns
+	@returns ID do owner do Post.
 */
 long getPostOwnerID(Post post);
 
-/** \brief ola.
+/** \brief Getter para a reputação do criador de um Post.
 
-	sou eu.
-	@param post
+	@param post Um Post
 
-	@returns
+	@returns Repuação do criador do Post.
 */
 int getPostOwnerRep(Post post);
 
-/** \brief ola.
 
-	sou eu.
-	@param post
+/** \brief Getter para o TypeID de um Post.
 
-	@returns
+	@param post Um Post
+
+	@returns TypeId do Post.
 */
 int getPostTypeID(Post post);
 
-/** \brief ola.
+/** \brief Getter para o parentID de um Post.
 
-	sou eu.
-	@param post
+	@param post Um Post (uma resposta)
 
-	@returns
+	@returns ID da pergunta a que o Post responde.
 */
 long getPostParentID(Post post);
 
-/** \brief ola.
+/** \brief Getter para o "time-stamp" de um Post.
 
-	sou eu.
-	@param post
+	@param post Um Post
 
-	@returns
+	@returns "time-stamp" do Post.
 */
 char* getPostDate(Post post);
 
-/** \brief ola.
+/** \brief Getter para a data de um Post.
 
-	sou eu.
-	@param post
+	@param post Um Post
 
-	@returns
+	@returns Data do Post no formato AAAA-MM-DD.
 */
 char* getPostSimpleDate(Post post);
 
-/** \brief ola.
+/** \brief Getter para as Tags de um Post.
 
-	sou eu.
-	@param post
+	@param post Um Post
 
-	@returns
+	@returns GArray contendo a tags usadas no Post.
 */
 GArray* getPostTags(Post post);
 
-/** \brief ola.
+/** \brief Getter para o score de um Post.
 
-	sou eu.
-	@param post
+	@param post Um Post
 
-	@returns
+	@returns Score do Post.
 */
 int getPostScore(Post post);
 
-/** \brief ola.
+/** \brief Getter para o número de comentários de um Post.
 
-	sou eu.
-	@param post
+	@param post Um Post
 
-	@returns
+	@returns O número de comentários que o Post obteve.
 */
 int getPostNComments(Post post);
 
-/** \brief ola.
+/** \brief Getter para o número de respostas de um Post.
 
-	sou eu.
-	@param post
+	@param post Um Post
 
-	@returns
+	@returns Número de respostas que o Post obteve.
 */
 int getPostNRespostas(Post post);
-
-/** \brief ola.
-
-	sou eu.
-	@param post
-
-	@returns
-*/
-GArray* getPostRespostas(Post post);
 
 
 // Setters para Post
 
-/** \brief ola.
+/** \brief Setter para o ID de um Post
 
-	sou eu.
-	@param post
-	@param id
+	@param post Um Post
+	@param id Id do Post.
 
-	@returns
 */
 void setPostID(Post post, long id);
 
-/** \brief ola.
+/** \brief Setter para o título de um Post
 
-	sou eu.
-	@param post
-	@param *titulo
-	
-	@returns
+	@param post Um Post
+	@param titulo Título do Post
+
 */
 void setPostTitle(Post post, char* titulo);
 
-/** \brief ola.
+/** \brief Setter para o ownerID de um Post.
 
-	sou eu.
-	@param post
-	@param owner_id
-	
-	@returns
+	@param post Um Post
+	@param owner_id ID do criador do Post
+
 */
 void setPostOwnerID(Post post, long owner_id);
 
-/** \brief ola.
+/** \brief Setter para de a reputação do criador um Post.
 
-	sou eu.
-	@param post
-	@param owner_rep
-	
-	@returns
+	@param post Um Post
+	@param owner_rep Reputação do criador.
+
 */
 void setPostOwnerRep(Post post, int owner_rep);
 
-/** \brief ola.
+/** \brief Setter para o TypeID de um Post.
 
-	sou eu.
-	@param post
-	@param type_id
-	
-	@returns
+	@param post Um Post
+	@param type_id TypeID do post
+
 */
 void setPostTypeID(Post post, int type_id);
 
-/** \brief ola.
+/** \brief Setter para o ParentID de um Post.
 
-	sou eu.
-	@param post
-	@param parent_id
-	
-	@returns
+	@param post Um Post
+	@param parent_id ParentID do Post
+
 */
 void setPostParentID(Post post, long parent_id);
 
-/** \brief ola.
+/** \brief Setter para a Data de um Post.
 
-	sou eu.
-	@param post
-	@param *data
-	
-	@returns
+	@param post Um Post
+	@param data "time-stamp" do Post
+
 */
 void setPostDate(Post post, char* data);
 
-/** \brief ola.
+/** \brief Setter para as Tags de um Post
 
-	sou eu.
-	@param post
-	@param *tags
-	
-	@returns
+	@param post Um Post
+	@param tags Tags do Post (conforme no documento Posts.xml)
+
 */
 void setPostTags(Post post, char* tags);
 
-/** \brief ola.
+/** \brief Setter para o score de um Post
 
-	sou eu.
-	@param post
-	@param score
-	
-	@returns
+	@param post Um Post
+	@param score Score do Post
+
 */
 void setPostScore(Post post, int score);
 
-/** \brief ola.
+/** \brief Setter para o número de comentários de um Post.
 
-	sou eu.
-	@param post
-	@param n_comments
-	
-	@returns
+	@param post Um Post
+	@param n_comments Número de comentários que o Post obteve
+
 */
 void setPostNComments(Post post, int n_comments); 
 
-/** \brief ola.
+/** \brief Setter para o número de respostas de um Post.
 
-	sou eu.
-	@param post
-	@param n_respostas
-	
-	@returns
+	@param post Um Post
+	@param n_respostas AnswerCount do Post.
+
 */
 void setPostNRespostas(Post post, int n_respostas);
 
-/** \brief ola.
-
-	sou eu.
-	@param post
-	@param *respostas
-	
-	@returns
-*/
-void setPostRespostas(Post post, GArray* respostas);
-
 
 // Cleaner
+
+/** \brief Função que liberta o espaço ocupado por um Post.
+
+	@param post Um Post a libertar.
+
+*/
 void freePost (Post post);
 
 // PostKey
-PostKey initPostKey();
-PostKey createPostKey(char* data, long id);
-void freePostKey(PostKey post_key);
 
+// Init
+
+/** \brief Função que cria uma nova postKey.
+
+	@param data "time-stamp" de um Post
+	@param id Id de um post
+	
+	@retuns Nova postKey.
+*/
+PostKey createPostKey(char* data, long id);
+
+// Getters
+
+/** \brief Getter para a Data da postKey de um Post.
+
+	@param post_key Uma postKey
+	
+	@retuns A data da chave.
+*/
 char* getPostKeyDate(PostKey post_key);
+
+/** \brief Getter para o ID da postKey de um Post.
+
+	@param post_key Uma postKey
+	
+	@retuns o ID da chave.
+*/
 long getPostKeyID(PostKey post_key);
 
-void setPostKeyDate(PostKey post_key, char* data);
-void setPostKeyID(PostKey post_key, long id);
+// Free
 
+/** \brief Função para libertar o espaço ocupado por uma postKey.
+
+	@param post_key PostKey a libertar.
+
+*/
+void freePostKey(PostKey post_key);
+
+/** \brief Função que estabelece uma relação de ordem entre duas postKeys
+
+	@param a Primeira PostKey
+	@param b Segunda PostKey
+	@param user_data 
+
+	@returns 0 caso as postKeys sejam iguais, -1 se a primeira for maior que a segunda, 1 caso contrário
+*/
 int cmpTreeKey(PostKey a, PostKey b, gpointer user_data);
 
-// Getters para PostAux
-char* getPostAuxDate(PostAux postAux);
 
 
-// Setters para PostAux
-void setPostAuxDate(PostAux postAux, char* data);
-
-void freePostAux(PostAux postAux);
 
 #endif

@@ -4,21 +4,19 @@
 /**
 	@file query_7.h
    
-	Definição...
+	Ficheiro .h com a assinatura da função auxiliar da Query 7
 */
 
 #include "toInclude.h"
 
-/** \brief ola.
+/** \brief Função que, dado um inteiro e um intervalo de datas, retorna uma LONG_list com IDs das perguntas com mais respostas.
 
-	sou eu.
-	@param *com_post
-	@param begin
-	@param end
+	@param *com_post Árvore dos Posts
+	@param begin Data inicial
+	@param end Data final
 
-	@returns
+	@returns LONG_list com IDs das perguntas com mais respostas.
 */
 LONG_list most_answered_questions_aux(GTree* com_post, int N, Date begin, Date end);
-
 
 #endif

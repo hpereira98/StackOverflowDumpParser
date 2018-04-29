@@ -4,27 +4,14 @@
 /**
 	@file query_4.h
    
-	Definição...
+	Ficheiro .h com a assinatura da função auxiliar da Query 4
 */
 
 #include "toInclude.h"
 
-/** \brief ola.
 
-	sou eu.
-	@param key_pointer
-	@param post_pointer
-	@param info
+/** \brief Função que, dado um intervalo de tempo e uma tag, retorna uma LONG_list contendo os IDs de perguntas, feitas no intervalo, que contenham essa  tag.
 
-	@returns TRUE -
-	@returns FALSE -
-*/
-gboolean adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer info);
-
-
-/** \brief ola.
-
-	sou eu.
 	@param *com_post
 	@param *tag
 	@param begin

@@ -5,17 +5,14 @@
 Post getPost(GTree* com_post, GHashTable* com_postAux, long id){
 	Post post  = NULL;
 
-	PostAux postAux = (PostAux)g_hash_table_lookup(com_postAux, &id);
+	char* postDate = g_hash_table_lookup(com_postAux, &id);
 	
-	if(postAux){
-
-		char* postDate = getPostAuxDate(postAux);
+	if(postDate){
 
 		PostKey key = createPostKey( postDate, id);
 
 		post = (Post)g_tree_lookup(com_post, key);
 
-		free(postDate);
 		freePostKey(key);
 	}
 
@@ -69,6 +66,13 @@ User getUser(GHashTable* com_user, long id){
 	return  user;
 }
 
+void appendUserToArray (gpointer key_pointer, gpointer user_pointer, gpointer info){	
+	User user = (User)user_pointer;
+	GArray* users = (GArray*)info;
+
+	g_array_append_val(users,user);
+}
+
 GArray* usersHashToGArray(GHashTable* com_user){
 	GArray* users = g_array_new(FALSE,FALSE,sizeof(User));
 
@@ -77,12 +81,7 @@ GArray* usersHashToGArray(GHashTable* com_user){
 	return users;
 }
 
-void appendUserToArray (gpointer key_pointer, gpointer user_pointer, gpointer info){	
-	User user = (User)user_pointer;
-	GArray* users = (GArray*)info;
 
-	g_array_append_val(users,user);
-}
 
 // Funções para ordenação 
 
@@ -94,8 +93,8 @@ int sortByNPosts(User* a,User *b){
 }
 
 int sortByRep(User* a,User *b){
-	int rep_a = getUserReputacao(*a);
-	int rep_b = getUserReputacao(*b);
+	int rep_a = getUserReputation(*a);
+	int rep_b = getUserReputation(*b);
 	
 	return rep_b - rep_a;
 }
@@ -144,11 +143,11 @@ char* dateToString(Date date){
 	int year = get_year(date);
 	int month = get_month(date);
 	int day = get_day(date);
-	printf("%d %d %d\n",year,month,day);
+
 	GDateTime* date_aux = g_date_time_new_utc(year,month,day,0,0,0);
 	char* date_res = g_date_time_format(date_aux,"%F");
 	g_date_time_unref(date_aux);
-	printf("%s\n",date_res);
+
 	return date_res;
 }
 

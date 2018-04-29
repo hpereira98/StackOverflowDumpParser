@@ -3,7 +3,6 @@
 struct tag{
 	char* name;
 	long id;
-	int ocorrencias;
 };
 
 // Tags
@@ -12,16 +11,6 @@ struct tag{
 
 Tag initTag(){
 	Tag new = malloc(sizeof(struct tag));
-	return new;
-}
-
-Tag createTag(char* name, long id, int ocorrencias){
-	Tag new = initTag();
-
-	setTagName(new, name);
-	setTagID(new, id);
-	setTagOcor(new, ocorrencias);
-
 	return new;
 }
 
@@ -35,9 +24,6 @@ long getTagID(Tag tag){
 	return tag->id;
 }
 
-int getTagOcor(Tag tag){
-	return tag->ocorrencias;
-}
 
 // Setters 
 
@@ -47,10 +33,6 @@ void setTagName(Tag tag, char* name){
 
 void setTagID(Tag tag, long id){
 	tag->id = id;
-}
-
-void setTagOcor(Tag tag, int ocor){
-	tag->ocorrencias = ocor;
 }
 
 // Cleaner

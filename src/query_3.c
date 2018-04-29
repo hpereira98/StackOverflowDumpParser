@@ -1,10 +1,16 @@
 #include <query_3.h>
 
+/*
+ Função que identifica o tipo de Post a ser processado e incrementa o respetivo contador 
+ do número total de Posts do seu tipo.
+*/
 gboolean posts_count(gpointer key_pointer, gpointer post_pointer, gpointer info){
 	Post post = (Post) post_pointer;
+
 	char* post_date = getPostSimpleDate(post);
 	char* date_begin = ((char**)(info))[0];
 	char* date_end = ((char**)(info))[1];
+
 	int* numQuestions = ((int**)(info))[2];
 	int* numAnswers = ((int**)(info))[3];
 	
@@ -12,7 +18,7 @@ gboolean posts_count(gpointer key_pointer, gpointer post_pointer, gpointer info)
 
 	free(post_date);
 
-	if(dateCheck == -1) return TRUE; // parar a travessia caso tenha sido passada a data inferior
+	if(dateCheck == -1) return TRUE; 
 
 	if(dateCheck == 0){
 		if(getPostTypeID(post)==1) (*numQuestions)++;

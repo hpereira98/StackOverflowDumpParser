@@ -1,10 +1,12 @@
 #include <query_9.h>
 
-
+/*
+ Função que percorre o GArray de Posts de um User e troca todas as ocorrências de respostas
+ pela respetiva pergunta.
+*/
 void swapAnswerPID (GTree* com_post, GHashTable* com_postAux, GArray* posts) {
 	Post post, newPost; 
 	long parentId;
-	/* Debugging */ int nao_encontrados = 0;
 
 	for (int i=0; i<posts->len; i++){
 		post = g_array_index(posts, Post, i);
@@ -14,10 +16,8 @@ void swapAnswerPID (GTree* com_post, GHashTable* com_postAux, GArray* posts) {
 
 			g_array_remove_index(posts, i);
 			if(newPost != NULL) g_array_insert_val(posts, i, newPost); // acho que assim os postsAux não encontrados são mais
-			else nao_encontrados++;
 		}
 	}
-	/* Debugging */// printf("Num respostas sem pergunta: %d\n",nao_encontrados );
 }
 
 LONG_list both_participated_aux(GHashTable* com_user, GTree* com_post, GHashTable* com_postAux, long id1, long id2, int N){
@@ -33,6 +33,8 @@ LONG_list both_participated_aux(GHashTable* com_user, GTree* com_post, GHashTabl
 
 	GArray *posts1 = getClonedUserPosts(user1);
 	GArray *posts2 = getClonedUserPosts(user2);
+
+	if(!posts1 || !posts2) return NULL;
 	
 	swapAnswerPID(com_post, com_postAux, posts1);
 	swapAnswerPID(com_post, com_postAux, posts2);
@@ -46,7 +48,7 @@ LONG_list both_participated_aux(GHashTable* com_user, GTree* com_post, GHashTabl
 			if (getPostID(post1) == getPostID(post2)){
 				id = getPostID(post1);
 				g_array_append_val(aux, id);
-				g_array_remove_index(posts2, j); // remover do segundo array para não voltar a passar por ele
+				g_array_remove_index(posts2, j); 
 			}
 		}
 	}
@@ -58,7 +60,7 @@ LONG_list both_participated_aux(GHashTable* com_user, GTree* com_post, GHashTabl
 	for(int i=0; i<size; i++){
 		id = g_array_index(aux, long, i);
 		set_list(result, i, id); 
-		/**********/ //printf("Post: %d postID: %ld Data: %s\n",i,id, getPostDate(getPost(com_post, com_postAux, id)));
+		/**********/ printf("Post: %d postID: %ld Data: %s\n",i,id, getPostDate(getPost(com_post, com_postAux, id)));
 	}
 
 	g_array_free(aux, TRUE);

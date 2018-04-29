@@ -14,9 +14,6 @@ struct post{
 	int n_respostas;
 };
 
-struct postAux{
-	char* data;
-};
 
 struct postKey{
 	char* data;
@@ -31,6 +28,9 @@ struct postKey{
 Post initPost(){
 	Post new = malloc(sizeof(struct post));
 	new->tags = NULL;
+	new->parent_id = -2;
+	new->n_respostas = -1;
+
 	return new;
 }
 
@@ -172,17 +172,11 @@ void freePost (Post post) {
 
 // Init
 
-PostKey initPostKey(){
-	PostKey new = malloc(sizeof(struct postKey));
-
-	return new;
-}
-
 PostKey createPostKey(char* data, long id){
-	PostKey new = initPostKey();
+	PostKey new =  malloc(sizeof(struct postKey));
 
-	setPostKeyDate(new, data);
-	setPostKeyID(new, id);
+	new->data = mystrdup(data);
+	new->id = id;
 
 	return new;
 }
@@ -203,15 +197,6 @@ long getPostKeyID(PostKey post_key){
 	return post_key->id;
 }
 
-// Setters
-
-void setPostKeyDate(PostKey post_key, char* data){
-	post_key->data = mystrdup(data);
-}
-
-void setPostKeyID(PostKey post_key, long id){
-	post_key->id = id;
-}
 
 // Função para comparação de dois PostKeys
 
@@ -232,34 +217,4 @@ int cmpTreeKey(PostKey a, PostKey b, gpointer user_data){
 	return r; 
 }
 
-// PostAux
-
-// Init
-
-PostAux initPostAux(){
-	PostAux new = malloc(sizeof(struct postAux));
-	return new;
-}
-
-// Getters
-
-char* getPostAuxDate(PostAux postAux){
-	return mystrdup(postAux->data);
-}
-
-// Free
-
-void freePostAux(PostAux postAux){
-	free(postAux->data);
-	free(postAux);
-}
-
-
-
-
-// Setters
-
-void setPostAuxDate(PostAux postAux, char* data){
-	postAux->data = mystrdup(data);
-}
 

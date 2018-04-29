@@ -6,18 +6,24 @@ STR_pair info_from_post_aux(GTree* com_post, GHashTable* com_postAux, GHashTable
 
 	Post post = getPost(com_post, com_postAux, id);
 
-	if (!post) printf("Post not found...\n");
-	else {
-		if(getPostTypeID(post)==2){ //caso seja uma resposta...
+	if (post){
+
+		if(getPostTypeID(post) == 2){ 
 			long parentID = getPostParentID(post);
-			post = getPost(com_post, com_postAux, parentID);
+			Post parent = getPost(com_post, com_postAux, parentID);
+
+			if(!parent) return result;
 		}
 
 		long ownerID = getPostOwnerID(post);
-		User user = getUser(com_user, ownerID); 	
+		User user = getUser(com_user, ownerID);
+
+		char* display_name;
+
+		if(user) display_name = getUserDisplayName(user);
+		else display_name = NULL; 
 
 		char* title = getPostTitle(post);
-		char* display_name = getUserDisplayName(user);
 
 		set_fst_str(result, title);
 		set_snd_str(result, display_name);	

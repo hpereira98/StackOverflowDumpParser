@@ -8,7 +8,7 @@
 
 int main(){
 	TAD_community teste = init();
-	char* path = "../../dumpexemplo/android/";
+	char* path = "../../dumpexemplo/ubuntu/";
 	Date inicio = createDate(01,01,2010);
 	Date fim = createDate(31,1,2020);
 
@@ -20,11 +20,13 @@ int main(){
 	//free(path);
 	
 	//clean(teste);
+	STR_pair new1 =info_from_post(teste, 9);
 	
 	printf("Tempo '0 - load' = %f\n----------------------------------\n", (double)(end-begin)/CLOCKS_PER_SEC);
 
 	clock_t begin1 = clock();
-	STR_pair new1 = info_from_post(teste, 9);
+	for(int i = 0; i < 187278; i++)
+	 info_from_post(teste, i);
 	//printf("%s -- %s\n",get_fst_str(new1),get_snd_str(new1) );
 	clock_t end1 = clock();
 
@@ -83,8 +85,9 @@ int main(){
 	clock_t end6 = clock();
 
 	printf("Tempo '6 - most_voted_answers' = %f\n----------------------------------\n", (double)(end6-begin6)/CLOCKS_PER_SEC);
-	Date inicio7 = createDate(01,1,2012);
-	Date fim7 = createDate(31,12,2012);
+	
+	Date inicio7 = createDate(01,5,2016);
+	Date fim7 = createDate(01,5,2016);
 
 	clock_t begin7 = clock();
 	LONG_list new7 = most_answered_questions(teste, 100, inicio7, fim7);
@@ -101,7 +104,7 @@ int main(){
 	printf("Tempo '8 - contains_word' = %f\n----------------------------------\n", (double)(end8-begin8)/CLOCKS_PER_SEC);
 
 	clock_t begin9 = clock();
-	LONG_list new9 = both_participated(teste,29, 30, 5); // ids aleatórios
+	LONG_list new9 = both_participated(teste, 488,15811, 1000); // ids aleatórios
 	clock_t end9 = clock();
   	
 
@@ -118,7 +121,7 @@ int main(){
 	Date fim11 = createDate(30,11,2013);
 
 	clock_t begin11 = clock();
-	LONG_list new11 = most_used_best_rep(teste, 100, inicio11, fim11);
+	LONG_list new11 = most_used_best_rep(teste, 10000000, inicio11, fim11);
 	clock_t end11 = clock();
  
 	printf("Tempo '11 - most_used_best_rep' = %f\n----------------------------------\n", (double)(end11-begin11)/CLOCKS_PER_SEC);

@@ -5,6 +5,7 @@
 
 typedef struct TCD_community * TAD_community;
 
+// init
 TAD_community init();
 
 // query 0
@@ -43,4 +44,5 @@ long better_answer(TAD_community com, long id);
 // query 11
 LONG_list most_used_best_rep(TAD_community com, int N, Date begin, Date end);
 
+// clean
 TAD_community clean(TAD_community com);

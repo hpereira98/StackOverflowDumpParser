@@ -4,55 +4,20 @@
 /**
 	@file query_11.h
    
-	Definição...
+	Ficheiro .h com a assinatura da função auxiliar da Query 11
 */
 
 #include "toInclude.h"
 
+/** \brief Função que lista as tags mais usadas, pelos N utilizadores com melhor reputação, durante um dado intervalo de tempo.
 
-/** \brief ola.
+	@param *com_user Tabela de Hash dos Users
+	@param *com_post Àrvore dos Posts
+	@param N Número de utilizadores a considerar na resposstas
+	@param begin Data inicial
+	@param end Data final
 
-	sou eu.
-	@param key_pointer
-	@param user_pointer
-	@param info
-
-	@returns
-*/
-void insereUsers(gpointer key_pointer, gpointer user_pointer, gpointer info);
-
-
-/** \brief ola.
-
-	sou eu.
-	@param *tagsId
-
-	@returns 
-*/
-GArray* tagsIdToMSet(GArray* tagsId);
-
-
-/** \brief ola.
-
-	sou eu.
-	@param *tagsId
-	@param *postTags
-	@param *com_tags
-
-*/
-void addTagId(GArray* tagsId, GArray* postTags, GHashTable* com_tags);
-
-
-/** \brief ola.
-
-	sou eu.
-	@param *com_user
-	@param *com_post
-	@param N
-	@param begin
-	@param end
-
-	@returns
+	@returns LONG_list com as N tags mais usadas conforme os critérios estabelecidos.
 */
 LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int N, Date begin, Date end);
 

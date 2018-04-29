@@ -1,9 +1,17 @@
 #include <query_10.h>
 
+/*
+ Função que calcula a pontuação de uma resposta.
+*/
 
 double answer_score (int score, int rep, int comments) {
 	return ((score*0.65) + (rep*0.25) + (comments*0.1)); 
 }
+
+/*
+ Função que guarda e atualiza o ID da Resposta com maior pontuação para a Pergunta escolhida,
+ à medida que a àrvore dos posts é atravessada.
+*/
 
 gboolean bestAnswer (gpointer key_pointer, gpointer post_pointer, gpointer info) {
 	Post post = (Post)post_pointer;

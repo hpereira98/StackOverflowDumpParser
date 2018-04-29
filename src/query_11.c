@@ -1,15 +1,23 @@
 #include <query_11.h>
-
+/* 
+ Função para libertar o espaco alocado no GArray de LONG_pairs.
+*/
 void freeMSet(LONG_pair* aux){
 	free_long_pair(*aux);
 }
 
+/*
+ Função que percorre um GArray de tagsID ordenado e devolve um GArray composto por pares da forma 
+ (tagID,numOcorrencias).
+*/
 GArray* tagsIdToMSet(GArray* tagsId){
 	GArray* mSetTagsID = g_array_new(FALSE, FALSE, sizeof(LONG_pair));
 	g_array_set_clear_func(mSetTagsID, (GDestroyNotify)freeMSet);
 
 	long id;
 	int count, i=0;
+
+	g_array_sort(tagsId, (GCompareFunc)cmpInt);
 
 	while(i< tagsId->len){
 		count = 1;
@@ -26,7 +34,9 @@ GArray* tagsIdToMSet(GArray* tagsId){
 	return mSetTagsID;
 }
 
-
+/*
+ Função que adiciona o ID das tags usadas num posts a um GArray
+*/
 void addTagId(GArray* tagsId, GArray* postTags, GHashTable* com_tags){
 	long id;
 	Tag tag;
@@ -64,12 +74,12 @@ LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int
 	for(int i = 0; i< n_Users; i++){ 
 		User user = g_array_index(users, User, i);	
 		GArray* user_posts = getUserPosts(user);
-		/*********************/// printf("%ld %d %d\n", getUserID(user), getUserReputacao(user),getUserNPosts(user));
+		/*********************/ //printf("%ld %d %d\n", getUserID(user), getUserReputacao(user),getUserNPosts(user));
+		if(!user_posts) break;
 
 		for(int j = 0; j<user_posts->len; j++){
 			Post post = g_array_index(user_posts, Post, j);			
 			char* data = getPostSimpleDate(post);
-			//printf("%s\n",data );
 
 			if(comparaDatas(date_begin, date_end, data) == 0){
 				GArray* post_tags = getPostTags(post);
@@ -77,10 +87,7 @@ LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int
 			}
 			free(data);
 		}
-		//g_array_free(user_posts, TRUE);
 	}
-
-	g_array_sort(tagsId, (GCompareFunc)cmpInt);
 
 	GArray* mSetTagsId = tagsIdToMSet(tagsId);
 	g_array_sort(mSetTagsId, (GCompareFunc)sortMSet);
@@ -92,7 +99,7 @@ LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int
 	for(int i=0; i<size; i++){
 		LONG_pair aux = g_array_index(mSetTagsId, LONG_pair, i);	
 		set_list(r, i, get_fst_long(aux));	
-		/* debugging */ //printf("Pos: %d tagId: %ld numVezesUsada: %ld\n",i,get_fst_long(aux),get_snd_long(aux));
+		/* debugging */ printf("Pos: %d tagId: %ld numVezesUsada: %ld\n",i,get_fst_long(aux),get_snd_long(aux));
 	}
 	
 	free(date_begin);

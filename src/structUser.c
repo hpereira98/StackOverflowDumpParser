@@ -3,8 +3,6 @@
 struct user{
 	long id; // user id
 	char* display_name; // username
-	int n_perguntas; // número de perguntas
-	int n_respostas; // número de respostas
 	int n_posts; // número total de posts
 	int reputacao; // reputacao
 	char* short_bio; // descrição do user
@@ -20,17 +18,10 @@ User initUser(){
 	User newUser = malloc(sizeof(struct user));
 
 	newUser->userPosts = NULL;
-	newUser->n_respostas = 0;
-	newUser->n_perguntas = 0;
 	newUser->n_posts = 0;
 
 	return newUser;
 }
-
-void initUserPosts(User user){
-	user->userPosts = g_array_new (FALSE,TRUE,sizeof(Post));
-}
-
 
 // Getters
 
@@ -42,16 +33,8 @@ char* getUserDisplayName(User user){
 	return mystrdup(user->display_name);
 }
 
-int getUserReputacao(User user){
+int getUserReputation(User user){
 	return user->reputacao;
-}
-
-int getUserNPerguntas(User user){
-	return user->n_perguntas;
-}
-
-int getUserNRespostas(User user){
-	return user->n_respostas;
 }
 
 int getUserNPosts(User user){
@@ -67,6 +50,8 @@ GArray* getUserPosts(User user){
 }
 
 GArray* getClonedUserPosts(User user){
+	if(!user->userPosts) return NULL;
+	
 	int size = (user->userPosts)->len;
 	Post aux;
 	GArray * new = g_array_new(FALSE,TRUE,sizeof(struct post*));
@@ -90,16 +75,8 @@ void setUserDisplayName(User user, char* display_name){
 	user->display_name = mystrdup(display_name);
 }
 
-void setUserReputacao(User user, int reputacao){
+void setUserReputation(User user, int reputacao){
 	user->reputacao = reputacao;
-}
-
-void setUserNPerguntas(User user, int n_perguntas){
-	user->n_perguntas = n_perguntas;
-}
-
-void setUserNRespostas(User user,int n_respostas){
-	user->n_respostas = n_respostas;
 }
 
 void setUserNPosts(User user, int n_posts){
@@ -119,11 +96,6 @@ void addUserPost(User user, Post post){
 	g_array_append_val(user->userPosts, post);
 
 	user->n_posts++;
-
-	if(getPostTypeID(post) == 1) 
-		user->n_perguntas++;
-	else 
-		user->n_respostas++;
 }
 
 // Cleaner

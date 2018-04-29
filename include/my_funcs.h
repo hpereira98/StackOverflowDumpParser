@@ -18,7 +18,7 @@
 	@param *com_postAux Tabela de Hash auxiliar dos Posts
 	@param id Identificador do Post a receber
 
-	@returns (Post) Post com o ID dado
+	@returns (Post) Post com o ID dado caso este exista, NULL caso contrário
 */
 Post getPost(GTree* com_post, GHashTable* com_postAux, long id);
 
@@ -53,14 +53,7 @@ User getUser(GHashTable* com_user, long id);
 */
 GArray* usersHashToGArray(GHashTable* com_user);
 
-/** \brief Função que adiciona a um array dinâmico um User
 
-	@param key_pointer Apontador para a chave
-	@param user_pointer Apontador para o User
-	@param info Informação a ser partilhada entre iterações
-
-*/
-void appendUserToArray (gpointer key_pointer, gpointer user_pointer, gpointer info);
 
 // Funções para ordenação 
 
@@ -81,8 +74,8 @@ int sortByNPosts(User* a,User *b);
 	@param b Segundo utilizador
 
 	@returns 0, caso a reputação de ambos os Users seja igual
-	@returns <0, caso a reputação do primeiro User seja superior ao do segundo User
-	@return >0, caso a reputação do primeiro User seja inferior ao do segundo User
+	@returns <0, caso a reputação do primeiro User seja superior à do segundo User
+	@return >0, caso a reputação do primeiro User seja inferior à do segundo User
 */
 int sortByRep(User* a,User *b);
 

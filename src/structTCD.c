@@ -23,7 +23,7 @@ TAD_community init(){
  
   	new->user = g_hash_table_new_full(g_int_hash, g_int_equal, free, (GDestroyNotify)freeUser);
   	new->post = g_tree_new_full((GCompareDataFunc)cmpTreeKey, NULL, (GDestroyNotify)freePostKey, (GDestroyNotify)freePost);
-  	new->postAux = g_hash_table_new_full(g_int_hash, g_int_equal, (GDestroyNotify)free, (GDestroyNotify)freePostAux);
+  	new->postAux = g_hash_table_new_full(g_int_hash, g_int_equal, (GDestroyNotify)free, (GDestroyNotify)free);
   	new->tags = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify)free, (GDestroyNotify)freeTags);
   		
 
@@ -63,7 +63,7 @@ void usersXmlToTAD(TAD_community com, xmlNodePtr doc_root){
    			
    			// Reputação
    			sscanf((const char*)rep,"%d", &repUser);
-   			setUserReputacao(new, repUser);
+   			setUserReputation(new, repUser);
 
 			// Bio			
 			setUserShortBio(new,(char*)bio); 
@@ -116,7 +116,6 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 	   		int awnsers;
 	   		
 	   		Post newPost = initPost();
-	   		PostAux newPostAux = initPostAux();
 
 	   		// Post ID 
 			sscanf((const char*)post_id, "%li", idPost); 
@@ -138,11 +137,9 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 	   			sscanf((const char*)parent_id, "%li", &idParent); 
 	   			setPostParentID(newPost, idParent);	   				
 	   		}
-	   		else setPostParentID(newPost, -2);
 
 	   		// Data
 	   		setPostDate(newPost, (char*)data);
-	   		setPostAuxDate(newPostAux, (char*)data);
 	   		
 	   		// Tags  
 	   		setPostTags(newPost, (char*) tags);
@@ -160,14 +157,13 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 	   		if(answer_count){
 	   			sscanf((const char*)answer_count, "%d", &awnsers); 
 	   			setPostNRespostas(newPost, awnsers);
-	   		}
-	   		else setPostNRespostas(newPost,-1);   				   			
+	   		}				   			
 
 	   		// Owner Reputation && Add Post to User
 	   		User user = getUser(com->user, idOwner);
 
 	   		if(user){
-	   			int owner_rep = getUserReputacao(user);
+	   			int owner_rep = getUserReputation(user);
 	   			setPostOwnerRep(newPost, owner_rep);
 
 	   			addUserPost(user, newPost);
@@ -176,7 +172,7 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 			PostKey key = createPostKey( (char*)data, *idPost);
 				
 	   		g_tree_insert(com->post, key, newPost);
-	   		g_hash_table_insert(com->postAux, idPost, newPostAux);
+	   		g_hash_table_insert(com->postAux, idPost, mystrdup((char*) data));
 	   		/*Debugging*/ //printf("Inserido %d\n", i);
 	   		i++;
 

@@ -4,32 +4,19 @@
 /**
 	@file query_3.h
    
-	Definição...
+	Ficheiro .h com a assinatura da função auxiliar da Query 3
 */
 
 #include "toInclude.h"
 
-/** \brief ola.
 
-	sou eu.
-	@param key_pointer
-	@param post_pointer
-	@param info
+/** \brief Função que, dado um intervalo de tempo, conta quantas perguntas e quantas respostas foram feitas durante o mesmo.
 
-	@returns TRUE -
-	@returns FALSE -
-*/
-gboolean posts_count(gpointer key_pointer, gpointer post_pointer, gpointer info);
+	@param *com_posts Árvore dos Posts
+	@param begin Data inicial
+	@param end Data final
 
-
-/** \brief ola.
-
-	sou eu.
-	@param *com_posts
-	@param begin
-	@param end
-
-	@returns
+	@returns LONG_pair cuja primeira componente corresponde ao número de perguntas, e a segunda ao número de respostas.
 */
 LONG_pair total_posts_aux(GTree* com_posts, Date begin, Date end);
 

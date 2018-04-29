@@ -4,30 +4,21 @@
 /**
 	@file query_9.h
    
-	Ficheiro .h da Query 9
+	Ficheiro .h com a assinatura da função auxiliar da Query 0
 */
 
 #include "toInclude.h"
 
-/** \brief Função que troca Respostas por Perguntas.
-
-	Percorre um array de Posts, removendo as Respostas e anexando no final do array a Pergunta correspondente.
-	@param *com_post Árvore dos Posts
-	@param *com_postAux Tabela de Hash auxiliar dos Posts
-	@param *posts Array dinâmico de Posts
-
-*/
-void swapAnswerPID (GTree* com_post, GHashTable* com_postAux, GArray* posts);
 
 
-/** \brief Função que lista os N IDs dos Posts em que dois utilizadores arbitrários participam.
+/** \brief Função que lista, no máximo, os N IDs dos Posts em que dois utilizadores participam.
 
 	@param *com_user Tabela de Hash dos Users
 	@param *com_post Árvore dos Posts
 	@param *com_postAux Tabela de Hash auxiliar dos Posts
 	@param id1 Identificador do primeiro User
 	@param id2 Identificador do segundo User
-	@param N Número de IDs a listar
+	@param N Número máximo de IDs a listar
 
 	@returns LONG_list dos IDs em que ambos os Users participam
 

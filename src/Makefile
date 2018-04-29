@@ -1,6 +1,7 @@
 IDIR=../include
 ODIR=obj
 LDIR=lib
+DDIR=../doc
 OLDIR=$(ODIR)/lib
 
 CC=gcc
@@ -19,9 +20,16 @@ $(ODIR)/%.o : %.c $(DEPS)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 program: $(SOURCES_OBJ) $(MY_LIBS_OBJ)
-	$(CC) $(CFLAGS) $(wildcard $(ODIR)/*.o)  $(wildcard $(OLDIR)/*.o) -o program $(LIBS)
+	$(CC) $(CFLAGS) $(wildcard $(ODIR)/*.o)  $(wildcard $(OLDIR)/*.o) -o program $(LIBS)	
+
+doc:	
+	cd  $(IDIR) && doxygen -g && doxygen 
+	cp -R $(IDIR)/{latex,html,Doxyfile} $(DDIR)
+	rm -R $(IDIR)/{latex,html,Doxyfile}
 
 clean:
 	rm obj/*.o
 	rm obj/lib/*.o
 	rm program
+	rm -r $(DDIR)/{latex,html,Doxyfile}
+	

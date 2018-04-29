@@ -12,21 +12,23 @@ USER get_user_info_aux(GHashTable* com_user, long id){
 	if(user!=NULL){
 		GArray* userPosts = getClonedUserPosts(user);
 		
-		g_array_sort (userPosts,(GCompareFunc)sortByDate);
+		if(userPosts){
+			g_array_sort (userPosts,(GCompareFunc)sortByDate);
 		
-		size = selectSize(userPosts->len, 10);
+			size = selectSize(userPosts->len, 10);
 		
-		for(i=0;i<size;i++){
+			for(i=0;i<size;i++){
 				post = g_array_index(userPosts,Post,i);
-
 				postsID[i] = getPostID(post);
+			}	
 
-		}
+			g_array_free(userPosts, TRUE);		
+		}	
+
 		char* short_bio = getUserShortBio(user);
 
 		res = create_user(short_bio, postsID);
 		/************/ //printf("%s\n", getUserShortBio(user));
-		g_array_free(userPosts, TRUE);
 		free(short_bio);
 	}
 
