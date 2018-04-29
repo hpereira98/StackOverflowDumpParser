@@ -20,11 +20,11 @@ void freeTagKey(char* tagName){
 
 TAD_community init(){
 	struct TCD_community* new = malloc(sizeof(struct TCD_community));
-  	//new->user = g_hash_table_new(g_int_hash, g_int_equal);
-  	new->user = g_hash_table_new_full(g_int_hash, g_int_equal, (GDestroyNotify)freeIdKey, (GDestroyNotify)freeUser);
+ 
+  	new->user = g_hash_table_new_full(g_int_hash, g_int_equal, free, (GDestroyNotify)freeUser);
   	new->post = g_tree_new_full((GCompareDataFunc)cmpTreeKey, NULL, (GDestroyNotify)freePostKey, (GDestroyNotify)freePost);
-  	new->postAux = g_hash_table_new_full(g_int_hash, g_int_equal, (GDestroyNotify)freeIdKey, (GDestroyNotify)freePostAux);
-  	new->tags = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify)freeTagKey, (GDestroyNotify)freeTags);
+  	new->postAux = g_hash_table_new_full(g_int_hash, g_int_equal, (GDestroyNotify)free, (GDestroyNotify)freePostAux);
+  	new->tags = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify)free, (GDestroyNotify)freeTags);
   		
 
   	return new;
@@ -42,12 +42,12 @@ void usersXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 
 	while(cur){
 
-   		xmlChar* id = xmlGetProp(cur, (const xmlChar *)"Id");
-   		xmlChar* rep = xmlGetProp(cur, (const xmlChar *)"Reputation");
-   		xmlChar* name = xmlGetProp(cur, (const xmlChar *)"DisplayName");
-		xmlChar* bio = xmlGetProp(cur, (const xmlChar *)"AboutMe");
+		if(!xmlStrcmp(cur->name, (const xmlChar*)"row")){
 
-   		if(id != NULL){
+   			xmlChar* id = xmlGetProp(cur, (const xmlChar *)"Id");
+   			xmlChar* rep = xmlGetProp(cur, (const xmlChar *)"Reputation");
+   			xmlChar* name = xmlGetProp(cur, (const xmlChar *)"DisplayName");
+			xmlChar* bio = xmlGetProp(cur, (const xmlChar *)"AboutMe");
 
    			long* idUser = malloc(sizeof(long));
    			int repUser;
@@ -70,14 +70,13 @@ void usersXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 			 
    			// Inserir conforme o ID
    			g_hash_table_insert(com->user, idUser, new); i++;
+
+   			xmlFree(id);
+			xmlFree(name);
+			xmlFree(rep);
+			xmlFree(bio);
 			
    		}
-
-		xmlFree(id);
-		xmlFree(name);
-		xmlFree(rep);
-		xmlFree(bio);
-
 		cur = cur->next;
 	}
 	long id_aux = -1;
@@ -92,10 +91,10 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 	/* Debuggin */ int i = 0;
 
 	while(cur){
-		xmlChar* post_type_id = xmlGetProp(cur, (const xmlChar *)"PostTypeId");	
+		
+		if(!xmlStrcmp(cur->name, (const xmlChar*)"row")){
 
-		if(post_type_id!=NULL){
-
+			xmlChar* post_type_id = xmlGetProp(cur, (const xmlChar *)"PostTypeId");	
 	   		xmlChar* post_id = xmlGetProp(cur, (const xmlChar *)"Id");
 	   		xmlChar* user_id = xmlGetProp(cur, (const xmlChar *)"OwnerUserId");
 	   		xmlChar* user_display_name = xmlGetProp(cur, (const xmlChar *)"OwnerDisplayName");
@@ -106,17 +105,22 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 			xmlChar* score_xml = xmlGetProp(cur, (const xmlChar *)"Score");
 			xmlChar* comments = xmlGetProp(cur, (const xmlChar *)"CommentCount");
 			xmlChar* answer = xmlGetProp(cur, (const xmlChar *)"AcceptedAnswerId");
+			xmlChar* answer_count = xmlGetProp(cur, (const xmlChar *)"AnswerCount");
 
 	   		long* idPost = malloc(sizeof(long));
 	   		long idOwner;
 	   		long idParent;
 	   		int idType = 0;
 	   		int score;
-	   		int n_comments ;
+	   		int n_comments;
+	   		int awnsers;
 	   		
-
 	   		Post newPost = initPost();
 	   		PostAux newPostAux = initPostAux();
+
+	   		// Post ID 
+			sscanf((const char*)post_id, "%li", idPost); 
+			setPostID(newPost, *idPost);
 	   				
 	   		// Titulo
 	   		setPostTitle(newPost, (char*)titulo);
@@ -124,47 +128,17 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 	   		// Owner ID 
 	   		sscanf((const char*)user_id, "%li", &idOwner);
 	   		setPostOwnerID(newPost, idOwner);
-	   			
-
-	   		// Owner Reputation
-	   		User user = (User)g_hash_table_lookup(com->user, &idOwner);
-	   		if (user!=NULL){
-	   			int owner_rep = getUserReputacao(user);
-	   			setPostOwnerRep(newPost, owner_rep);
-	   		}
-
-	   		// Count User's questions and answers 			
-			if (user!=NULL) {
-				if (idType == 1) {
-					int n_perguntas = getUserNPerguntas(user);
-					setUserNPerguntas(user, n_perguntas + 1);
-				}
-				else if (idType == 2){
-					int n_respostas = getUserNRespostas(user);
-					setUserNRespostas(user, n_respostas + 1);
-				}
-				int n_posts = getUserNPosts(user);
-				setUserNPosts(user, n_posts+1);
-			}
-
-	   		// Post ID 
-			sscanf((const char*)post_id, "%li", idPost); 
-			setPostID(newPost, *idPost);
-
-	   			
 
 	   		// Type ID
 	   		sscanf((const char*)post_type_id, "%d", &idType); 
 	   		setPostTypeID(newPost, idType);
-	   			
 
 	   		// Parent ID
 	   		if(parent_id) {
 	   			sscanf((const char*)parent_id, "%li", &idParent); 
-	   			setPostParentID(newPost, idParent);
-	   				
+	   			setPostParentID(newPost, idParent);	   				
 	   		}
-	   		else setPostParentID(newPost, -2);   			
+	   		else setPostParentID(newPost, -2);
 
 	   		// Data
 	   		setPostDate(newPost, (char*)data);
@@ -176,29 +150,29 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 	   			
 	   		// Score
 			sscanf((const char*)score_xml, "%d", &score); 
-	   		setPostScore(newPost, score);
-	   			
+	   		setPostScore(newPost, score);	   			
 
 	   		// Nº Comments
 	   		sscanf((const char*)comments,"%d", &n_comments);
 	   		setPostNComments(newPost, n_comments);
 
 	   		// Nº Respostas
-	   		if(getPostTypeID(newPost)==1){
-	   			xmlChar* answercount = xmlGetProp(cur, (const xmlChar *)"AnswerCount");
-	   			int awnsers;
-
-	   			sscanf((const char*)answercount, "%d", &awnsers); 
+	   		if(answer_count){
+	   			sscanf((const char*)answer_count, "%d", &awnsers); 
 	   			setPostNRespostas(newPost, awnsers);
-	   			xmlFree(answercount);
 	   		}
-	   		else setPostNRespostas(newPost,-1);
-		
-			// Add Post to User
-			
-			if(user) addUserPost(user, newPost);
-			
+	   		else setPostNRespostas(newPost,-1);   				   			
 
+	   		// Owner Reputation && Add Post to User
+	   		User user = getUser(com->user, idOwner);
+
+	   		if(user){
+	   			int owner_rep = getUserReputacao(user);
+	   			setPostOwnerRep(newPost, owner_rep);
+
+	   			addUserPost(user, newPost);
+	   		}
+			
 			PostKey key = createPostKey( (char*)data, *idPost);
 				
 	   		g_tree_insert(com->post, key, newPost);
@@ -206,7 +180,7 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 	   		/*Debugging*/ //printf("Inserido %d\n", i);
 	   		i++;
 
-	   			
+	   		xmlFree(post_type_id);	
 			xmlFree(post_id);
 			xmlFree(user_id);
 			xmlFree(titulo);
@@ -217,8 +191,8 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 			xmlFree(comments);
 			xmlFree(answer);
 			xmlFree(user_display_name);
+			xmlFree(answer_count);
 		}
-		xmlFree(post_type_id);
 		cur = cur->next;
 	}
 	/*Debugging*/ printf("Posts: %d\n", i);
@@ -232,11 +206,11 @@ void tagsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 
 	while(cur){
 
-		xmlChar* tag_id = xmlGetProp(cur, (const xmlChar *)"Id");
+		if(!xmlStrcmp(cur->name, (const xmlChar*)"row")){
 
-	   	if(tag_id){
-
+			xmlChar* tag_id = xmlGetProp(cur, (const xmlChar *)"Id");
 	   		xmlChar* tag_name = xmlGetProp(cur, (const xmlChar *)"TagName");
+
 		   	Tag new = initTag();
 
 		   	// ID		
@@ -249,17 +223,14 @@ void tagsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 			setTagName(new, (char*)tag_name);
 
 	   		// Inserir conforme Tag Name
-
 	   		g_hash_table_insert(com->tags, mystrdup((char*)tag_name), new);
 				
 			i++;
 
 			xmlFree(tag_name);
+			xmlFree(tag_id);
 				
 		}
-
-		xmlFree(tag_id);
- 
 		cur = cur->next;
 	}
 	/* Debugging */ printf("Tags: %d\n", i);
@@ -333,12 +304,7 @@ LONG_list most_used_best_rep(TAD_community com, int N, Date begin, Date end){
 	return most_used_best_rep_aux(com->user, com->tags, N, begin, end);
 }
 
-// clean
-
-void aux(long* key, User user, gpointer info){
-	free(key);
-	freeUser(user);
-}
+// Clean
 
 TAD_community clean(TAD_community com){
 	g_hash_table_destroy(com->user);

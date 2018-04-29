@@ -115,8 +115,15 @@ void setUserShortBio(User user, char* short_bio){
 void addUserPost(User user, Post post){
 	if(!user->userPosts)
 		user->userPosts = g_array_new (FALSE,TRUE,sizeof(Post));
+	 
+	g_array_append_val(user->userPosts, post);
+
+	user->n_posts++;
+
+	if(getPostTypeID(post) == 1) 
+		user->n_perguntas++;
 	else 
-		g_array_append_val(user->userPosts, post);
+		user->n_respostas++;
 }
 
 // Cleaner

@@ -144,10 +144,11 @@ char* dateToString(Date date){
 	int year = get_year(date);
 	int month = get_month(date);
 	int day = get_day(date);
-
+	printf("%d %d %d\n",year,month,day);
 	GDateTime* date_aux = g_date_time_new_utc(year,month,day,0,0,0);
 	char* date_res = g_date_time_format(date_aux,"%F");
-	
+	g_date_time_unref(date_aux);
+	printf("%s\n",date_res);
 	return date_res;
 }
 

@@ -32,7 +32,6 @@
 #include "query_9.h"
 #include "query_10.h"
 #include "query_11.h"
-#include "clean.h"
 #include <time.h> // remover depois 
 
 #ifndef DEBUG_MODE

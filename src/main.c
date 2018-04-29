@@ -52,7 +52,7 @@ int main(){
 	char *aux = "package-management";
 	LONG_list new4 = questions_with_tag(teste, aux, inicio4, fim4);
 	clock_t end4 = clock();
-	free(aux);
+	
 	
 
 	printf("Tempo '4 - questions_with_tag' = %f\n----------------------------------\n", (double)(end4-begin4)/CLOCKS_PER_SEC);
