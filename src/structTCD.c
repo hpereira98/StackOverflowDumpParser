@@ -1,4 +1,4 @@
-#include "structs.h"
+#include "structTCD.h"
 
 struct TCD_community{
 	GHashTable* user;
@@ -95,99 +95,104 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 		if(!xmlStrcmp(cur->name, (const xmlChar*)"row")){
 
 			xmlChar* post_type_id = xmlGetProp(cur, (const xmlChar *)"PostTypeId");	
-	   		xmlChar* post_id = xmlGetProp(cur, (const xmlChar *)"Id");
-	   		xmlChar* user_id = xmlGetProp(cur, (const xmlChar *)"OwnerUserId");
-	   		xmlChar* user_display_name = xmlGetProp(cur, (const xmlChar *)"OwnerDisplayName");
-	   		xmlChar* titulo = xmlGetProp(cur, (const xmlChar *)"Title");
-	   		xmlChar* parent_id = xmlGetProp(cur, (const xmlChar *)"ParentId");
-			xmlChar* data = xmlGetProp(cur, (const xmlChar *)"CreationDate");
-			xmlChar* tags = xmlGetProp(cur, (const xmlChar *)"Tags");
-			xmlChar* score_xml = xmlGetProp(cur, (const xmlChar *)"Score");
-			xmlChar* comments = xmlGetProp(cur, (const xmlChar *)"CommentCount");
-			xmlChar* answer = xmlGetProp(cur, (const xmlChar *)"AcceptedAnswerId");
-			xmlChar* answer_count = xmlGetProp(cur, (const xmlChar *)"AnswerCount");
 
-	   		long* idPost = malloc(sizeof(long));
-	   		long idOwner;
-	   		long idParent;
-	   		int idType = 0;
-	   		int score;
-	   		int n_comments;
-	   		int awnsers;
+			if(*post_type_id <= '2') {
+
+	   			xmlChar* post_id = xmlGetProp(cur, (const xmlChar *)"Id");
+	   			xmlChar* user_id = xmlGetProp(cur, (const xmlChar *)"OwnerUserId");
+	   			xmlChar* user_display_name = xmlGetProp(cur, (const xmlChar *)"OwnerDisplayName");
+	   			xmlChar* titulo = xmlGetProp(cur, (const xmlChar *)"Title");
+	   			xmlChar* parent_id = xmlGetProp(cur, (const xmlChar *)"ParentId");
+				xmlChar* data = xmlGetProp(cur, (const xmlChar *)"CreationDate");
+				xmlChar* tags = xmlGetProp(cur, (const xmlChar *)"Tags");
+				xmlChar* score_xml = xmlGetProp(cur, (const xmlChar *)"Score");
+				xmlChar* comments = xmlGetProp(cur, (const xmlChar *)"CommentCount");
+				xmlChar* answer = xmlGetProp(cur, (const xmlChar *)"AcceptedAnswerId");
+				xmlChar* answer_count = xmlGetProp(cur, (const xmlChar *)"AnswerCount");
+
+	   			long* idPost = malloc(sizeof(long));
+	   			long idOwner;
+	   			long idParent;
+	   			int idType = 0;
+	   			int score;
+	   			int n_comments;
+	   			int awnsers;
 	   		
-	   		Post newPost = initPost();
+	   			Post newPost = initPost();
 
-	   		// Post ID 
-			sscanf((const char*)post_id, "%li", idPost); 
-			setPostID(newPost, *idPost);
+	   			// Post ID 
+				sscanf((const char*)post_id, "%li", idPost); 
+				setPostID(newPost, *idPost);
 	   				
-	   		// Titulo
-	   		setPostTitle(newPost, (char*)titulo);
+	   			// Titulo
+	   			setPostTitle(newPost, (char*)titulo);
 
-	   		// Owner ID 
-	   		sscanf((const char*)user_id, "%li", &idOwner);
-	   		setPostOwnerID(newPost, idOwner);
+		   		// Owner ID 
+		   		sscanf((const char*)user_id, "%li", &idOwner);
+	   			setPostOwnerID(newPost, idOwner);
 
-	   		// Type ID
-	   		sscanf((const char*)post_type_id, "%d", &idType); 
-	   		setPostTypeID(newPost, idType);
+		   		// Type ID
+		   		sscanf((const char*)post_type_id, "%d", &idType); 
+	   			setPostTypeID(newPost, idType);	
 
-	   		// Parent ID
-	   		if(parent_id) {
-	   			sscanf((const char*)parent_id, "%li", &idParent); 
-	   			setPostParentID(newPost, idParent);	   				
-	   		}
+	 	  		// Parent ID
+	   			if(parent_id) {
+	   				sscanf((const char*)parent_id, "%li", &idParent); 
+	   				setPostParentID(newPost, idParent);	   				
+	   			}
 
-	   		// Data
-	   		setPostDate(newPost, (char*)data);
+		   		// Data
+	   			setPostDate(newPost, (char*)data);
 	   		
-	   		// Tags  
-	   		setPostTags(newPost, (char*) tags);
+	  	 		// Tags  
+	   			setPostTags(newPost, (char*) tags);
 		   		   		
 	   			
-	   		// Score
-			sscanf((const char*)score_xml, "%d", &score); 
-	   		setPostScore(newPost, score);	   			
+	   			// Score
+				sscanf((const char*)score_xml, "%d", &score); 
+	   			setPostScore(newPost, score);	   			
 
-	   		// Nº Comments
-	   		sscanf((const char*)comments,"%d", &n_comments);
-	   		setPostNComments(newPost, n_comments);
+	  	 		// Nº Comments
+	   			sscanf((const char*)comments,"%d", &n_comments);
+	   			setPostNComments(newPost, n_comments);
 
-	   		// Nº Respostas
-	   		if(answer_count){
-	   			sscanf((const char*)answer_count, "%d", &awnsers); 
-	   			setPostNRespostas(newPost, awnsers);
-	   		}				   			
+	   			// Nº Respostas
+	   			if(answer_count){
+	   				sscanf((const char*)answer_count, "%d", &awnsers); 
+	   				setPostNRespostas(newPost, awnsers);
+	   			}				   			
 
-	   		// Owner Reputation && Add Post to User
-	   		User user = getUser(com->user, idOwner);
+	 	  		// Owner Reputation && Add Post to User
+	 	  		User user = getUser(com->user, idOwner);
 
-	   		if(user){
-	   			int owner_rep = getUserReputation(user);
-	   			setPostOwnerRep(newPost, owner_rep);
+	   			if(user){
+	 	  			int owner_rep = getUserReputation(user);
+	   				setPostOwnerRep(newPost, owner_rep);
 
-	   			addUserPost(user, newPost);
-	   		}
+		   			addUserPost(user, newPost);
+		   		}
 			
-			PostKey key = createPostKey( (char*)data, *idPost);
+				PostKey key = createPostKey( (char*)data, *idPost);
 				
-	   		g_tree_insert(com->post, key, newPost);
-	   		g_hash_table_insert(com->postAux, idPost, mystrdup((char*) data));
-	   		/*Debugging*/ //printf("Inserido %d\n", i);
-	   		i++;
+	   			g_tree_insert(com->post, key, newPost);
+	   			g_hash_table_insert(com->postAux, idPost, mystrdup((char*) data));
+	  	 		/*Debugging*/ //printf("Inserido %d\n", i);
+	   			i++;
 
-	   		xmlFree(post_type_id);	
-			xmlFree(post_id);
-			xmlFree(user_id);
-			xmlFree(titulo);
-			xmlFree(parent_id);
-			xmlFree(data);
-			xmlFree(tags);
-			xmlFree(score_xml);
-			xmlFree(comments);
-			xmlFree(answer);
-			xmlFree(user_display_name);
-			xmlFree(answer_count);
+	   		
+				xmlFree(post_id);
+				xmlFree(user_id);
+				xmlFree(titulo);
+				xmlFree(parent_id);
+				xmlFree(data);
+				xmlFree(tags);
+				xmlFree(score_xml);
+				xmlFree(comments);
+				xmlFree(answer);
+				xmlFree(user_display_name);
+				xmlFree(answer_count);
+			}
+			xmlFree(post_type_id);	
 		}
 		cur = cur->next;
 	}

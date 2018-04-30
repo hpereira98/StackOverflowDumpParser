@@ -16,7 +16,7 @@
 #include "interface.h"
 #include "common.h"
 #include "structPost.h"
-#include "structs.h"
+#include "structTCD.h"
 #include "structUser.h"
 #include "structTag.h"
 #include "my_funcs.h"

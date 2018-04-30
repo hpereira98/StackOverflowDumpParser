@@ -1,6 +1,6 @@
 #include <interface.h>
 #include <time.h>
-#include <structs.h>
+#include <structTCD.h>
 #include <query_5.h>
 #include <my_funcs.h>
 
@@ -117,11 +117,11 @@ int main(){
 	//printf("%li\n",new10);
 
 	printf("Tempo '10 - better_answer' = %f\n----------------------------------\n", (double)(end10-begin10)/CLOCKS_PER_SEC);
-	Date inicio11 = createDate(01,11,2013);
-	Date fim11 = createDate(30,11,2013);
+	Date inicio11 = createDate(01,1,2014);
+	Date fim11 = createDate(31,12,2014);
 
 	clock_t begin11 = clock();
-	LONG_list new11 = most_used_best_rep(teste, 10000000, inicio11, fim11);
+	LONG_list new11 = most_used_best_rep(teste, 10, inicio11, fim11);
 	clock_t end11 = clock();
  
 	printf("Tempo '11 - most_used_best_rep' = %f\n----------------------------------\n", (double)(end11-begin11)/CLOCKS_PER_SEC);

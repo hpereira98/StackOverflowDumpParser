@@ -25,7 +25,6 @@ GArray* tagsIdToMSet(GArray* tagsId){
 
 		while( id == g_array_index(tagsId, long,++i) )
 			count++;
-		
 
 		LONG_pair new = create_long_pair(id,count);
 		g_array_append_val(mSetTagsID,new);
