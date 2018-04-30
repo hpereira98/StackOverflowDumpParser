@@ -20,13 +20,13 @@ int main(){
 	//free(path);
 	
 	//clean(teste);
-	STR_pair new1 =info_from_post(teste, 9);
+	
 	
 	printf("Tempo '0 - load' = %f\n----------------------------------\n", (double)(end-begin)/CLOCKS_PER_SEC);
 
 	clock_t begin1 = clock();
-	for(int i = 0; i < 187278; i++)
-	 info_from_post(teste, i);
+	
+	STR_pair new1 =  info_from_post(teste, 9);
 	//printf("%s -- %s\n",get_fst_str(new1),get_snd_str(new1) );
 	clock_t end1 = clock();
 
@@ -104,7 +104,7 @@ int main(){
 	printf("Tempo '8 - contains_word' = %f\n----------------------------------\n", (double)(end8-begin8)/CLOCKS_PER_SEC);
 
 	clock_t begin9 = clock();
-	LONG_list new9 = both_participated(teste, 488,15811, 1000); // ids aleatórios
+	LONG_list new9 = both_participated(teste, 1465,16575, 1000); // ids aleatórios
 	clock_t end9 = clock();
   	
 
@@ -121,7 +121,7 @@ int main(){
 	Date fim11 = createDate(31,12,2020);
 
 	clock_t begin11 = clock();
-	LONG_list new11 = most_used_best_rep(teste, 3000, inicio11, fim11);
+	LONG_list new11 = most_used_best_rep(teste, 510757, inicio11, fim11);
 	clock_t end11 = clock();
  
 	printf("Tempo '11 - most_used_best_rep' = %f\n----------------------------------\n", (double)(end11-begin11)/CLOCKS_PER_SEC);
@@ -142,7 +142,7 @@ int main(){
 	free_date(fim7);
 	free_date(inicio11);
 	free_date(fim11);
-	//free_list(new11);
+	free_list(new11);
 	free_list(new9);
 	free_list(new8);
 	free_list(new7);

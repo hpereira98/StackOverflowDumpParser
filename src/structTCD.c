@@ -6,24 +6,16 @@ struct TCD_community{
 	GHashTable* postAux;
 	GHashTable* tags;	
 };
-void freeIdKey(long* id){
-	free(id);
-}
-
-void freeTagKey(char* tagName){
-	free(tagName);
-}
 
 
-
-// QUERIES
+// Init
 
 TAD_community init(){
 	struct TCD_community* new = malloc(sizeof(struct TCD_community));
  
-  	new->user = g_hash_table_new_full(g_int_hash, g_int_equal, free, (GDestroyNotify)freeUser);
+  	new->user = g_hash_table_new_full(g_direct_hash, g_direct_equal, NULL, (GDestroyNotify)freeUser);
   	new->post = g_tree_new_full((GCompareDataFunc)cmpTreeKey, NULL, (GDestroyNotify)freePostKey, (GDestroyNotify)freePost);
-  	new->postAux = g_hash_table_new_full(g_int_hash, g_int_equal, (GDestroyNotify)free, (GDestroyNotify)free);
+  	new->postAux = g_hash_table_new_full(g_direct_hash, g_direct_equal, NULL, (GDestroyNotify)free);
   	new->tags = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify)free, (GDestroyNotify)freeTags);
   		
 
@@ -49,8 +41,9 @@ void usersXmlToTAD(TAD_community com, xmlNodePtr doc_root){
    			xmlChar* name = xmlGetProp(cur, (const xmlChar *)"DisplayName");
 			xmlChar* bio = xmlGetProp(cur, (const xmlChar *)"AboutMe");
 
-   			long* idUser = malloc(sizeof(long));
+   			//long* idUser = malloc(sizeof(long));
    			int repUser;
+   			long idUser;
 				
    			User new = initUser();  
    				
@@ -58,8 +51,8 @@ void usersXmlToTAD(TAD_community com, xmlNodePtr doc_root){
    			setUserDisplayName(new, (char*)name); 
 
    			// ID
-   			sscanf((const char*)id, "%li", idUser); 
-   			setUserID(new,*idUser);
+   			sscanf((const char*)id, "%li", &idUser); 
+   			setUserID(new,idUser);
    			
    			// Reputação
    			sscanf((const char*)rep,"%d", &repUser);
@@ -69,7 +62,7 @@ void usersXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 			setUserShortBio(new,(char*)bio); 
 			 
    			// Inserir conforme o ID
-   			g_hash_table_insert(com->user, idUser, new); i++;
+   			g_hash_table_insert(com->user, (gpointer)idUser, new); i++;
 
    			xmlFree(id);
 			xmlFree(name);
@@ -110,7 +103,7 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 				xmlChar* answer = xmlGetProp(cur, (const xmlChar *)"AcceptedAnswerId");
 				xmlChar* answer_count = xmlGetProp(cur, (const xmlChar *)"AnswerCount");
 
-	   			long* idPost = malloc(sizeof(long));
+	   			long idPost;
 	   			long idOwner;
 	   			long idParent;
 	   			int idType = 0;
@@ -121,8 +114,8 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 	   			Post newPost = initPost();
 
 	   			// Post ID 
-				sscanf((const char*)post_id, "%li", idPost); 
-				setPostID(newPost, *idPost);
+				sscanf((const char*)post_id, "%li", &idPost); 
+				setPostID(newPost, idPost);
 	   				
 	   			// Titulo
 	   			setPostTitle(newPost, (char*)titulo);
@@ -172,10 +165,10 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 		   			addUserPost(user, newPost);
 		   		}
 			
-				PostKey key = createPostKey( (char*)data, *idPost);
+				PostKey key = createPostKey( (char*)data, idPost);
 				
 	   			g_tree_insert(com->post, key, newPost);
-	   			g_hash_table_insert(com->postAux, idPost, mystrdup((char*) data));
+	   			g_hash_table_insert(com->postAux, (gpointer)idPost, mystrdup((char*) data));
 	  	 		/*Debugging*/ //printf("Inserido %d\n", i);
 	   			i++;
 
@@ -222,7 +215,7 @@ void tagsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 
 			// Name
 			setTagName(new, (char*)tag_name);
-			printf("%s\n",tag_name );
+
 	   		// Inserir conforme Tag Name
 	   		g_hash_table_insert(com->tags, mystrdup((char*)tag_name), new);
 				
@@ -238,7 +231,7 @@ void tagsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 
 }
 
-
+// QUERIES
 
 // query 1
 STR_pair info_from_post(TAD_community com, long id){

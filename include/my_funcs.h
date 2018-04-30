@@ -53,7 +53,15 @@ User getUser(GHashTable* com_user, long id);
 */
 GArray* usersHashToGArray(GHashTable* com_user);
 
-//
+// Funções sobre hash das Tags
+
+/** \brief Função que retorna uma Tag, dado o seu nome.
+
+	@param *com_tags Tabela de Hash das Tags
+	@param tag Nome da Tag
+
+	@returns Tag com o nome passado como argumento.
+*/
 Tag getTag(GHashTable* com_tags, char* tag);
 
 // Funções para ordenação 
@@ -118,9 +126,9 @@ int sortByDate(Post* a, Post* b);
 	@param a Primeiro Par
 	@param b Segundo Par
 
-	@returns 0, caso o número de ocorrências seja igual nos dois Pares
 	@returns <0, caso o número de ocorrências do primeiro Par seja superior ao do segundo Par 
-	@return >0, caso o número de ocorrências do primeiro Par seja inferior ao do segundo Post
+	@returns >0, caso o número de ocorrências do primeiro Par seja inferior ao do segundo Post
+	@returns tagID1 - tagID2, caso as tags tenham registado o mesmo número do ocorrências.
 */
 int sortMSet(LONG_pair* a, LONG_pair* b);
 

@@ -1,6 +1,32 @@
 #include <query_9.h>
 
 /*
+ Função que insere a informação contida num GArray de Posts numa tabela de Hash cuja chave é o ID de um post
+ (ou parentID caso seja uma resposta) e o valor é um apontador sem significado, que apenas permite identificar
+ a existência da chave aquando da procura na tabela de Hash resultado.
+*/
+GHashTable* gArrayToHash (GArray* toConvert){
+	long id; 
+	Post post;
+	GHashTable* result = g_hash_table_new_full(g_direct_hash, g_direct_equal, NULL, free);
+	
+	for(int i=0; i < toConvert->len; i++){		
+		post = g_array_index(toConvert, Post, i);
+
+		int* value = malloc(sizeof(int));
+		*value = 1;
+
+		if(getPostTypeID(post)==2)
+			id = getPostParentID(post);
+		else 
+			id = getPostID(post);
+
+		g_hash_table_insert(result, (gpointer)id, value);
+	}
+	return result;	
+}
+
+/*
  Função que percorre o GArray de Posts de um User e troca todas as ocorrências de respostas
  pela respetiva pergunta.
 */
@@ -15,14 +41,15 @@ void swapAnswerPID (GTree* com_post, GHashTable* com_postAux, GArray* posts) {
 			newPost = getPost(com_post, com_postAux, parentId);
 
 			g_array_remove_index(posts, i);
-			if(newPost != NULL) g_array_insert_val(posts, i, newPost); // acho que assim os postsAux não encontrados são mais
+			if(newPost != NULL) g_array_insert_val(posts, i, newPost); 
 		}
 	}
 }
 
-LONG_list both_participated_aux(GHashTable* com_user, GTree* com_post, GHashTable* com_postAux, long id1, long id2, int N){
-	GArray* aux = g_array_new(FALSE, FALSE, sizeof(long));
-	Post post1, post2;
+LONG_list both_participated_aux(GHashTable* com_user, GTree* com_post, GHashTable* com_postAux, long id1, long id2, int N){	
+	Post post;
+	GArray* toConvert;
+	GArray* toTraverse;
 	long id; 
 	int size;
 
@@ -31,41 +58,57 @@ LONG_list both_participated_aux(GHashTable* com_user, GTree* com_post, GHashTabl
 
 	if(!user1 || !user2) return NULL;
 
-	GArray *posts1 = getClonedUserPosts(user1);
-	GArray *posts2 = getClonedUserPosts(user2);
+	GArray* posts1 = getClonedUserPosts(user1);
 
-	if(!posts1 || !posts2) return NULL;
+	if(!posts1) return NULL;
+
+	GArray* posts2 = getClonedUserPosts(user2);
 	
-	swapAnswerPID(com_post, com_postAux, posts1);
-	swapAnswerPID(com_post, com_postAux, posts2);
-
-	g_array_sort(posts1, (GCompareFunc)sortByDate);
-
-	for (int i=0; i < posts1->len; i++) {
-		post1 = g_array_index(posts1, Post, i);
-		for (int j=0; j < posts2->len; j++) {
-			post2 = g_array_index(posts2, Post, j);
-			if (getPostID(post1) == getPostID(post2)){
-				id = getPostID(post1);
-				g_array_append_val(aux, id);
-				g_array_remove_index(posts2, j); 
-			}
-		}
+	if(!posts2){ 
+		g_array_free(posts1, TRUE);
+		return NULL;
 	}
 
-	size = selectSize(aux->len,N);
+	if(posts1->len < posts2->len){
+		toConvert = posts2;
+		toTraverse = posts1;
+	}
+	else{
+		toConvert = posts1;
+		toTraverse = posts2;
+	}
+	
+	swapAnswerPID(com_post, com_postAux, toTraverse);
+	g_array_sort(toTraverse, (GCompareFunc)sortByDate);
+
+	GHashTable* toSearch = gArrayToHash(toConvert);
+
+	GArray* result_aux = g_array_new(FALSE, FALSE, sizeof(long));
+
+	for (int i=0; i < toTraverse->len; i++) {
+		post = g_array_index(posts1, Post, i);
+		id = getPostID(post);
+		
+		int* check = g_hash_table_lookup(toSearch, (gpointer)id);
+
+		if(check)
+			g_array_append_val(result_aux,id);
+	}
+
+	size = selectSize(result_aux->len,N);
 
 	LONG_list result = create_list(size);
 
 	for(int i=0; i<size; i++){
-		id = g_array_index(aux, long, i);
+		id = g_array_index(result_aux, long, i);
 		set_list(result, i, id); 
 		/**********/ printf("Post: %d postID: %ld Data: %s\n",i,id, getPostDate(getPost(com_post, com_postAux, id)));
 	}
 
-	g_array_free(aux, TRUE);
+	g_array_free(result_aux, TRUE);	
 	g_array_free(posts1, TRUE);
 	g_array_free(posts2, TRUE);
+	g_hash_table_destroy(toSearch);
 
 	return result;
 

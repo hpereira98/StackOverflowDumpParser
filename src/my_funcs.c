@@ -5,7 +5,7 @@
 Post getPost (GTree* com_post, GHashTable* com_postAux, long id){
 	Post post  = NULL;
 
-	char* postDate = g_hash_table_lookup(com_postAux, &id);
+	char* postDate = g_hash_table_lookup(com_postAux, (gpointer)id);
 	
 	if(postDate){
 
@@ -18,8 +18,10 @@ Post getPost (GTree* com_post, GHashTable* com_postAux, long id){
 
 	return post;
 }
-
-
+/*
+ Função que verifica se uma pergunta ou uma resposta, conforme valor passado como parâmetro, pertence a um intervalo de 
+ datas, e, caso pertença, adiciona o post em causa a um GArray.
+*/
 gboolean addPostsToGArray (gpointer key_pointer, gpointer post_pointer, gpointer info){
 	Post post = (Post) post_pointer; 
 	int* typeId = ((int**)info)[3];
@@ -56,14 +58,9 @@ GArray* filterPostsByTypeID (GTree* com_post, char* date_begin, char* date_end, 
 // Funções sobre Hash dos User 
 
 User getUser (GHashTable* com_user, long id){
-	long* userId = malloc(sizeof(User));
-	*userId = id;
+	long userId = id;
 
-	User user = g_hash_table_lookup(com_user, userId);
-
-	free(userId);
-
-	return  user;
+	return  g_hash_table_lookup(com_user, (gpointer)userId );
 }
 
 void appendUserToArray (gpointer key_pointer, gpointer user_pointer, gpointer info){	

@@ -158,15 +158,10 @@ void setPostNRespostas(Post post, int n_respostas){
 
 // Cleaner
 
-void freePostTags(char** tag){
-	free(*tag);
-}
-
 void freePost (Post post) {
 	free(post->titulo);
 	free(post->data);
 	if(post->tags != NULL){
-		//g_array_set_clear_func(post->tags, (GDestroyNotify)freePostTags);
 		g_array_free(post->tags, TRUE);
 	}
 	free(post);	
