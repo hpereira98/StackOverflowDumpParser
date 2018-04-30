@@ -179,7 +179,7 @@ void setPostDate(Post post, char* data);
 	@param tags Tags do Post (conforme no documento Posts.xml)
 
 */
-void setPostTags(Post post, char* tags);
+void setPostTags(Post post, char* tags, GHashTable* com_tags);
 
 /** \brief Setter para o score de um Post
 

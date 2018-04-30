@@ -6,19 +6,26 @@ void freeMSet(LONG_pair* aux){
 	free_long_pair(*aux);
 }
 
+void funcAux(gpointer key, gpointer value, gpointer info){
+	GArray* mSetTagsID = (GArray*) info;
+	int* ocur = (int*) value;
+	LONG_pair new = create_long_pair(((long)key), *ocur);
+	g_array_append_val(mSetTagsID,new);
+}
+
 /*
  Função que percorre um GArray de tagsID ordenado e devolve um GArray composto por pares da forma 
  (tagID,numOcorrencias).
 */
-GArray* tagsIdToMSet(GArray* tagsId){
+GArray* tagsIdToMSet(GHashTable* tagsId){
 	GArray* mSetTagsID = g_array_new(FALSE, FALSE, sizeof(LONG_pair));
 	g_array_set_clear_func(mSetTagsID, (GDestroyNotify)freeMSet);
 
 	long id;
 	int count, i=0;
 
-	g_array_sort(tagsId, (GCompareFunc)cmpInt);
-
+	g_hash_table_foreach(tagsId, funcAux, mSetTagsID);
+/*
 	while(i< tagsId->len){
 		count = 1;
 		id = g_array_index(tagsId, long, i);
@@ -29,6 +36,7 @@ GArray* tagsIdToMSet(GArray* tagsId){
 		LONG_pair new = create_long_pair(id,count);
 		g_array_append_val(mSetTagsID,new);
 	}
+*/	
 	printf("TAMANHO mset %d\n", mSetTagsID->len);
 	return mSetTagsID;
 }
@@ -36,23 +44,30 @@ GArray* tagsIdToMSet(GArray* tagsId){
 /*
  Função que adiciona o ID das tags usadas num posts a um GArray
 */
-void addTagId(GArray* tagsId, GArray* postTags, GHashTable* com_tags){
+void addTagId(GHashTable* tagsId, GArray* postTags, GHashTable* com_tags){
 	long id;
-	Tag tag;
 
 	for(int i = 0; i<postTags->len; i++){
-		char* next_tag = g_array_index(postTags, char*, i);
-		//printf("Tag usada : %s\n",next_tag );
-		tag = g_hash_table_lookup(com_tags, next_tag); 
-		
-		if(tag){
-			id = getTagID(tag);			
-			g_array_append_val(tagsId, id);	
-		}
-										
-	}		
+		long next_tag = g_array_index(postTags, long, i);
+		//printf("%ld\n",next_tag );
+		//printf("Tag usada : %s\n",next_tag ); 
+			
+		int* num_ocor =	g_hash_table_lookup(tagsId , (gpointer)next_tag);
 
-}
+		if(!num_ocor) {
+			int* ocor = malloc(sizeof(long));
+			*ocor = 0;
+			//long* tag = malloc(sizeof(long));
+			//*tag = next_tag;
+			g_hash_table_insert(tagsId, (gpointer)next_tag, ocor);
+			printf("nao encontrou\n");
+		}
+		else {(*num_ocor)++; printf("%d\n",*num_ocor);}
+	}
+										
+}		
+
+
 
 
 LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int N, Date begin, Date end){
@@ -62,10 +77,10 @@ LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int
 	char* date_end = dateToString(end);
 
 	GArray* users = usersHashToGArray(com_user);
-	
  	g_array_sort(users, (GCompareFunc)sortByRep);
 
-	GArray* tagsId = g_array_new(TRUE, FALSE, sizeof(long));
+	//GArray* tagsId = g_array_new(TRUE, FALSE, sizeof(long));
+ 	GHashTable* teste = g_hash_table_new(g_direct_hash,g_direct_equal);
 
 	if(users->len < N) n_Users = users->len;
 	else n_Users = N;
@@ -82,13 +97,13 @@ LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int
 
 			if(comparaDatas(date_begin, date_end, data) == 0){
 				GArray* post_tags = getPostTags(post);
-				if(post_tags != NULL) addTagId(tagsId, post_tags, com_tags);		
+				if(post_tags != NULL) addTagId(teste, post_tags, com_tags);		
 			}
 			free(data);
 		}
 	}
 
-	GArray* mSetTagsId = tagsIdToMSet(tagsId);
+	GArray* mSetTagsId = tagsIdToMSet(teste);
 	g_array_sort(mSetTagsId, (GCompareFunc)sortMSet);
 
 	size = selectSize(mSetTagsId->len, N);
@@ -104,7 +119,7 @@ LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int
 	free(date_begin);
 	free(date_end);
 	g_array_free(users, TRUE);
-	g_array_free(tagsId, TRUE);
+	//g_array_free(tagsId, TRUE);
 	g_array_free(mSetTagsId, TRUE);
 
 	//DEBUG(printf("SIZE = %d\n", size));

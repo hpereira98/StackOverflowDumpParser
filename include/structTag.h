@@ -25,7 +25,7 @@ char* getTagName(Tag tag);
 
 /** \brief Getter para ID de uma Tag
 
-	@param tag Uma Tag
+	@param tag Uma Tag 
 
 	@returns ID da Tag
 */

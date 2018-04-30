@@ -8,7 +8,7 @@
 
 int main(){
 	TAD_community teste = init();
-	char* path = "../../dumpexemplo/ubuntu/";
+	char* path = "../../dumpexemplo/android/";
 	Date inicio = createDate(01,01,2010);
 	Date fim = createDate(31,1,2020);
 
@@ -47,11 +47,11 @@ int main(){
 	clock_t end3 = clock();
 
 	printf("Tempo '3 - total_posts' = %f\n----------------------------------\n", (double)(end3-begin3)/CLOCKS_PER_SEC);
-	Date inicio4 = createDate(01,03,2013);
-	Date fim4 = createDate(31,03,2016);
+	Date inicio4 = createDate(01,03,2000);
+	Date fim4 = createDate(31,03,2020);
 
 	clock_t begin4 = clock();
-	char *aux = "package-management";
+	char *aux = "cyanogenmod";
 	LONG_list new4 = questions_with_tag(teste, aux, inicio4, fim4);
 	clock_t end4 = clock();
 	
@@ -117,11 +117,11 @@ int main(){
 	//printf("%li\n",new10);
 
 	printf("Tempo '10 - better_answer' = %f\n----------------------------------\n", (double)(end10-begin10)/CLOCKS_PER_SEC);
-	Date inicio11 = createDate(01,1,2014);
-	Date fim11 = createDate(31,12,2014);
+	Date inicio11 = createDate(01,1,2000);
+	Date fim11 = createDate(31,12,2020);
 
 	clock_t begin11 = clock();
-	LONG_list new11 = most_used_best_rep(teste, 10, inicio11, fim11);
+	LONG_list new11 = most_used_best_rep(teste, 3000, inicio11, fim11);
 	clock_t end11 = clock();
  
 	printf("Tempo '11 - most_used_best_rep' = %f\n----------------------------------\n", (double)(end11-begin11)/CLOCKS_PER_SEC);
@@ -142,7 +142,7 @@ int main(){
 	free_date(fim7);
 	free_date(inicio11);
 	free_date(fim11);
-	free_list(new11);
+	//free_list(new11);
 	free_list(new9);
 	free_list(new8);
 	free_list(new7);

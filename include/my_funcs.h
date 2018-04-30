@@ -53,7 +53,8 @@ User getUser(GHashTable* com_user, long id);
 */
 GArray* usersHashToGArray(GHashTable* com_user);
 
-
+//
+Tag getTag(GHashTable* com_tags, char* tag);
 
 // Funções para ordenação 
 

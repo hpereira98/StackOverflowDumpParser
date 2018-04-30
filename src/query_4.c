@@ -7,7 +7,7 @@ gboolean adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer in
 
 	Post post = (Post) post_pointer;
 
-	char* tag = ((char**)(info))[1];
+	long* tagID = ((long**)(info))[1];
 
 	char* post_date = getPostSimpleDate(post);
 	char* begin = ((char**)(info))[2];
@@ -21,7 +21,7 @@ gboolean adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer in
 	if(dateCheck == -1) return TRUE;
 
 	long postID;
-	char* tag_temp;
+	long tagID_temp;
 	GArray* post_tags;
 
 	if(dateCheck == 0 && getPostTypeID(post) == 1){
@@ -30,9 +30,9 @@ gboolean adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer in
 		if(post_tags != NULL){
 
 			for(int i = 0; i<post_tags->len && !added; i++){
-				tag_temp = g_array_index(post_tags, char*, i);
+				tagID_temp = g_array_index(post_tags, long, i);
 	
-				if(strcmp(tag_temp, tag) == 0){
+				if(tagID_temp == *tagID){
 					postID = getPostID(post);
 					g_array_append_val(questionsID, postID);
 					added++;
@@ -44,13 +44,19 @@ gboolean adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer in
 }
 
 
-LONG_list questions_with_tag_aux(GTree* com_post, char* tag, Date begin, Date end){
+LONG_list questions_with_tag_aux(GTree* com_post, GHashTable* com_tags, char* tagName, Date begin, Date end){
 
 	char* date_begin = dateToString(begin);
 	char* date_end = dateToString(end);
 
+	Tag tag = getTag(com_tags, tagName);
+
+	if(!tag)return create_list(0);
+
+	long tagID = getTagID(tag);
+
 	GArray* questionsID = g_array_new(FALSE, FALSE, sizeof(long));
-	void* info[4] = {questionsID, tag, date_begin, date_end};
+	void* info[4] = {questionsID, &tagID, date_begin, date_end};
 
 	g_tree_foreach(com_post, (GTraverseFunc)adicionaComTag, info);
 

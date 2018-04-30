@@ -123,15 +123,20 @@ void setPostDate(Post post, char* data){
 	post->data = mystrdup(data);
 }
 
-void setPostTags(Post post, char* tags){
+void setPostTags(Post post, char* tags, GHashTable* com_tags){
 	
 	if(tags){
 		int j = 1;
-		post->tags = g_array_new(FALSE, FALSE, sizeof(char*));
+		post->tags = g_array_new(FALSE, FALSE, sizeof(long));
 
 		while(tags[j]!='\0'){
-		   	char* next_tag = nextTag((char*)tags, &j);	   			
-			g_array_append_val(post->tags, next_tag);
+		   	char* next_tag = nextTag((char*)tags, &j);
+		   	Tag tag = getTag(com_tags,next_tag);
+
+   			long tagID = getTagID(tag);
+			g_array_append_val(post->tags, tagID);
+
+			free(next_tag);
 		}
 	}	
 }
@@ -161,7 +166,7 @@ void freePost (Post post) {
 	free(post->titulo);
 	free(post->data);
 	if(post->tags != NULL){
-		g_array_set_clear_func(post->tags, (GDestroyNotify)freePostTags);
+		//g_array_set_clear_func(post->tags, (GDestroyNotify)freePostTags);
 		g_array_free(post->tags, TRUE);
 	}
 	free(post);	

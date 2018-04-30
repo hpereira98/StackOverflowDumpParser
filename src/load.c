@@ -22,7 +22,7 @@ TAD_community load(TAD_community com, char* dump_path){
 	strcpy(tags_path, dump_path);
 	strcat(tags_path, tags);
 		
-	char* xml_docs_path[3] = {users_path, posts_path, tags_path};
+	char* xml_docs_path[3] = {users_path, tags_path, posts_path};
 
 	
 	for(int i=0; i<3; i++){
@@ -48,12 +48,13 @@ TAD_community load(TAD_community com, char* dump_path){
 					break;
 
 				case 1 :
-					postsXmlToTAD(com, doc_root);
+					tagsXmlToTAD(com, doc_root);
 					break;
 
 				case 2 :
-					tagsXmlToTAD(com, doc_root);
+					postsXmlToTAD(com, doc_root);
 					break;
+					
 
 			}
 

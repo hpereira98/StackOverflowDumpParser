@@ -2,7 +2,7 @@
 
 // Funcoes sobre Posts 
 
-Post getPost(GTree* com_post, GHashTable* com_postAux, long id){
+Post getPost (GTree* com_post, GHashTable* com_postAux, long id){
 	Post post  = NULL;
 
 	char* postDate = g_hash_table_lookup(com_postAux, &id);
@@ -20,7 +20,7 @@ Post getPost(GTree* com_post, GHashTable* com_postAux, long id){
 }
 
 
-gboolean addPostsToGArray(gpointer key_pointer, gpointer post_pointer, gpointer info){
+gboolean addPostsToGArray (gpointer key_pointer, gpointer post_pointer, gpointer info){
 	Post post = (Post) post_pointer; 
 	int* typeId = ((int**)info)[3];
 
@@ -42,7 +42,7 @@ gboolean addPostsToGArray(gpointer key_pointer, gpointer post_pointer, gpointer 
 	return FALSE;
 }
 
-GArray* filterPostsByTypeID(GTree* com_post, char* date_begin, char* date_end, int typeId){
+GArray* filterPostsByTypeID (GTree* com_post, char* date_begin, char* date_end, int typeId){
 	GArray* posts = g_array_new(FALSE, FALSE, sizeof(Post));
 
 	void* info[4] = {date_begin, date_end, posts, &typeId};
@@ -55,7 +55,7 @@ GArray* filterPostsByTypeID(GTree* com_post, char* date_begin, char* date_end, i
 
 // Funções sobre Hash dos User 
 
-User getUser(GHashTable* com_user, long id){
+User getUser (GHashTable* com_user, long id){
 	long* userId = malloc(sizeof(User));
 	*userId = id;
 
@@ -73,7 +73,7 @@ void appendUserToArray (gpointer key_pointer, gpointer user_pointer, gpointer in
 	g_array_append_val(users,user);
 }
 
-GArray* usersHashToGArray(GHashTable* com_user){
+GArray* usersHashToGArray (GHashTable* com_user){
 	GArray* users = g_array_new(FALSE,FALSE,sizeof(User));
 
 	g_hash_table_foreach(com_user, appendUserToArray, users);
@@ -81,38 +81,45 @@ GArray* usersHashToGArray(GHashTable* com_user){
 	return users;
 }
 
+// Funcao sobre hash das Tags
+
+Tag getTag (GHashTable* com_tags, char* tag){
+
+	return g_hash_table_lookup(com_tags, tag); 
+}
+
 
 
 // Funções para ordenação 
 
-int sortByNPosts(User* a,User *b){
+int sortByNPosts (User* a,User *b){
 	int nposts1 = getUserNPosts(*a);
 	int nposts2 = getUserNPosts(*b);
 	
 	return nposts2-nposts1;
 }
 
-int sortByRep(User* a,User *b){
+int sortByRep (User* a,User *b){
 	int rep_a = getUserReputation(*a);
 	int rep_b = getUserReputation(*b);
 	
 	return rep_b - rep_a;
 }
 
-int sortByScore(Post *a, Post *b){
+int sortByScore (Post *a, Post *b){
 	int score_a = getPostScore(*a);
 	int score_b = getPostScore(*b);
 	return score_b - score_a;
 }
 
-int sortByNRespostas(Post* a, Post *b){
+int sortByNRespostas (Post* a, Post *b){
 	int n_resp_a = getPostNRespostas(*a);
 	int n_resp_b = getPostNRespostas(*b);
 	
 	return n_resp_b - n_resp_a;
 }
 
-int sortByDate(Post* a, Post* b){
+int sortByDate (Post* a, Post* b){
 	char* date_a = getPostDate(*a);
 	char* date_b = getPostDate(*b);
 	
@@ -125,11 +132,15 @@ int sortByDate(Post* a, Post* b){
 
 }
 
-int sortMSet(LONG_pair* a, LONG_pair* b){
+int sortMSet (LONG_pair* a, LONG_pair* b){
 	long ocur_a = get_snd_long(*a);
 	long ocur_b = get_snd_long(*b);
+	long tagId_a = get_fst_long(*a);
+	long tagId_b = get_fst_long(*b);
 
-	return (-1) * cmpInt(&ocur_a, &ocur_b);
+	int result = cmpInt(&ocur_b, &ocur_a);
+
+	return result? result : cmpInt(&tagId_a, &tagId_b);
 }
 
 int cmpInt(long *a, long* b){
@@ -138,7 +149,7 @@ int cmpInt(long *a, long* b){
 
 // Datas
 
-char* dateToString(Date date){
+char* dateToString (Date date){
 
 	int year = get_year(date);
 	int month = get_month(date);
@@ -151,7 +162,7 @@ char* dateToString(Date date){
 	return date_res;
 }
 
-int comparaDatas(char* begin, char* end, char* post_date){ 
+int comparaDatas (char* begin, char* end, char* post_date){ 
 
 	if(strcmp(post_date,end)>0) 
 		return 1; // ainda nao entrou no intervalo de tempo (na travessia)
@@ -165,7 +176,7 @@ int comparaDatas(char* begin, char* end, char* post_date){
 
 // Funções auxiliares para processamento das tags
 
-char* nextTag(char* tags, int *i){
+char* nextTag (char* tags, int *i){
 	int j = (*i); 
 	int tagSize=0;
 
@@ -190,7 +201,7 @@ char* nextTag(char* tags, int *i){
 
 // Função para determinar tamanho da LONG_list a devolver 
 
-int selectSize(int garraySize, int n){
+int selectSize (int garraySize, int n){
 	int size;
 
 	if(garraySize > n) 

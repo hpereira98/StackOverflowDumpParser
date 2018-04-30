@@ -145,7 +145,7 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 	   			setPostDate(newPost, (char*)data);
 	   		
 	  	 		// Tags  
-	   			setPostTags(newPost, (char*) tags);
+	   			setPostTags(newPost, (char*) tags, com->tags);
 		   		   		
 	   			
 	   			// Score
@@ -222,7 +222,7 @@ void tagsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 
 			// Name
 			setTagName(new, (char*)tag_name);
-
+			printf("%s\n",tag_name );
 	   		// Inserir conforme Tag Name
 	   		g_hash_table_insert(com->tags, mystrdup((char*)tag_name), new);
 				
@@ -260,7 +260,7 @@ LONG_pair total_posts(TAD_community com, Date begin, Date end){
 
 // query 4
 LONG_list questions_with_tag(TAD_community com, char* tag, Date begin, Date end){
-	return questions_with_tag_aux(com->post,tag,begin,end);
+	return questions_with_tag_aux(com->post, com->tags, tag, begin, end);
 }
 
 
