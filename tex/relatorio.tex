@@ -94,9 +94,9 @@ No âmbito da unidade curricular \underline{Laboratórios de Informática III}, 
 
 Ora, perante este enunciado, decidimos utilizar na estruturação do nosso sistema as definições da biblioteca \href{https://developer.gnome.org/glib}{GLib} (versão 2.56.1), mais propriamente as GHashTables, as GTrees e os GArrays (e respetivas funções). As estruturas por nós definidas serão apresentadas e justificadas na secção \ref{structs}.
 
-O grupo decidiu organizar o trabalho, separando o código em diferentes ficheiros, isto é, um ficheiro para as estruturas por nós definidas e utilizadas (\textit{structs.c}) e respetivos acessos (getters e setters, como forma de garantir o encapsulamento), um para o parser do ficheiro XML (\textit{load.c}), um para cada interrogação (\textit{query\_*.c}), um para as funções auxiliares (\textit{my\_funcs.c}) e outro para a \textit{main.c}.
+O grupo decidiu organizar o trabalho, separando o código em diferentes ficheiros, isto é, um ficheiro para as estruturas por nós definidas e utilizadas (\textit{structPost.c},\textit{structTag.c},\textit{structTCD.c} e \textit{structUser.c}) e respetivos acessos (getters e setters, como forma de garantir o encapsulamento), um para o parser do ficheiro XML (\textit{load.c}), um para cada interrogação (\textit{query\_*.c}), um para as funções auxiliares (\textit{my\_funcs.c}) e outro para a \textit{main.c}. As funções de \textit{init} e \textit{clean} estão definidas no ficheiro \textit{structTCD.c}.
 
-Um ponto fulcral deste trabalho era conciliar a eficiência com o encapsulamento, sem comprometer nenhum destes.
+Um ponto fulcral deste trabalho é conciliar a eficiência com o encapsulamento, sem comprometer nenhum destes.
 
 %% ESTRUTURAS
 
@@ -126,19 +126,16 @@ struct TCD_community{
 };
 \end{lstlisting}
 
-Por sua vez, definimos também uma estrutura para os Utilizadores, para os Posts e para as Tags, com o intuito de as "guardar" em cada elemento das tabelas/árvore acima descritas.
+Por sua vez, definimos também uma estrutura para os Utilizadores, para os Posts e para as Tags, com o intuito de as "guardar" em cada elemento das tabelas/árvore acima descritas. De notar que o Utilizador cujo ID é -1 não foi incluído na nossa estrutura.
 
 \begin{lstlisting}[caption=Definição de estruturas internas]
 struct user{
-	long id; // id do utilizador
+	long id; // identificador do utilizador
 	char* display_name; // username
-	int n_perguntas; // numero de perguntas do utilizador
-	int n_respostas; // numero de respostas do utilizador
-	int n_posts; // numero total de posts deste utilizador
-	int reputacao; // reputacao
-	char* short_bio; // descricao do utilizador
-	GArray* userPosts; // array com os posts de cada utilizador
-
+	int n_posts; // numero total de posts
+	int reputacao; // reputacao do utilizador
+	char* short_bio; // descricao do utilizador 
+	GArray* userPosts; // array dinamico com os posts do utilizador
 };
 
 struct post{
@@ -158,7 +155,6 @@ struct post{
 struct tag{
 	char* name; // nome da tag
 	long id; // id da tag
-	int ocorrencias; // ocorrencias da tag
 };
 \end{lstlisting}
 
@@ -319,6 +315,21 @@ g_array_sort(mSetTagsId, (GCompareFunc)sortMSet); //ordena o vetor de pares pelo
 \section{Conclusão}
 Este projeto foi extremamente enriquecedor para o grupo, uma vez que nos permitiu trabalhar com um tipo diferente de dados, o XML, e nos ensinou a trabalhar com ele. Tivemos que nos esforçar bastante para conseguirmos atingir os objetivos estabelecidos, tendo sempre em atenção o encapsulamento do código e a sua eficiência. O trabalho permitiu-nos também aprender a desenvolver as estruturas de que precisamos, consoante as dificuldades, exigências e necessidades
 que nos foram sendo impostas com o desenrolar do projeto.
+
+Os resultados que obtivemos, ao correr o programa, foram iguais aos dos testes fornecidos pelos docentes, pelo que podemos concluir que a nossa implementação está correta. Além disso, achamos que cumprimos o objetivo de criar um programa eficiente, visto que os tempos que obtivemos para cada interrogação, utilizando os \textit{dumps} do Ubuntu e os mesmos parâmetros utilizados pelos professores nos testes, foram os seguintes (aproximadamente):
+\begin{table}[h]
+\centering
+\caption{Tempos de Execução}
+\begin{tabular}{llllllllllll}
+Interrogação:        & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 \\
+Tempo (em segundos): & X & X & X & X & X & X & X & X & X & X  & X 
+\end{tabular}
+\end{table}
+
+O tempo de carregamento dos dados para estrutura, com os \textit{dumps} do Ubuntu, foi de XXX segundos. A nossa função \textit{clean} também está a funcionar como o esperado, como se pode comprovar pelo relatório do \textit{valgrind}:
+\begin{verbatim}
+PARTE DO VALGRIND DOS FREES
+\end{verbatim}
 
 Em suma, tendo em conta a eficiência e os resultados que obtivemos, podemos concluir que conseguimos atingir as metas propostas com este projeto, dado que os tempos de execução, tanto do \textit{load} como das interrogações, foram bastante positivos. Com os \textit{getters} e \textit{setters} por nós definidos para as nossas estruturas, conseguimos sempre, com a modulação e separação dos ficheiros que fizemos, respeitar o encapsulamento da informação.
 \end{document}
