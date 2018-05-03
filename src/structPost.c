@@ -128,18 +128,15 @@ void setPostTags(Post post, char* tags, GHashTable* com_tags){
 	if(tags){
 		int j = 1; int count=0;
 		post->tags = g_array_new(FALSE, FALSE, sizeof(long));
-		printf("%s\n",tags );
+		
 		while(tags[j]!='\0'){
 		   	char* next_tag = nextTag((char*)tags, &j);
 		   	Tag tag = getTag(com_tags,next_tag);
-		   	printf("%s ", next_tag);
    			long tagID = getTagID(tag);
 			g_array_append_val(post->tags, tagID);
 			count++;
 			free(next_tag);
 		}
-		printf("\n");
-		printf("%d\n",count );
 	}	
 }
 

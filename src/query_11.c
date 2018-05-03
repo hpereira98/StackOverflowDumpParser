@@ -60,8 +60,6 @@ LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int
 
 	char* date_begin = dateToString(begin);
 	char* date_end = dateToString(end);
-	printf("%s\n",date_begin );
-	printf("%s\n", date_end);
 
 	GArray* users = usersHashToGArray(com_user);
 
@@ -75,7 +73,8 @@ LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int
  	GHashTable* tagN_Ocur = g_hash_table_new_full(g_direct_hash,g_direct_equal, NULL, free);
 	
 	for( i = 0; i < n_Users; i++){ 
-		User user = g_array_index(users, User, i);	
+		User user = g_array_index(users, User, i);
+		//***********printf("%ld %d\n",getUserID(user), getUserReputation(user) );	
 		GArray* user_posts = getUserPosts(user);
 
 		if(user_posts){
@@ -103,7 +102,7 @@ LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int
 		LONG_pair aux = g_array_index(mSetTagsId, LONG_pair, i);	
 		set_list(result, i, get_fst_long(aux));	
 
-		SHOW_RESULT(
+		RESULT(
 			printf("%d -- tagId: %ld numVezesUsada: %ld\n", i, get_fst_long(aux), get_snd_long(aux));
 		)
 	}

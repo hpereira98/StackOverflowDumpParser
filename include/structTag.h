@@ -1,6 +1,11 @@
 #ifndef _STRUCTTAG_H_
 #define _STRUCTTAG_H_
 
+/**
+	@file structTag.h
+   
+	Assinatura de funções para interagir com variáveis do tipo Tag.
+*/
 
 typedef struct tag* Tag;
 

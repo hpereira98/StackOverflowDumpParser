@@ -1,5 +1,8 @@
 #include <query_9.h>
 
+void aux(long key, int* value, gpointer info){
+	printf("%ld %d\n", key, *value);
+}
 /*
  Função que insere a informação contida num GArray de Posts numa tabela de Hash cuja chave é o ID de um post
  (ou parentID caso seja uma resposta) e o valor é um apontador sem significado, que apenas permite identificar
@@ -23,12 +26,13 @@ GHashTable* gArrayToHash(GArray* toConvert){
 
 		g_hash_table_insert(result, (gpointer)id, value);
 	}
+
 	return result;	
 }
 
 /*
  Função que percorre o GArray de Posts de um User e troca todas as ocorrências de respostas
- pela respetiva pergunta.
+ pela respetiva pergunta, com o objetivo de posteriormente ser possivel ordenar corretamente.
 */
 void swapAnswerPID(GTree* com_post, GHashTable* com_postAux, GArray* posts) {
 	Post post, newPost; 
@@ -91,8 +95,10 @@ LONG_list both_participated_aux(GHashTable* com_user, GTree* com_post, GHashTabl
 		
 		int* check = g_hash_table_lookup(toSearch, (gpointer)id);
 
-		if(check)
+		if(check){
 			g_array_append_val(result_aux,id);
+			g_hash_table_remove(toSearch, (gpointer)id);
+		}
 	}
 
 	size = selectSize(result_aux->len,N);
@@ -103,7 +109,7 @@ LONG_list both_participated_aux(GHashTable* com_user, GTree* com_post, GHashTabl
 		id = g_array_index(result_aux, long, i);
 		set_list(result, i, id);
 
-		SHOW_RESULT(
+		RESULT(
 			printf("%d --  postId: %ld\n", i+1, id);
 		)	
 	}

@@ -93,20 +93,25 @@ Tag getTag (GHashTable* com_tags, char* tag){
 int sortByNPosts (User* a,User *b){
 	int nposts1 = getUserNPosts(*a);
 	int nposts2 = getUserNPosts(*b);
+
+	int result = nposts2-nposts1;
 	
-	return nposts2-nposts1;
+	return result? result : getUserID(*a) - getUserID(*b);
 }
 
 int sortByRep (User* a,User *b){
 	int rep_a = getUserReputation(*a);
 	int rep_b = getUserReputation(*b);
 	
-	return rep_b - rep_a;
+	int result = rep_b-rep_a;
+	
+	return result? result : getUserID(*a) - getUserID(*b);
 }
 
 int sortByScore (Post *a, Post *b){
 	int score_a = getPostScore(*a);
 	int score_b = getPostScore(*b);
+
 	return score_b - score_a;
 }
 
@@ -136,14 +141,12 @@ int sortMSet (LONG_pair* a, LONG_pair* b){
 	long tagId_a = get_fst_long(*a);
 	long tagId_b = get_fst_long(*b);
 
-	int result = cmpInt(&ocur_b, &ocur_a);
+	int result = ocur_b - ocur_a;
 
-	return result? result : cmpInt(&tagId_a, &tagId_b);
+	return result? result : tagId_a - tagId_b;
 }
 
-int cmpInt(long *a, long* b){
-	return *a - *b;
-}
+
 
 // Datas
 

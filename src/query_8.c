@@ -40,7 +40,7 @@ LONG_list contains_word_aux(GTree* com_post, char* word, int N){
 		postID = g_array_index(postIDArray,long,i);
 		set_list(postList, i, postID);
 
-		SHOW_RESULT(
+		RESULT(
 			printf("%d --  postId: %ld\n", i+1, postID);
 		)
 	}

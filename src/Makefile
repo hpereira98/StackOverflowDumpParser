@@ -2,7 +2,10 @@ IDIR=../include
 ODIR=obj
 LDIR=lib
 DDIR=../doc
+RDIR=../tex
 OLDIR=$(ODIR)/lib
+ROOT=../
+
 
 CC=gcc
 CFLAGS = -Wall -std=c11 -g `pkg-config --cflags libxml-2.0` `pkg-config --cflags glib-2.0` -I$(IDIR)
@@ -23,13 +26,14 @@ program: $(SOURCES_OBJ) $(MY_LIBS_OBJ)
 	$(CC) $(CFLAGS) $(wildcard $(ODIR)/*.o)  $(wildcard $(OLDIR)/*.o) -o program $(LIBS)	
 
 doc:	
-	cd    $(IDIR) && doxygen -g && doxygen 
-	cp    $(IDIR)/Doxyfile $(DDIR)
-	cp -r $(IDIR)/latex $(DDIR)
-	cp -r $(IDIR)/html $(DDIR)
-	rm -r $(IDIR)/latex
-	rm -r $(IDIR)/html
-	rm    $(IDIR)/Doxyfile
+	cd    $(IDIR) && doxygen -g && doxygen
+	mv    $(IDIR)/Doxyfile $(DDIR)/Doxyfile
+	mv    $(IDIR)/latex $(DDIR)/latex
+	mv    $(IDIR)/html $(DDIR)/html
+	
+relatorio:
+	cd $(RDIR) && pdflatex relatorio.tex
+	mv $(RDIR)/relatorio.pdf $(ROOT)/relatorio.pdf
 
 clean:
 	rm obj/*.o
@@ -38,4 +42,5 @@ clean:
 	rm -r $(DDIR)/latex
 	rm -r $(DDIR)/html
 	rm    $(DDIR)/Doxyfile
-	
+	cd    $(RDIR) && (GLOBIGNORE='logoUM.jpg:relatorio.tex'; rm relatorio.*)
+	rm    $(ROOT)/relatorio.pdf		

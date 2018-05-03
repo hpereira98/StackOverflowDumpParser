@@ -32,13 +32,15 @@ USER get_user_info_aux(GHashTable* com_user, long id){
 		free(short_bio);
 	}
 
-	SHOW_RESULT(
+	RESULT(
+		if(result){
 			char* shortBio = get_bio(result);
 			long* posts = get_10_latest_posts(result);
 			printf("ShortBio: %s\nPosts do User:\n", shortBio);
 			for(i=0; i<10; i++)
 				printf("%d -- PostID: %ld\n", i, posts[i]);
-			free(shortBio); free(posts);
+			free(posts);
+		}
 	)
 
 	return result;

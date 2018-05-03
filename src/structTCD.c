@@ -30,7 +30,6 @@ TAD_community init(){
 
 void usersXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 	xmlNodePtr cur = doc_root->xmlChildrenNode; 
-	/* Debuggin */ int i = 0;
 
 	while(cur){
 
@@ -51,7 +50,7 @@ void usersXmlToTAD(TAD_community com, xmlNodePtr doc_root){
    			setUserDisplayName(new, (char*)name); 
 
    			// ID
-   			sscanf((const char*)id, "%li", &idUser); 
+   			sscanf((const char*)id, "%li", &idUser); 	
    			setUserID(new,idUser);
    			
    			// Reputação
@@ -62,7 +61,7 @@ void usersXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 			setUserShortBio(new,(char*)bio); 
 			 
    			// Inserir conforme o ID
-   			g_hash_table_insert(com->user, (gpointer)idUser, new); i++;
+   			g_hash_table_insert(com->user, (gpointer)idUser, new);
 
    			xmlFree(id);
 			xmlFree(name);
@@ -72,16 +71,12 @@ void usersXmlToTAD(TAD_community com, xmlNodePtr doc_root){
    		}
 		cur = cur->next;
 	}
-	long id_aux = -1;
-	g_hash_table_remove(com->user, &id_aux);
-	/* Debuggin */ printf("Users: %d\n", i);
 }
 
 // POSTS
 
 void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 	xmlNodePtr cur = doc_root->xmlChildrenNode; 
-	/* Debuggin */ int i = 0;
 
 	while(cur){
 		
@@ -139,8 +134,7 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 	   		
 	  	 		// Tags  
 	   			setPostTags(newPost, (char*) tags, com->tags);
-		   		   		
-	   			
+		   		   			
 	   			// Score
 				sscanf((const char*)score_xml, "%d", &score); 
 	   			setPostScore(newPost, score);	   			
@@ -169,9 +163,6 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 				
 	   			g_tree_insert(com->post, key, newPost);
 	   			g_hash_table_insert(com->postAux, (gpointer)idPost, mystrdup((char*) data));
-	  	 		/*Debugging*/ //printf("Inserido %d\n", i);
-	   			i++;
-
 	   		
 				xmlFree(post_id);
 				xmlFree(user_id);
@@ -189,14 +180,12 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 		}
 		cur = cur->next;
 	}
-	/*Debugging*/ printf("Posts: %d\n", i);
 }
 
 // TAGS 
 
 void tagsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 	xmlNodePtr cur = doc_root->xmlChildrenNode; 
-	/* Debugging */ int i = 0;
 
 	while(cur){
 
@@ -218,17 +207,12 @@ void tagsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 
 	   		// Inserir conforme Tag Name
 	   		g_hash_table_insert(com->tags, mystrdup((char*)tag_name), new);
-				
-			i++;
 
 			xmlFree(tag_name);
-			xmlFree(tag_id);
-				
+			xmlFree(tag_id);				
 		}
 		cur = cur->next;
 	}
-	/* Debugging */ printf("Tags: %d\n", i);
-
 }
 
 // QUERIES

@@ -48,7 +48,7 @@ long better_answer_aux(GTree* com_post, GHashTable* com_postAux, long id){
 	Post post = getPost(com_post,com_postAux,id);
 
 	if (!post || getPostTypeID(post) != 1){
-		SHOW_RESULT(
+		RESULT(
 			printf("postID: %ld não existe, ou então nao corresponde a uma Pergunta.\n",id);
 		)
 
@@ -66,7 +66,7 @@ long better_answer_aux(GTree* com_post, GHashTable* com_postAux, long id){
 
 	free(data);
 
-	SHOW_RESULT(
+	RESULT(
 		printf("ID melhor resposta: %ld\n", answerId);
 	)
 	

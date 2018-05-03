@@ -1,6 +1,12 @@
 #ifndef __STRUCTUSER_H__
 #define __STRUCTUSER_H__
 
+/**
+	@file structUser.h
+   
+	Assinatura de funções para interagir com variáveis do tipo User.
+*/
+
 typedef struct user* User;
 
 #include "toInclude.h"

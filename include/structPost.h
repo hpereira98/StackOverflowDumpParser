@@ -1,8 +1,13 @@
 #ifndef __STRUCTPOST_H__
 #define __STRUCTPOST_H__
 
+/**
+	@file structPost.h
+   
+	Assinatura de funções para interagir com variáveis do tipo Post ou PostKey.
+*/
+
 typedef struct post* Post;
-typedef struct postAux* PostAux;
 typedef struct postKey* PostKey;
 
 #include "toInclude.h"

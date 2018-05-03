@@ -40,7 +40,7 @@ LONG_pair total_posts_aux(GTree* com_posts, Date begin, Date end){
 	
 	LONG_pair totalPosts = create_long_pair(numQuestions, numAnswers);
 
-	SHOW_RESULT(
+	RESULT(
 		printf("Num Perguntas: %d -- Num Respostas: %d\n", numQuestions, numAnswers);
 	)
 	

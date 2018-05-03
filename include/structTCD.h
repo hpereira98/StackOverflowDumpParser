@@ -2,6 +2,12 @@
 #define __STRUCTS_H__
 
 
+/**
+	@file structTCD.h
+   
+	Assinatura de funções que permitem carregar a estrutura com dados vindos dos ficheiros .xml.
+*/
+
 #include "toInclude.h"
 
 

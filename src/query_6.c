@@ -21,7 +21,7 @@ LONG_list most_voted_answers_aux(GTree* com_post, int N, Date begin, Date end){
 		post = g_array_index(answers, Post, i);	
 		set_list(result, i, getPostID(post));
 
-		SHOW_RESULT(
+		RESULT(
 			printf("%d --  postId: %ld Score: %d\n", i+1, getPostID(post), getPostScore(post));
 		)
 	}

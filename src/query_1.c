@@ -32,7 +32,7 @@ STR_pair info_from_post_aux (GTree* com_post, GHashTable* com_postAux, GHashTabl
 		free(display_name);
 	}	
 
-	SHOW_RESULT(
+	RESULT(
 		char* title = get_fst_str(result);
 		char* display_name = get_snd_str(result);
 		printf("Tittle: %s\nDisplay Name: %s\n", title, display_name);

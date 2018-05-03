@@ -35,20 +35,20 @@
 #include "query_11.h"
 #include <time.h> 
 
-	
+#define SHOW_TIME	
 
-#ifdef DEBUG
-#define DEBUG(X) X
+#ifdef SHOW_TIME
+#define TIME(X) X
 #else
-#define DEBUG(X)	
+#define TIME(X)	
 #endif
 
-//#define SHOW
+#define SHOW_RESULT
 
-#ifdef SHOW
-#define SHOW_RESULT(X) X
+#ifdef SHOW_RESULT
+#define RESULT(X) X
 #else
-#define SHOW_RESULT(X)
+#define RESULT(X)
 #endif
 
 #endif

@@ -66,7 +66,7 @@ LONG_list questions_with_tag_aux(GTree* com_post, GHashTable* com_tags, char* ta
 		long id = g_array_index(questionsID,long,i);
 		set_list(result, i, id);
 
-		SHOW_RESULT( 
+		RESULT( 
 			printf("%d -- PostId: %ld\n", i+1, id); 
 		)
 	}

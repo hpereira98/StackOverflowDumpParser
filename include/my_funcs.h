@@ -132,16 +132,6 @@ int sortByDate(Post* a, Post* b);
 */
 int sortMSet(LONG_pair* a, LONG_pair* b);
 
-/** \brief Função de ordenação de inteiros (long)
-
-	@param a Primeiro inteiro
-	@param b Segundo inteiro
-
-	@returns 0, caso ambos sejam iguais
-	@returns <0, caso o primeiro seja menor que o segundo
-	@return >0, caso o primeiro seja maior que o segundo
-*/
-int cmpInt(long *a, long* b);
 
 // Funções para tratamentos de datas
 
