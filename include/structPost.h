@@ -112,7 +112,7 @@ int getPostNComments(Post post);
 
 	@returns Número de respostas que o Post obteve.
 */
-int getPostNRespostas(Post post);
+int getPostNAnswers(Post post);
 
 
 // Setters para Post
@@ -203,7 +203,7 @@ void setPostNComments(Post post, int n_comments);
 	@param n_respostas AnswerCount do Post.
 
 */
-void setPostNRespostas(Post post, int n_respostas);
+void setPostNAnswers(Post post, int n_respostas);
 
 
 // Cleaner

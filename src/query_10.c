@@ -4,7 +4,7 @@
  Função que calcula a pontuação de uma resposta.
 */
 
-double answer_score (int score, int rep, int comments) {
+double answer_score(int score, int rep, int comments) {
 	return ((score*0.65) + (rep*0.25) + (comments*0.1)); 
 }
 
@@ -12,8 +12,7 @@ double answer_score (int score, int rep, int comments) {
  Função que guarda e atualiza o ID da Resposta com maior pontuação para a Pergunta escolhida,
  à medida que a àrvore dos posts é atravessada.
 */
-
-gboolean bestAnswer (gpointer key_pointer, gpointer post_pointer, gpointer info) {
+gboolean bestAnswer(gpointer key_pointer, gpointer post_pointer, gpointer info) {
 	Post post = (Post)post_pointer;
 	double score=0;
 
@@ -43,11 +42,16 @@ gboolean bestAnswer (gpointer key_pointer, gpointer post_pointer, gpointer info)
 	return FALSE;
 }
 
+
 long better_answer_aux(GTree* com_post, GHashTable* com_postAux, long id){
 	
 	Post post = getPost(com_post,com_postAux,id);
 
 	if (!post || getPostTypeID(post) != 1){
+		SHOW_RESULT(
+			printf("postID: %ld não existe, ou então nao corresponde a uma Pergunta.\n",id);
+		)
+
 		return -1;
 	}	
 
@@ -61,6 +65,10 @@ long better_answer_aux(GTree* com_post, GHashTable* com_postAux, long id){
 	g_tree_foreach(com_post, (GTraverseFunc)bestAnswer, info);
 
 	free(data);
+
+	SHOW_RESULT(
+		printf("ID melhor resposta: %ld\n", answerId);
+	)
 	
 	return answerId;
 }

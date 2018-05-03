@@ -18,12 +18,13 @@ Post getPost (GTree* com_post, GHashTable* com_postAux, long id){
 
 	return post;
 }
+
+
 /*
  Função que verifica se uma pergunta ou uma resposta, conforme valor passado como parâmetro, pertence a um intervalo de 
  datas, e, caso pertença, adiciona o post em causa a um GArray.
 */
-gboolean addPostsToGArray (gpointer key_pointer, gpointer post_pointer, gpointer info){
-	Post post = (Post) post_pointer; 
+gboolean addPostsToGArray (PostKey postKey, Post post, gpointer info){
 	int* typeId = ((int**)info)[3];
 
 	if(getPostTypeID(post) == *typeId){
@@ -63,17 +64,17 @@ User getUser (GHashTable* com_user, long id){
 	return  g_hash_table_lookup(com_user, (gpointer)userId );
 }
 
-void appendUserToArray (gpointer key_pointer, gpointer user_pointer, gpointer info){	
-	User user = (User)user_pointer;
-	GArray* users = (GArray*)info;
-
+/*
+ Função que adiciona um User a um GArray.
+*/
+void appendUserToArray (long userId, User user, GArray* users){	
 	g_array_append_val(users,user);
 }
 
 GArray* usersHashToGArray (GHashTable* com_user){
 	GArray* users = g_array_new(FALSE,FALSE,sizeof(User));
 
-	g_hash_table_foreach(com_user, appendUserToArray, users);
+	g_hash_table_foreach(com_user, (GHFunc)appendUserToArray, users);
 
 	return users;
 }
@@ -109,9 +110,9 @@ int sortByScore (Post *a, Post *b){
 	return score_b - score_a;
 }
 
-int sortByNRespostas (Post* a, Post *b){
-	int n_resp_a = getPostNRespostas(*a);
-	int n_resp_b = getPostNRespostas(*b);
+int sortByNAnswers (Post* a, Post *b){
+	int n_resp_a = getPostNAnswers(*a);
+	int n_resp_b = getPostNAnswers(*b);
 	
 	return n_resp_b - n_resp_a;
 }
@@ -168,7 +169,6 @@ int comparaDatas (char* begin, char* end, char* post_date){
 	else 
 		return 0; // esta dentro do intervalo 
 }
-
 
 
 // Funções auxiliares para processamento das tags

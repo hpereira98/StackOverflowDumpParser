@@ -11,7 +11,7 @@ struct post{
 	GArray* tags;
 	int score;
 	int n_comments;
-	int n_respostas;
+	int n_answers;
 };
 
 
@@ -29,7 +29,7 @@ Post initPost(){
 	Post new = malloc(sizeof(struct post));
 	new->tags = NULL;
 	new->parent_id = -2;
-	new->n_respostas = -1;
+	new->n_answers = -1;
 
 	return new;
 }
@@ -89,8 +89,8 @@ int getPostNComments(Post post){
 	return post->n_comments;
 }
 
-int getPostNRespostas(Post post){
-	return post->n_respostas;
+int getPostNAnswers(Post post){
+	return post->n_answers;
 }
 
 // Setters
@@ -126,18 +126,20 @@ void setPostDate(Post post, char* data){
 void setPostTags(Post post, char* tags, GHashTable* com_tags){
 	
 	if(tags){
-		int j = 1;
+		int j = 1; int count=0;
 		post->tags = g_array_new(FALSE, FALSE, sizeof(long));
-
+		printf("%s\n",tags );
 		while(tags[j]!='\0'){
 		   	char* next_tag = nextTag((char*)tags, &j);
 		   	Tag tag = getTag(com_tags,next_tag);
-
+		   	printf("%s ", next_tag);
    			long tagID = getTagID(tag);
 			g_array_append_val(post->tags, tagID);
-
+			count++;
 			free(next_tag);
 		}
+		printf("\n");
+		printf("%d\n",count );
 	}	
 }
 
@@ -152,8 +154,8 @@ void setPostNComments(Post post, int n_comments){
 }
 
 
-void setPostNRespostas(Post post, int n_respostas){
-	post->n_respostas = n_respostas;
+void setPostNAnswers(Post post, int n_answers){
+	post->n_answers = n_answers;
 }
 
 // Cleaner

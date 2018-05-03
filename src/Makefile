@@ -23,13 +23,19 @@ program: $(SOURCES_OBJ) $(MY_LIBS_OBJ)
 	$(CC) $(CFLAGS) $(wildcard $(ODIR)/*.o)  $(wildcard $(OLDIR)/*.o) -o program $(LIBS)	
 
 doc:	
-	cd  $(IDIR) && doxygen -g && doxygen 
-	cp -R $(IDIR)/{latex,html,Doxyfile} $(DDIR)
-	rm -R $(IDIR)/{latex,html,Doxyfile}
+	cd    $(IDIR) && doxygen -g && doxygen 
+	cp    $(IDIR)/Doxyfile $(DDIR)
+	cp -r $(IDIR)/latex $(DDIR)
+	cp -r $(IDIR)/html $(DDIR)
+	rm -r $(IDIR)/latex
+	rm -r $(IDIR)/html
+	rm    $(IDIR)/Doxyfile
 
 clean:
 	rm obj/*.o
 	rm obj/lib/*.o
 	rm program
-	rm -r $(DDIR)/{latex,html,Doxyfile}
+	rm -r $(DDIR)/latex
+	rm -r $(DDIR)/html
+	rm    $(DDIR)/Doxyfile
 	

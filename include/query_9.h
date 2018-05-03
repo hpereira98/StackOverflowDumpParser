@@ -4,7 +4,7 @@
 /**
 	@file query_9.h
    
-	Ficheiro .h com a assinatura da função auxiliar da Query 0
+	Ficheiro .h com a assinatura da função auxiliar da Query 9.
 */
 
 #include "toInclude.h"
@@ -20,7 +20,7 @@
 	@param id2 Identificador do segundo User
 	@param N Número máximo de IDs a listar
 
-	@returns LONG_list dos IDs em que ambos os Users participam
+	@returns LONG_list dos IDs em que ambos os Users participam.
 
 */
 LONG_list both_participated_aux(GHashTable* com_user, GTree* com_post, GHashTable* com_postAux, long id1, long id2, int N);

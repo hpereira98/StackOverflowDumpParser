@@ -5,7 +5,7 @@
  (ou parentID caso seja uma resposta) e o valor é um apontador sem significado, que apenas permite identificar
  a existência da chave aquando da procura na tabela de Hash resultado.
 */
-GHashTable* gArrayToHash (GArray* toConvert){
+GHashTable* gArrayToHash(GArray* toConvert){
 	long id; 
 	Post post;
 	GHashTable* result = g_hash_table_new_full(g_direct_hash, g_direct_equal, NULL, free);
@@ -30,7 +30,7 @@ GHashTable* gArrayToHash (GArray* toConvert){
  Função que percorre o GArray de Posts de um User e troca todas as ocorrências de respostas
  pela respetiva pergunta.
 */
-void swapAnswerPID (GTree* com_post, GHashTable* com_postAux, GArray* posts) {
+void swapAnswerPID(GTree* com_post, GHashTable* com_postAux, GArray* posts) {
 	Post post, newPost; 
 	long parentId;
 
@@ -101,8 +101,11 @@ LONG_list both_participated_aux(GHashTable* com_user, GTree* com_post, GHashTabl
 
 	for(int i=0; i<size; i++){
 		id = g_array_index(result_aux, long, i);
-		set_list(result, i, id); 
-		/**********/ printf("Post: %d postID: %ld Data: %s\n",i,id, getPostDate(getPost(com_post, com_postAux, id)));
+		set_list(result, i, id);
+
+		SHOW_RESULT(
+			printf("%d --  postId: %ld\n", i+1, id);
+		)	
 	}
 
 	g_array_free(result_aux, TRUE);	

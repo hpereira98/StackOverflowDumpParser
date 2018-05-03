@@ -10,7 +10,7 @@ LONG_list most_answered_questions_aux(GTree* com_post, int N, Date begin, Date e
 
 	GArray* questions = filterPostsByTypeID(com_post, date_begin, date_end, typeId);
 	
-	g_array_sort(questions,(GCompareFunc)sortByNRespostas);
+	g_array_sort(questions,(GCompareFunc)sortByNAnswers);
 
 	size = selectSize(questions->len, N);
 
@@ -19,7 +19,10 @@ LONG_list most_answered_questions_aux(GTree* com_post, int N, Date begin, Date e
 	for(int i=0; i<size; i++){
 		post = g_array_index(questions, Post, i);
 		set_list(result, i, getPostID(post));
-		/************///printf("Pos: %d Id: %ld Score: %d\n",i,getPostID(post),getPostNRespostas(post));
+
+		SHOW_RESULT(
+			printf("%d --  postId: %ld numRespostas: %d\n", i+1, getPostID(post), getPostNAnswers(post));
+		)	
 	}
 
 	free(date_begin);

@@ -1,11 +1,9 @@
 #include <query_4.h>
 /*
- 	Função que verifica se um Post contém a tag passada como argumento à Query 4
+ Função que verifica se um Post contém a tag passada como argumento à Query 4.
 */
-gboolean adicionaComTag(gpointer key_pointer, gpointer post_pointer, gpointer info){ 
+gboolean adicionaComTag(gpointer key_pointer, Post post, gpointer info){ 
 	GArray* questionsID = ((GArray**)(info))[0];
-
-	Post post = (Post) post_pointer;
 
 	long* tagID = ((long**)(info))[1];
 
@@ -51,11 +49,12 @@ LONG_list questions_with_tag_aux(GTree* com_post, GHashTable* com_tags, char* ta
 
 	Tag tag = getTag(com_tags, tagName);
 
-	if(!tag)return create_list(0);
+	if(!tag) return create_list(0);
 
 	long tagID = getTagID(tag);
 
 	GArray* questionsID = g_array_new(FALSE, FALSE, sizeof(long));
+	
 	void* info[4] = {questionsID, &tagID, date_begin, date_end};
 
 	g_tree_foreach(com_post, (GTraverseFunc)adicionaComTag, info);
@@ -66,7 +65,10 @@ LONG_list questions_with_tag_aux(GTree* com_post, GHashTable* com_tags, char* ta
 	for(int i=0; i<size; i++){
 		long id = g_array_index(questionsID,long,i);
 		set_list(result, i, id);
-		/*******/// printf("Pos: %d postId: %ld\n",i,id);
+
+		SHOW_RESULT( 
+			printf("%d -- PostId: %ld\n", i+1, id); 
+		)
 	}
 
 	free(date_begin);

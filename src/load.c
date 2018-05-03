@@ -1,6 +1,6 @@
 #include <load.h>
 
-TAD_community load(TAD_community com, char* dump_path){
+TAD_community load (TAD_community com, char* dump_path){
 
 	char* users = "Users.xml";
 	char* users_path = malloc(strlen(dump_path)+strlen(users) + 1);
@@ -11,11 +11,6 @@ TAD_community load(TAD_community com, char* dump_path){
 	char* posts_path = malloc(strlen(dump_path)+strlen(posts) + 1);
 	strcpy(posts_path, dump_path);
 	strcat(posts_path, posts);
-
-	/*char* votes = "Votes.xml";
-	char* votes_path = malloc(strlen(dump_path)+strlen(votes)+1);
-	strcpy(votes_path, dump_path);
-	strcat(votes_path, votes);*/
 	
 	char* tags = "Tags.xml";
 	char* tags_path = malloc(strlen(dump_path)+strlen(tags)+1);

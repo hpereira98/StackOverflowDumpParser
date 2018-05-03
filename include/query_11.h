@@ -4,7 +4,7 @@
 /**
 	@file query_11.h
    
-	Ficheiro .h com a assinatura da função auxiliar da Query 11
+	Ficheiro .h com a assinatura da função auxiliar da Query 11.
 */
 
 #include "toInclude.h"

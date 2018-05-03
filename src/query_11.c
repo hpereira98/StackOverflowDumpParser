@@ -41,12 +41,13 @@ void addTagId(GHashTable* tagsId, GArray* postTags, GHashTable* com_tags){
 		int* num_ocor =	g_hash_table_lookup(tagsId , (gpointer)next_tag);
 
 		if(!num_ocor) {
+			//printf("nao encontrou tag com id %ld\n", next_tag);
 			int* ocor = malloc(sizeof(int));
 			*ocor = 1;
 
 			g_hash_table_insert(tagsId, (gpointer)next_tag, ocor);
 		}
-		else (*num_ocor)++;
+		else (*num_ocor)++; //printf("aumentou ocur de tag com id %ld para %d\n", next_tag, *num_ocor);}
 	}
 										
 }		
@@ -59,6 +60,8 @@ LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int
 
 	char* date_begin = dateToString(begin);
 	char* date_end = dateToString(end);
+	printf("%s\n",date_begin );
+	printf("%s\n", date_end);
 
 	GArray* users = usersHashToGArray(com_user);
 
@@ -99,7 +102,10 @@ LONG_list most_used_best_rep_aux(GHashTable* com_user, GHashTable* com_tags, int
 	for( i=0; i<size; i++){
 		LONG_pair aux = g_array_index(mSetTagsId, LONG_pair, i);	
 		set_list(result, i, get_fst_long(aux));	
-		/* debugging */// printf("Pos: %d tagId: %ld numVezesUsada: %ld\n",i,get_fst_long(aux),get_snd_long(aux));
+
+		SHOW_RESULT(
+			printf("%d -- tagId: %ld numVezesUsada: %ld\n", i, get_fst_long(aux), get_snd_long(aux));
+		)
 	}
 	
 	free(date_begin);

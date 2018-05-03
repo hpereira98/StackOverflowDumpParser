@@ -108,7 +108,7 @@ int sortByScore(Post *a, Post *b);
 	@returns <0, caso o nº de respostas do primeiro Post seja superior ao do segundo Post
 	@return >0, caso o nº de respostas do primeiro Post seja inferior ao do segundo Post
 */
-int sortByNRespostas(Post* a, Post *b);
+int sortByNAnswers(Post* a, Post *b);
 
 /** \brief Função de ordenação de Posts pela Data
 

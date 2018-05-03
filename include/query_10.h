@@ -6,7 +6,7 @@
 /**
 	@file query_10.h
    
-	Ficheiro .h com a assinatura da função auxiliar da Query 10
+	Ficheiro .h com a assinatura da função auxiliar da Query 10.
 */
 
 

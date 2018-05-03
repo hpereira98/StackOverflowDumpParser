@@ -152,7 +152,7 @@ void postsXmlToTAD(TAD_community com, xmlNodePtr doc_root){
 	   			// Nº Respostas
 	   			if(answer_count){
 	   				sscanf((const char*)answer_count, "%d", &awnsers); 
-	   				setPostNRespostas(newPost, awnsers);
+	   				setPostNAnswers(newPost, awnsers);
 	   			}				   			
 
 	 	  		// Owner Reputation && Add Post to User

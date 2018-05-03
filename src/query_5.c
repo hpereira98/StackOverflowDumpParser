@@ -5,7 +5,7 @@ USER get_user_info_aux(GHashTable* com_user, long id){
 
 	int i, size;
 	Post post; 
-	USER res = NULL;
+	USER result = NULL;
 	
 	User user = getUser(com_user, id);
 	
@@ -13,7 +13,7 @@ USER get_user_info_aux(GHashTable* com_user, long id){
 		GArray* userPosts = getClonedUserPosts(user);
 		
 		if(userPosts){
-			g_array_sort (userPosts,(GCompareFunc)sortByDate);
+			g_array_sort(userPosts,(GCompareFunc)sortByDate);
 		
 			size = selectSize(userPosts->len, 10);
 		
@@ -27,10 +27,19 @@ USER get_user_info_aux(GHashTable* com_user, long id){
 
 		char* short_bio = getUserShortBio(user);
 
-		res = create_user(short_bio, postsID);
-		/************/ //printf("%s\n", getUserShortBio(user));
+		result = create_user(short_bio, postsID);
+
 		free(short_bio);
 	}
 
-	return res;
+	SHOW_RESULT(
+			char* shortBio = get_bio(result);
+			long* posts = get_10_latest_posts(result);
+			printf("ShortBio: %s\nPosts do User:\n", shortBio);
+			for(i=0; i<10; i++)
+				printf("%d -- PostID: %ld\n", i, posts[i]);
+			free(shortBio); free(posts);
+	)
+
+	return result;
 }	

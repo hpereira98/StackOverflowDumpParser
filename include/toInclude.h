@@ -4,7 +4,8 @@
 /**
 	@file toInclude.h
    
-	Definição...
+	Ficheiro .h com a que contém as bibliotecas necessárias à execução do programa, 
+	assim como os ficheiros .h dos respetivos ficheiros .c desenvolvidos pelo grupo.
 */
 
 #include <gmodule.h>
@@ -32,12 +33,22 @@
 #include "query_9.h"
 #include "query_10.h"
 #include "query_11.h"
-#include <time.h> // remover depois 
+#include <time.h> 
 
-#ifndef DEBUG_MODE
+	
+
+#ifdef DEBUG
 #define DEBUG(X) X
 #else
-#define DEBUG(X)
+#define DEBUG(X)	
+#endif
+
+//#define SHOW
+
+#ifdef SHOW
+#define SHOW_RESULT(X) X
+#else
+#define SHOW_RESULT(X)
 #endif
 
 #endif

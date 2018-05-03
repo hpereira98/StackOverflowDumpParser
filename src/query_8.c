@@ -1,8 +1,7 @@
 #include <query_8.h>
 
 
-gboolean word_lookup(gpointer key_pointer, gpointer post_pointer, gpointer info){
-	Post post = (Post)post_pointer ; 
+gboolean word_lookup(gpointer key_pointer, Post post, gpointer info){
 
 	if(getPostTypeID(post)==1){
 		
@@ -40,7 +39,10 @@ LONG_list contains_word_aux(GTree* com_post, char* word, int N){
 	for(i = 0; i < size; i++){
 		postID = g_array_index(postIDArray,long,i);
 		set_list(postList, i, postID);
-		/*******/ //printf("Pos: %d Id: %ld Titulo: %s\n", i,getPostID(post),getPostTitle(post));
+
+		SHOW_RESULT(
+			printf("%d --  postId: %ld\n", i+1, postID);
+		)
 	}
 
 	g_array_free(postIDArray, TRUE);

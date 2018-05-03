@@ -12,6 +12,7 @@
 /** \brief Função que, dado um inteiro e um intervalo de datas, retorna uma LONG_list com IDs das perguntas com mais respostas.
 
 	@param *com_post Árvore dos Posts
+	@param N número de IDs a devolver
 	@param begin Data inicial
 	@param end Data final
 
