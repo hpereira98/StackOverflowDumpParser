@@ -35,7 +35,7 @@
 #include "query_11.h"
 #include <time.h> 
 
-#define SHOW_TIME	
+//#define SHOW_TIME	
 
 #ifdef SHOW_TIME
 #define TIME(X) X

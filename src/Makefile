@@ -42,5 +42,4 @@ clean:
 	rm -r $(DDIR)/latex
 	rm -r $(DDIR)/html
 	rm    $(DDIR)/Doxyfile
-	cd    $(RDIR) && (GLOBIGNORE='logoUM.jpg:relatorio.tex'; rm relatorio.*)
-	rm    $(ROOT)/relatorio.pdf		
+	cd    $(RDIR) && (GLOBIGNORE='logoUM.jpg:relatorio.tex'; rm relatorio.*)	
