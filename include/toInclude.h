@@ -43,7 +43,7 @@
 #define TIME(X)	
 #endif
 
-#define SHOW_RESULT
+//#define SHOW_RESULT
 
 #ifdef SHOW_RESULT
 #define RESULT(X) X

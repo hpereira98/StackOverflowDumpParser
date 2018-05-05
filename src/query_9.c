@@ -1,8 +1,5 @@
 #include <query_9.h>
 
-void aux(long key, int* value, gpointer info){
-	printf("%ld %d\n", key, *value);
-}
 /*
  Função que insere a informação contida num GArray de Posts numa tabela de Hash cuja chave é o ID de um post
  (ou parentID caso seja uma resposta) e o valor é um apontador sem significado, que apenas permite identificar

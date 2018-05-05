@@ -1,47 +1,45 @@
 #include <interface.h>
 #include <time.h>
-#include <structTCD.h>
-#include <query_5.h>
-#include <my_funcs.h>
+#include <toInclude.h>
 
 
 
 int main(){
 	char* path = "../../dumpexemplo/ubuntu/";
 
-	long idQ1 = 796430;
+	long idQ1 = 801049;
 
 	int nQ2 = 10;
 
-	Date inicio3 = createDate(1,1,2014);
-	Date fim3 = createDate(31,12,2014);
+	Date inicio3 = createDate(1,07,2016);
+	Date fim3 = createDate(31,07,2016);
 
-	char* tagToLookup = "nautilus";
-	Date inicio4 = createDate(01,01,2014);
-	Date fim4 = createDate(31,01,2014);
+	char* tagToLookup = "package-management";
+	Date inicio4 = createDate(01,03,2013);
+	Date fim4 = createDate(31,03,2013);
 
-	long idQ5 = 449;
+	long idQ5 = 15811;
 
-	int nQ6 = 50;
-	Date inicio6 = createDate(01,05,2013);
-	Date fim6 = createDate(06,05,2013);
+	int nQ6 = 5;
+	Date inicio6 = createDate(01,11,2015);
+	Date fim6 = createDate(30,11,2015);
 
-	int nQ7 = 100;
-	Date inicio7 = createDate(01,01,2012);
-	Date fim7 = createDate(31,12,2012);
+	int nQ7 = 10;
+	Date inicio7 = createDate(01,8,2014);
+	Date fim7 = createDate(11,8,2014);
 
-	char* wordQ8 = "glib";
+	char* wordQ8 = "kde";
 	int nQ8 = 10;
 
-	long id1Q9 = 253;
-	long id2Q9 = 455;
-	int nQ9 = 5;
+	long id1Q9 = 87;
+	long id2Q9 = 5691;
+	int nQ9 = 10;
 
-	long idQ10 = 5942;
+	long idQ10 = 30334;
 
-	int nQ11 = 10;
-	Date inicio11 = createDate(01,01,2014);
-	Date fim11 = createDate(31,12,2014);	
+	int nQ11 = 5;
+	Date inicio11 = createDate(01,11,2013);
+	Date fim11 = createDate(30,11,2013);	
 
 	
 	TAD_community teste = init();
@@ -55,7 +53,7 @@ int main(){
 		printf("Tempo '0 - load' = %f\n----------------------------------\n", (double)(end-begin)/CLOCKS_PER_SEC);
 	)
 
-	TIME( clock_t begin1 = clock();)
+	TIME( clock_t	 begin1 = clock();)
 	
 	RESULT(printf("***** Resultado '1 - info_from_post' ******\n");)
 	STR_pair new1 =  info_from_post(teste, idQ1);

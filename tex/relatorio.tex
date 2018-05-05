@@ -9,6 +9,8 @@
 \usepackage{hyperref}
 \usepackage{xcolor}
 \usepackage{multicol}
+\usepackage{listingsutf8}
+
 
 %% DEFINIÇÃO DOS SNIPPETS EM C
 \usepackage{listings}
@@ -94,7 +96,7 @@ No âmbito da unidade curricular \underline{Laboratórios de Informática III}, 
 
 Ora, perante este enunciado, decidimos utilizar na estruturação do nosso sistema as definições da biblioteca \href{https://developer.gnome.org/glib}{GLib} (versão 2.56.1), mais propriamente as GHashTables, as GTrees e os GArrays (e respetivas funções). As estruturas por nós definidas serão apresentadas e justificadas na secção \ref{structs}.
 
-O grupo decidiu organizar o trabalho, separando o código em diferentes ficheiros, isto é, um ficheiro para as estruturas por nós definidas e utilizadas (\textit{structPost.c},\textit{structTag.c},\textit{structTCD.c} e \textit{structUser.c}) e respetivos acessos (getters e setters, como forma de garantir o encapsulamento), um para o parser do ficheiro XML (\textit{load.c}), um para cada interrogação (\textit{query\_*.c}), um para as funções auxiliares (\textit{my\_funcs.c}) e outro para a \textit{main.c}. As funções de \textit{init} e \textit{clean} estão definidas no ficheiro \textit{structTCD.c}.
+O grupo decidiu organizar o trabalho, separando o código em diferentes ficheiros, isto é, um ficheiro para cada estrutura por nós definida e utilizada (\textit{structPost.c},\textit{structTag.c},\textit{structTCD.c} e \textit{structUser.c}) e respetivas funções para interagir com as mesmas, um para o \textit{parsing} dos ficheiros XML (\textit{load.c}), um para cada interrogação (\textit{query\_*.c}), um para as funções auxiliares (\textit{my\_funcs.c}), e outro para a \textit{main.c}. As funções de \textit{init} e \textit{clean} estão definidas no ficheiro \textit{structTCD.c}.
 
 Um ponto fulcral deste trabalho é conciliar a eficiência com o encapsulamento, sem comprometer nenhum destes.
 
@@ -113,7 +115,7 @@ typedef struct TCD_community * TAD_community;
 Assim sendo, tivemos como desafio criar a nossa própria definição concreta da comunidade. Após ponderarmos em grupo, tendo em conta as interrogações que nos apresentaram, a eficiência e o encapsulamento, decidimos organizar a nossa \textit{TCD\_community} da seguinte maneira (utilizando as definições da biblioteca GLib):
 \begin{itemize}
 \item Uma tabela de Hash para os Utilizadores
-\item Uma árvore binária balanceada para os Posts
+\item Uma árvore binária balanceada para os Posts, ordenada por ordem cronológica inversa
 \item Uma tabela de Hash para acesso direto à data dos Posts pelo seu ID
 \item Uma tabela de Hash para as Tags
 \end{itemize}
@@ -126,27 +128,31 @@ struct TCD_community{
 };
 \end{lstlisting}
 
-Por sua vez, definimos também uma estrutura para os Utilizadores, para os Posts e para as Tags, com o intuito de as "guardar" em cada elemento das tabelas/árvore acima descritas. De notar que o Utilizador cujo ID é -1 não foi incluído na nossa estrutura.
+
+A nossa decisão de utilizar as tabelas de Hash vai de encontro ao propósito de aceder diretamente à informação por nós pretendida, no caso de um Utilizador, a partir de um ID, no caso de uma Tag, a partir do seu nome. Porém, para os Posts, decidimos utilizar uma estrutura diferente, neste caso uma árvore binária balanceada, pois necessitávamos de uma ordem (neste caso cronológica) de recolha da informação dos Posts da estrutura. Esta estrutura faz uma associação do tipo chave-valor, sendo a ordem dos elementos estabelicida pela comparação das chaves. No entento, sendo os Posts uma unidade central no enunciado proposto, o grupo deparou-se com a necessidade de obter informação relativa a um certo Post, dado o seu \textit{ID}, da forma mais eficiente possível. Claramente, realizar uma travessia (\textit{in-order}) na árvore até encontrar o desejado não seria uma boa solução. De forma a otimizar o pretendido, foi adicionada à estrutura \textit{TCD\_community} uma tabela de Hash cuja chave corresponde ao ID de um Post e o valor armazenado ao \textit{timestamp} do mesmo, considerado até ao milissegundo. Deste modo, por comparação de chaves da árvore seria possível efetuar uma procura binária. Contudo verificou-se a exitência de diferentes posts cujos \textit{timestamps} eram iguais, e a estrutura usada para os armazenar não contempla chaves repetidas. Assim, 
+foi criada a estrutura \textit{postKey}, também esta tornada opaca e devidamente encapsulada, apenas contendo a data e o ID de um Post, que passou a ser usada como chave de inserção na árvore. Desta forma garantiu-se não só a ordenação pretendida como a unicidade de cada uma das chaves. No caso de dois Posts terem o mesmo \textit{timestamp}, considerou-se como sendo maior o Post com menor ID. Para efeitos de procura de um Post foi criada a função \textit{getPost}, cuja execução se divide nas duas tarefas descritas anteriormente: dado o ID de um Post, criar uma variavel do tipo \textit{postKey}, com o ID e o \textit{timestamp} presente na tabela de Hash \textit{postAux} e, de seguida, proceder a uma procura binária na árvore dos Posts.
+
+Por sua vez, definimos também uma estrutura para os Utilizadores, para os Posts e para as Tags, de forma a permitir que a informação útil contida em cada \textit{row} dos ficheiros XML fosse guardada em variáveis representativas das entidade aqui enumeradas e posteriormente inseridas nas tabelas/árvore acima descritas. As estruturas que de seguida se listam foram tornadas opacas, sendo apenas possível a sua criação, alteração ou consulta da informação por estas contidas, através de funções definadas no ficheiro que contém a declaração da estrutura e cuja assinatura tenha sido exportada no respetivo \textit{header file}. Deste modo, não só garantimos um acesso controlado aos campos internos de cada estrutura, como dotamos o projeto de uma maior nível de abstração e modularidade.
 
 \begin{lstlisting}[caption=Definição de estruturas internas]
 struct user{
-	long id; // identificador do utilizador
+	long id; // ID do utilizador
 	char* display_name; // username
 	int n_posts; // numero total de posts
-	int reputacao; // reputacao do utilizador
+	int reputacao; // reputacaoo do utilizador
 	char* short_bio; // descricao do utilizador 
 	GArray* userPosts; // array dinamico com os posts do utilizador
 };
 
 struct post{
-	long id; // id do post
+	long id; // ID do post
 	char* titulo; // titulo do post
-	long owner_id; // id do criador do post
+	long owner_id; // ID do criador do post
 	int owner_rep; // reputacao do criador do post
 	int type_id; // tipo do post
-	long parent_id; // "pai" do post (se este for resposta)
+	long parent_id; // ID do "pai" do post (se este for resposta)
 	char* data; // data do post
-	GArray* tags; // tags do post
+	GArray* tags; // IDs das tags usadas no post
 	int score; // score do post
 	int n_comments; // numero de comentarios do post
 	int n_respostas; // numero de respostas do post (se este for pergunta)
@@ -154,67 +160,70 @@ struct post{
 
 struct tag{
 	char* name; // nome da tag
-	long id; // id da tag
+	long id; // ID da tag
 };
 \end{lstlisting}
-
-A nossa decisão de utilizar as tabelas de Hash vai de encontro ao propósito de aceder diretamente à informação por nós pretendida (seja de um Utilizador ou de uma Tag), a partir de um ID. Porém, para os Posts, decidimos utilizar uma estrutura diferente, neste caso uma árvore binária balanceada, pois necessitávamos de uma ordem (neste caso cronológica) de recolha da informação dos Posts da estrutura. Assim, como é mais eficiente iterar numa árvore tendo em mente a sua ordenação, decidimos utilizar uma estrutura diferente. Além disso, desenvolvemos também duas estruturas auxiliares: uma tabela de Hash, contendo a data de cada Post (uma vez que lidamos variadas vezes com estes de forma cronológica), e uma estrutura \textit{postKey} apenas contendo a data e o ID do Post de forma a facilitar a sua inserção na árvore.
 
 %% QUERIES
 \newpage
 \section{Interrogações e abordagem}
 \label{queries}
-Nesta secção, iremos explicitar a nossa abordagem às interrogações descritas no enunciado, mostrando algumas partes do código que achamos importante incluir de forma a facilitar a justificação da abordagem referida. Como o encapsulamento foi algo que sempre quisemos preservar ao longo do desenvolvimento do projeto, separamos os ficheiros de modo a que cada ficheiro \textit{query\_*.c} contém uma função auxiliar que será chamada no seio da função original da query definida no \textit{interface.h}.
+Nesta secção, iremos explicitar a nossa abordagem às interrogações descritas no enunciado, mostrando algumas partes do código que achamos importante incluir de forma a facilitar a justificação da abordagem referida. Como o encapsulamento e a modularidade foi algo que sempre quisemos preservar ao longo do desenvolvimento do projeto, separamos a resolução de cada \textit{query} por diferentes ficheiros, de modo a que cada \textit{query\_*.c} contém uma função auxiliar à resolução da devida interrogação. Tendo em mente que as implementações propostas incidem sobre os dados presentes na \textit{TCD\_community}, a resolução das \textit{queries} consiste na invocação, feita no ficheiro que contém a definição da estrutura, da respetiva função auxiliar. Esta úlima recebe como argumentos partes da estrutura \textit{TCD\_community} de que necessita, assim como os argumentos passados à função principal.
 
 \subsection{Info From Post}
-A primeira interrogação tinha como objetivo definir uma função que retornasse o título do post e o nome do autor dado um ID de um Post. Se o Post for uma resposta, a função deverá retornar informações (título e utilizador) da pergunta correspondente. O resultado teria que ser um \textit{STR\_pair}, par de Strings definido no repositório que nos foi dado.
+A primeira interrogação tinha como objetivo definir uma função que retornasse o título do post e o nome do autor dado um ID de um Post. Se o Post for uma resposta, a função deverá retornar informações (título e utilizador) da pergunta correspondente.
 
-\begin{lstlisting}[caption=Query 1 - tipo função auxiliar]
+\begin{lstlisting}[caption=Query 1 - assinatura da função auxiliar]
 STR_pair info_from_post_aux(GTree* com_post, GHashTable* com_postAux, GHashTable* com_user, long id);
 \end{lstlisting}
 
-Ora, isto foi bastante simples, uma vez que apenas foi necessário ir buscar o Post com o dado ID (ou, no caso desse Post ser uma resposta, ir buscar a respetiva pergunta) e o autor do mesmo (ou da pergunta, na situação referida) e, de seguida, colocar no \textit{STR\_pair} o título do Post e o nome do autor, como pretendido. Para fazer a procura na tabela de Hash utilizamos a função \textit{g\_hash\_table\_lookup}, dada pela \textit{GLib}.
+Ora, dada a estrutura escolhida pelo grupo, apenas foi necessário procurar o Post com o dado ID e, no caso desse Post ser uma resposta, procurar pela respetiva pergunta, em ambos os casos, através da função \textit{getPost}. De seguida, foi necessário procurar a informação relativa ao criador do Post, através da função \textit{getUser} e colocar no \textit{STR\_pair} a devolver o título do Post e o nome do autor, como pretendido.
 
 \subsection{Top Most Active}
 Na segunda interrogação, era-nos pedida uma função que criasse uma lista com os N utilizadores mais ativos, isto é, com o maior número de Posts. Essa lista seria, portanto, uma \textit{LONG\_list}.
 
-Para tal, criamos um \textit{GArray} (array dinâmico definido na \textit{GLib}) para guardarmos todos os utilizadores presentes na respetiva tabela de Hash e para, depois, os ordenarmos mais facilmente pelo número de Posts com a função \textit{g\_array\_sort}.
-\begin{lstlisting}[caption=Query 2 - tipo da função auxiliar]
+\begin{lstlisting}[caption=Query 2 - assinatura da função auxiliar]
 LONG_list top_most_active_aux(GHashTable* com_user, int N);
 \end{lstlisting}
 
-Para iterarmos a tabela de Hash e colocarmos os utilizadores consoante o seu número de Posts, utilizamos as funções \textit{g\_hash\_table\_foreach} e as seguintes por nós definidas:
-\begin{lstlisting}[caption= Query 2 - funções auxiliares]
-int sortByNPosts(User* a,User *b){
-	int nposts1 = getUserNPosts(*a);
-	int nposts2 = getUserNPosts(*b);
-	
-	return nposts2-nposts1;
-}
-
-void appendUserToArray (gpointer key_pointer, gpointer user_pointer, gpointer info){	
-	User user = (User)user_pointer;
-	GArray* users = (GArray*)info;
-
-	g_array_append_val(users,user);
-
-}
-\end{lstlisting}
+Para tal, consideramos todos os utilizadores sobre a forma de um array dinâmico, obtido através da função \textit{usersHashToGArray}, ao qual é aplicado a função \textit{g\_array\_sort}, passando-lhe como argumento uma função que permite comparar o número de Posts efetuados por dois Users. A parte final da resolução desta \textit{query} corresponde a inserir na \textit{LONG\_list} a devolver os IDs
+dos Users presentes nas N posições iniciais do array dinâmico.
 
 \subsection{Total Posts}
 Nesta terceira \textit{query}, a função que desenvolvemos tinha como objetivo obter o número
-total de posts (identificando perguntas e respostas separadamente) num dado período de tempo.
+total de posts (identificando perguntas e respostas separadamente) efetuados num dado período de tempo.
 
-Para tal, bastou-nos percorrer a árvore dos Posts e comparar as datas (por ser uma árvore binária balanceada é uma tarefa fácil) com o intervalo de tempo dado, incrementando o número de perguntas e de respostas, caso estivessem dentro desse mesmo intervalo.
-Desta forma, a função devolve o seguinte:
-\begin{lstlisting}[caption=Query 3 - resultado a devolver]
-LONG_pair totalPost = create_long_pair(numQuestions,numAnswers); //numQuestions e numAnswers: numero de perguntas e de respostas, respetivamente
+Para tal, bastou-nos percorrer a árvore dos Posts e comparar as datas de cada post com o intervalo de tempo dado, incrementando o número de perguntas ou de respostas, caso este estivesse dentro do intervalo. A função disponibilizada pela \textit{GLib} para percorrer árvores binário do tipo \textit{GTree} permite aplicar uma função passada para como parâmetro a cada par chave-valor encontrado. O tipo de retorno desta função é um \textit{gboolean}, sendo que quando é devolvido \textit{TRUE} a travessia é interrompida. Esta caraterística foi também determinante na adoção da estrutura escolhida para armazenar os Posts uma vez que, em perguntas cuja contabilização de um dado Post na resposta dependa da sua ocorrência ter sido dentro ou fora de um dado intervalo de tempo, podemos minimizar o número de iterações desnecessárias sobre a árvore. Isto é, aquando da travessia da árvore, a partir do primeiro Post cuja data seja anterior ao limite inferior do intervalo do tempo, todos os outros Posts que seriam visitados posteriormente não fariam, certamente, parte da resposta final. Logo, não precisam de ser visitados. 
+
+\begin{lstlisting}[caption=Query 3 - mecanismo de diminuição de iterações desnecessárias]
+int dateCheck = comparaDatas(date_begin, date_end, post_date);
+
+(...)
+
+if(dateCheck == -1) return TRUE; 
 \end{lstlisting}
+
+\begin{lstlisting}[caption=Implementação da função comparaDatas]
+int comparaDatas (char* begin, char* end, char* post_date){ 
+
+	if(strcmp(post_date,end)>0) 
+		return 1; // data do Post ainda nao entrou no intervalo de tempo 
+	if(strcmp(begin,post_date)>0) 
+		return -1; // data do Post fora do limite inferior(Return True na travessia)
+	else 
+		return 0; // data do Post esta dentro do intervalo de tempo
+}
+\end{lstlisting}
+
+Este mecanismo fui útil, não só na resolução da \textit{Query 3}, mas também, nas \textit{queries} 4, 6, 7, e 10. 
 
 \subsection{Questions with Tag}
 A quarta interrogação pedia que criássemos uma lista com os IDs das perguntas que, num dado intervalo de tempo, contivessem uma certa \textit{tag}, sendo que essa lista teria que ser ordenada em cronologia inversa.
 
-Nós abordamos esta \textit{query} criando um array dinâmico, no qual colocámos os IDs das perguntas que, ao percorrer a árvore, verificamos estar dentro do intervalo de tempo dado e que continha a determinada \textit{tag}. Uma vez que dentro da estrutura dos Posts já tinhamos uma lista com as suas \textit{tags}, foi-nos fácil filtrar as perguntas que pretendíamos. Após isso, bastou apenas passar a informação presente no array (já ordenado) para uma \textit{LONG\_list}:
+Nós abordamos esta \textit{query} criando um array dinâmico, no qual colocámos os IDs das perguntas que, ao percorrer a árvore, verificamos estar dentro do intervalo de tempo dado e que continha a determinada \textit{tag}. Para ser possível fazer tal verificação foi necessário obter o ID representativo da \textit{tag} passada como argumento, conseguido através da execução das funções \textit{getTag}(procura, pelo nome de uma \textit{tag}, na tabela de Hash onde se encontra armazenada informação relativa às \textit{tags}) e \textit{getTagID}.
+
+Após isso, bastou apenas passar a informação presente no array (já ordenado por ordem cronológica inversa) para uma \textit{LONG\_list}:
+
 \begin{lstlisting}[caption=Query 4 - array dinâmico para LONG\_list]
 for(int i=0; i<size; i++){
 		long id = g_array_index(questionsID,long,i); //questionsID: array dinamico
@@ -223,11 +232,19 @@ for(int i=0; i<size; i++){
 \end{lstlisting}
 
 \subsection{Get User Info}
-Para esta quinta \textit{query}, tivemos que desenvolver funções que nos permitissem obter informações relativas a um certo utilizador, isto é, a sua \textit{Short Bio} e os IDs dos seus últimos dez Posts. Como a nossa estrutura de utilizadores continha ambas as informações, foi apenas necessário ordenar em cronologia inversa as publicações de cada utilizador e converter os dados necessários para a estrutura \textit{USER}, como pedia a interrogação:
-\begin{lstlisting}[caption=Query 5 - tipo da função auxiliar e passagem para estrutura USER]
-// USER get_user_info_aux(GHashTable* com_user, long id);
+Para esta quinta \textit{query}, como a nossa estrutura de utilizadores continha ambas as informações necessárias, foi suficiente ordenar em cronologia inversa as publicações do utilizador em causa e converter os dados necessários para a estrutura \textit{USER}, como pedia a interrogação. Para obter os Posts realizados pelo utilizador é usada a função \textit{getClonedUserPosts}, que faz uma shallow-copy do \textit{GArray} que contém os posts do utilizador. Desta forma, podemos reordenar por data o array dinâmico sem que essa alteração tenha repercursões na informação presente na \textit{TCD\_community}.
 
-USER res = create_user( getUserShortBio(user),postsID);
+
+\begin{lstlisting}[caption=Query 5 - preservação do encapsulamento]
+(...)
+User user = getUser(com_user, id); // id - passado como parametro a query
+	
+	if(user!=NULL){
+		GArray* userPosts = getClonedUserPosts(user);
+		
+		if(userPosts){
+			g_array_sort(userPosts,(GCompareFunc)sortByDate);
+(...)
 \end{lstlisting}
 
 \subsection{Most Voted Answers}
@@ -239,12 +256,7 @@ int sortByScore(Post *a, Post *b){
 	return score_b - score_a;
 }
 \end{lstlisting}
-É importante referir que, ao percorrer a árvore dos Posts, a travessia parava assim que a data da publicação se situava abaixo do limite inferior do intervalo de tempo dado, de forma a ser mais eficiente. Utilizamos esta estratégia sempre que lidamos com árvores e intervalos de tempo.
-\begin{lstlisting}[caption=Interrupção da travessia nas árvores]
-int dateCheck = comparaDatas(begin, end, post_date); // comparaDatas: funcao que devolve 1 caso a post_date ainda nao tenha entrado no intervalo definido por begin e end e que devolve -1 caso a post_date seja mais antiga que o limite inferior (begin) do intervalo de tempo dado
 
-if (dateCheck == -1) return TRUE; // a funcao de iteracao g_tree_foreach interrompe se a funcao argumento do tipo GTraverseFunc devolver TRUE
-\end{lstlisting}
 
 \subsection{Most Answered Questions}
 A sétima interrogação é muito idêntica à sexta \textit{query}. Pedia-nos que criássemos uma lista ordenada com as perguntas mais respondidas, num dado intervalo de tempo.
@@ -254,7 +266,8 @@ Assim sendo, a nossa abordagem foi também muito semelhante, modificando apenas 
 \subsection{Contains Word}
 O objetivo da oitava \textit{query} era, dada uma palavra, devolver uma lista com os IDs das N perguntas cujos títulos a contenham, ordenados por cronologia inversa.
 
-Para resolver esta interrogação, tivemos que percorrer a árvore dos Posts, inserindo num array dinâmico os IDs das perguntas cujos títulos contenham a palavra passada como argumento. Para verificarmos tal situação, utilizamos funções predefinidas, tais como uma adaptação nossa à \textit{strdup} e a função \textit{strstr}. Após percorrermos toda a árvore de Posts, foi apenas necessário ordenar o array em cronologia inversa das perguntas lá inseridas.
+Para resolver esta interrogação, tivemos que percorrer a árvore dos Posts, inserindo num array dinâmico os IDs das perguntas cujos títulos contenham a palavra passada como argumento. Para verificarmos tal situação, utilizamos a função \textit{strstr}. 
+
 \begin{lstlisting}[caption=Query 8 - comparação do título e da palavra dada como argumento]
 if(strstr(titulo,word)!=NULL ){ // word: palavra dada como argumento
 	g_array_append_val(postArray,post); // funcao que coloca o post no final do array dinamico
@@ -264,24 +277,26 @@ if(strstr(titulo,word)!=NULL ){ // word: palavra dada como argumento
 \subsection{Both Participated}
 Nesta nona interrogação, tivemos o "desafio" de, dados os IDs de dois utilizadores, devolver as últimas N perguntas (cronologia inversa) em que participaram dois utilizadores específicos. Estes podem interagir de três diferentes formas: um deles faz a pergunta e o outro a resposta (e vice-versa) e ambos responderem a uma mesma pergunta.
 
-A abordagem que considerámos mais eficiente e mais simples de implementar foi a seguinte:
+A abordagem que considerámos mais eficiente foi a seguinte:
 \begin{enumerate}
-\item Carregar as informações dos dois utilizadores dados como argumento;
-\item Iterar os dois arrays dinâmicos com os Posts de cada utilizador, trocando as respostas pela respetiva pergunta (uma vez que o enunciado pedia as perguntas em que os dois utilizadores participaram), cujo ID é representado no ficheiro XML pelo \textit{ParentID};
-\item Ordenar o array do primeiro utilizador pela data em cronologia inversa;
-\item Comparar os arrays e colocá-los num outro array dinâmico (como o primeiro está ordenado, este também o vai ser), de forma a filtrar as perguntas em comum;
+\item Carregar as informações dos dois utilizadores dados como argumento, em particular o \textit{GArray} contendo os Posts realizados por cada um dos utilizadores;
+\item Identificar o array com maior tamanho e inserir os dados nele contidos num tabela de Hash, de forma a posteriormente ser possível iterar sobre o outro array, já ordenado, por cronologia inversa, e apenas contendo perguntas, com o objetivo de verificar existência de cada elemento do segundo array na tabela de Hash.	
 \item Selecionar as N primeiras perguntas do novo array com as perguntas em comum.
 \end{enumerate}
-\begin{lstlisting}[caption=Query 9 - comparação dos dois arrays de Posts de cada utilizador]
-for (int i=0; i < posts1->len; i++) {
-	post1 = g_array_index(posts1, Post, i); // posts1: array de posts do primeiro utilizador
-	for (int j=0; j < posts2->len; j++) {
-		post2 = g_array_index(posts2, Post, j); // posts2: array de posts do primeiro utilizador
-		if (getPostID(post1) == getPostID(post2)){
-			id = getPostID(post1);
-			g_array_append_val(aux, id); // aux: array de posts em comum
-			g_array_remove_index(posts2, j); // remover do segundo array para nao voltar a passar por ele
-		}
+\begin{lstlisting}[caption=Query 9 - identificação dos Posts comuns aos dois utilizadores]
+GHashTable* toSearch = gArrayToHash(toConvert);
+
+GArray* result_aux = g_array_new(FALSE, FALSE, sizeof(long));
+
+for (int i=0; i < toTraverse->len; i++) {
+	post = g_array_index(posts1, Post, i);
+	id = getPostID(post);
+		
+	int* check = g_hash_table_lookup(toSearch, (gpointer)id);
+
+	if(check){
+		g_array_append_val(result_aux,id);
+		g_hash_table_remove(toSearch, (gpointer)id);
 	}
 }
 \end{lstlisting}
@@ -291,24 +306,31 @@ A décima interrogação pedia que, dada uma determinada pergunta, obtivéssemos
 \begin{verbatim}
 (score*0.45) + (reputation*0.25) + (votes*0.2) + (comments*0.1)
 \end{verbatim}
-Ora, como a diferença entre os \textit{UpVotes} e os \textit{DownVotes} é igual ao Score, decidimos não utilizar o ficheiros XML dos Votes e utilizar o Score presente no ficheiro dos Posts. Os restantes parâmetros encontram-se guardados na estrutura por nós definida após ser executado o \textit{load}.
+Ora, como a diferença entre os \textit{UpVotes} e os \textit{DownVotes} é igual ao Score, decidimos não utilizar o ficheiro Votes.xml e utilizar o Score presente no ficheiro dos Posts. Os restantes parâmetros encontram-se guardados na estrutura por nós definida após ser executado o \textit{load}.
 
-Para conseguirmos responder ao que nos foi pedido, tivemos que desenvolver funções que nos permitissem verificar que o ID do Post dado correspondia a uma pergunta e, se assim fosse, iterar a árvore dos Posts para verificar quais são respostas para essa pergunta e selecionar, então, a resposta com a maior pontuação, calculada pela média acima referida.
-
-Um dos fatores que achamos importante para a eficiência do programa foi o facto de interrompermos a iteração da árvore dos Posts (que se encontra ordenada por data) quando a data de um Post for anterior à da pergunta dada como argumento(situação que não seria, de todo, possível). Desta forma, limitamos o número de iterações, não permitindo, portanto, que se percorra toda a estrutura quando queremos, por exemplo, ver a melhor resposta para uma pergunta recente.
-A comparação que utilizamos para tal foi a seguinte (sendo que o funcionamento da função \textit{g\_tree\_foreach} foi explicada numa interrogação anterior):
-\begin{lstlisting}[caption=Query 10 - interrupção da iteração da árvore]
-if(strcmp(getPostDate(post),data)<0) return TRUE; //post: estrutura do Post de cada iteracao; data: data da pergunta-argumento
-\end{lstlisting}
+Para conseguirmos responder ao que nos foi pedido, tivemos que verificar que o ID do Post dado correspondia a uma pergunta e, se assim fosse, iterar a árvore dos Posts para verificar quais são respostas para essa pergunta e selecionar, então, a resposta com a maior pontuação, calculada pela média acima referida.
 
 \subsection{Most Used Best Rep}
-Nesta décima primeira (e última) \textit{query}, era pretendido que, dado um intervalo arbitrário de tempo, desenvolvêssemos um programa que devolvesse os IDs das N \textit{tags} mais utilizadas pelos N utilizadores com melhor reputação.
+Nesta décima primeira (e última) \textit{query}, era pretendido que, dado um intervalo arbitrário de tempo, fosse possível obter os IDs das N \textit{tags} mais utilizadas pelos N utilizadores com melhor reputação.
 
-Para chegar a tal resultado, tivemos que iterar toda a tabela de Hash dos utilizadores e guardar as informações relativas a estes num array dinâmico, ordenando-o de forma decrescente pela reputação de cada utilizador. Depois percorremos os N utilizadores com melhor reputacao e, a cada um deles, fomos ao seu array de Posts e colocámos noutro array dinâmico os IDs das \textit{tags} utilizadas. Após este processo, ordenámos este mesmo array, de forma a que, com uma só travessia, pudéssemos construir um vetor dinâmico de \textit{LONG\_pair}s com o seguinte formato: (ID da \textit{tag}, número de ocorrências). Por último, foi apenas necessário ordenar esse vetor pelo número de ocorrências e retirar daí os IDs das N \textit{tags} mais usadas para uma \textit{LONG\_list}.
+Para chegar a tal resultado, foi preciso ordenar os utilizadores por ordem decrescente de reputação, e, posteriormente, percorrer os N utilizadores com melhor reputação. Para cada um deles, fomos ao seu array de Posts e adicionamos as tag usadas em cada um dos posts a uma tabela de Hash, cuja chave é o ID da \textit{tag} e o valor corresponde ao número de ocorrências dessa \textit{tag}. Após este processo, passamos a informação contida na tabela de Hash para um array dinâmico. Por último, foi apenas necessário ordenar esse vetor pelo número de ocorrências e retirar daí os IDs das N \textit{tags} mais usadas para uma \textit{LONG\_list}.
 
-\begin{lstlisting}[caption=Query 11 - conversão do array de tags para um de pares e respetiva ordenação]
-GArray* mSetTagsId = tagsIdToMSet(tagsId); //tagsIdToMSet: transforma cada elemento do array tagsId num par (ID,numero de ocorrencias)
-g_array_sort(mSetTagsId, (GCompareFunc)sortMSet); //ordena o vetor de pares pelo numero de ocorrencias
+\begin{lstlisting}[caption=Query 11 - registo da ocorrência de uma \textit{tag} na tabela de Hash]
+(...)
+for(int i = 0; i<postTags->len; i++){
+		long next_tag = g_array_index(postTags, long, i);
+
+		int* num_ocor =	g_hash_table_lookup(tagsId , (gpointer)next_tag);
+
+		if(!num_ocor) {
+			int* ocor = malloc(sizeof(int));
+			*ocor = 1;
+
+			g_hash_table_insert(tagsId, (gpointer)next_tag, ocor);
+		}
+		else (*num_ocor)++; 
+	}
+
 \end{lstlisting}
 
 %% CONCLUSÃO
@@ -319,14 +341,23 @@ que nos foram sendo impostas com o desenrolar do projeto.
 Os resultados que obtivemos, ao correr o programa, foram iguais aos dos testes fornecidos pelos docentes, pelo que podemos concluir que a nossa implementação está correta. Além disso, achamos que cumprimos o objetivo de criar um programa eficiente, visto que os tempos que obtivemos para cada interrogação, utilizando os \textit{dumps} do Ubuntu e os mesmos parâmetros utilizados pelos professores nos testes, foram os seguintes (aproximadamente):
 \begin{table}[h]
 \centering
-\caption{Tempos de Execução}
+\caption{Tempos de Execução - input nº 1}
 \begin{tabular}{llllllllllll}
 Interrogação:        & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 \\
-Tempo (em segundos): & X & X & X & X & X & X & X & X & X & X  & X 
+Tempo (em segundos): & 0.000024 & 0.143056 & 0.047433 & 0.161335 & 0.005250 & 0.039786 & 0.062277 & 0.110665 & 0.000371 & 0.129559  & 0.159771
 \end{tabular}
 \end{table}
 
-O tempo de carregamento dos dados para estrutura, com os \textit{dumps} do Ubuntu, foi de XXX segundos. A nossa função \textit{clean} também está a funcionar como o esperado, como se pode comprovar pelo relatório do \textit{valgrind}:
+\begin{table}[h]
+\centering
+\caption{Tempos de Execução - input nº 2}
+\begin{tabular}{llllllllllll}
+Interrogação:        & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 \\
+Tempo (em segundos): & 0.000035 & 0.141657 & 0.133918 & 0.136191 & 0.006277 & 0.096734 & 0.126107 & 0.117705 & 0.000102 & 0.135200  & 0.162032
+\end{tabular}
+\end{table}
+
+A nossa função \textit{clean} também está a funcionar como o esperado, como se pode comprovar pelo relatório do \textit{valgrind}:
 \begin{verbatim}
 PARTE DO VALGRIND DOS FREES
 \end{verbatim}
