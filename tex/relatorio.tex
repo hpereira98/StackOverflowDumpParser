@@ -129,17 +129,17 @@ struct TCD_community{
 \end{lstlisting}
 
 
-A nossa decisão de utilizar as tabelas de Hash vai de encontro ao propósito de aceder diretamente à informação por nós pretendida, no caso de um Utilizador, a partir de um ID, no caso de uma Tag, a partir do seu nome. Porém, para os Posts, decidimos utilizar uma estrutura diferente, neste caso uma árvore binária balanceada, pois necessitávamos de uma ordem (neste caso cronológica) de recolha da informação dos Posts da estrutura. Esta estrutura faz uma associação do tipo chave-valor, sendo a ordem dos elementos estabelicida pela comparação das chaves. No entento, sendo os Posts uma unidade central no enunciado proposto, o grupo deparou-se com a necessidade de obter informação relativa a um certo Post, dado o seu \textit{ID}, da forma mais eficiente possível. Claramente, realizar uma travessia (\textit{in-order}) na árvore até encontrar o desejado não seria uma boa solução. De forma a otimizar o pretendido, foi adicionada à estrutura \textit{TCD\_community} uma tabela de Hash cuja chave corresponde ao ID de um Post e o valor armazenado ao \textit{timestamp} do mesmo, considerado até ao milissegundo. Deste modo, por comparação de chaves da árvore seria possível efetuar uma procura binária. Contudo verificou-se a exitência de diferentes posts cujos \textit{timestamps} eram iguais, e a estrutura usada para os armazenar não contempla chaves repetidas. Assim, 
+A nossa decisão de utilizar as tabelas de Hash vai de encontro ao propósito de aceder diretamente à informação por nós pretendida, no caso de um Utilizador, a partir de um ID, no caso de uma Tag, a partir do seu nome. Porém, para os Posts, decidimos utilizar uma estrutura diferente, neste caso uma árvore binária balanceada, pois necessitávamos de uma ordem (neste caso cronológica) de recolha da informação dos Posts da estrutura. Esta estrutura faz uma associação do tipo chave-valor, sendo a ordem dos elementos estabelecida pela comparação das chaves. No entanto, sendo os Posts uma unidade central no enunciado proposto, o grupo deparou-se com a necessidade de obter informação relativa a um certo Post, dado o seu \textit{ID}, da forma mais eficiente possível. Claramente, realizar uma travessia (\textit{in-order}) na árvore até encontrar o desejado não seria uma boa solução. De forma a otimizar o pretendido, foi adicionada à estrutura \textit{TCD\_community} uma tabela de Hash cuja chave corresponde ao ID de um Post e o valor armazenado ao \textit{timestamp} do mesmo, considerado até ao milissegundo. Deste modo, por comparação de chaves da árvore seria possível efetuar uma procura binária. Contudo verificou-se a exitência de diferentes posts cujos \textit{timestamps} eram iguais, e a estrutura usada para os armazenar não contempla chaves repetidas. Assim, 
 foi criada a estrutura \textit{postKey}, também esta tornada opaca e devidamente encapsulada, apenas contendo a data e o ID de um Post, que passou a ser usada como chave de inserção na árvore. Desta forma garantiu-se não só a ordenação pretendida como a unicidade de cada uma das chaves. No caso de dois Posts terem o mesmo \textit{timestamp}, considerou-se como sendo maior o Post com menor ID. Para efeitos de procura de um Post foi criada a função \textit{getPost}, cuja execução se divide nas duas tarefas descritas anteriormente: dado o ID de um Post, criar uma variavel do tipo \textit{postKey}, com o ID e o \textit{timestamp} presente na tabela de Hash \textit{postAux} e, de seguida, proceder a uma procura binária na árvore dos Posts.
 
-Por sua vez, definimos também uma estrutura para os Utilizadores, para os Posts e para as Tags, de forma a permitir que a informação útil contida em cada \textit{row} dos ficheiros XML fosse guardada em variáveis representativas das entidade aqui enumeradas e posteriormente inseridas nas tabelas/árvore acima descritas. As estruturas que de seguida se listam foram tornadas opacas, sendo apenas possível a sua criação, alteração ou consulta da informação por estas contidas, através de funções definadas no ficheiro que contém a declaração da estrutura e cuja assinatura tenha sido exportada no respetivo \textit{header file}. Deste modo, não só garantimos um acesso controlado aos campos internos de cada estrutura, como dotamos o projeto de uma maior nível de abstração e modularidade.
+Por sua vez, definimos também uma estrutura para os Utilizadores, para os Posts e para as Tags, de forma a permitir que a informação útil contida em cada \textit{row} dos ficheiros XML fosse guardada em variáveis representativas das entidade aqui enumeradas e posteriormente inseridas nas tabelas/árvore acima descritas. As estruturas descritas no \textit{Listing} \ref{structs} foram tornadas opacas, sendo apenas possível a sua criação, alteração ou consulta da informação por estas contidas, através de funções definidas no ficheiro que contém a declaração da estrutura e cuja assinatura tenha sido exportada no respetivo \textit{header file}. Deste modo, não só garantimos um acesso controlado aos campos internos de cada estrutura, como dotamos o projeto de uma maior nível de abstração e modularidade.
 
-\begin{lstlisting}[caption=Definição de estruturas internas]
+\begin{lstlisting}[caption=Definição de estruturas internas,label=structs]
 struct user{
 	long id; // ID do utilizador
 	char* display_name; // username
 	int n_posts; // numero total de posts
-	int reputacao; // reputacaoo do utilizador
+	int reputacao; // reputacao do utilizador
 	char* short_bio; // descricao do utilizador 
 	GArray* userPosts; // array dinamico com os posts do utilizador
 };
@@ -342,24 +342,61 @@ Os resultados que obtivemos, ao correr o programa, foram iguais aos dos testes f
 \begin{table}[h]
 \centering
 \caption{Tempos de Execução - input nº 1}
-\begin{tabular}{llllllllllll}
-Interrogação:        & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 \\
-Tempo (em segundos): & 0.000024 & 0.143056 & 0.047433 & 0.161335 & 0.005250 & 0.039786 & 0.062277 & 0.110665 & 0.000371 & 0.129559  & 0.159771
-\end{tabular}
+\scalebox{0.85}{
+\begin{tabular}{ll}
+Interrogação: & Tempo (em segundos): \\
+1             & 0.000024             \\
+2             & 0.143056             \\
+3             & 0.047433             \\
+4             & 0.161335             \\
+5             & 0.005250             \\
+6             & 0.039786             \\
+7             & 0.062277             \\
+8             & 0.110665             \\
+9             & 0.000371             \\
+10            & 0.129559             \\
+11            & 0.159771   
+\end{tabular}}
 \end{table}
 
 \begin{table}[h]
 \centering
 \caption{Tempos de Execução - input nº 2}
-\begin{tabular}{llllllllllll}
-Interrogação:        & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 \\
-Tempo (em segundos): & 0.000035 & 0.141657 & 0.133918 & 0.136191 & 0.006277 & 0.096734 & 0.126107 & 0.117705 & 0.000102 & 0.135200  & 0.162032
-\end{tabular}
+\scalebox{0.85}{
+\begin{tabular}{ll}
+Interrogação: & Tempo (em segundos): \\
+1             & 0.000035             \\
+2             & 0.141657             \\
+3             & 0.133918             \\
+4             & 0.136191             \\
+5             & 0.006277             \\
+6             & 0.096734             \\
+7             & 0.126107             \\
+8             & 0.117705             \\
+9             & 0.000102             \\
+10            & 0.135200             \\
+11            & 0.162032  
+\end{tabular}}
 \end{table}
 
 A nossa função \textit{clean} também está a funcionar como o esperado, como se pode comprovar pelo relatório do \textit{valgrind}:
 \begin{verbatim}
-PARTE DO VALGRIND DOS FREES
+==1969== HEAP SUMMARY:
+==1969==     in use at exit: 92,784 bytes in 37 blocks
+==1969==   total heap usage: 19,704,863 allocs, 19,704,826 frees, 
+1,352,717,691 bytes allocated
+==1969== 
+==1969== LEAK SUMMARY:
+==1969==    definitely lost: 0 bytes in 0 blocks
+==1969==    indirectly lost: 0 bytes in 0 blocks
+==1969==      possibly lost: 0 bytes in 0 blocks
+==1969==    still reachable: 92,784 bytes in 37 blocks
+==1969==         suppressed: 0 bytes in 0 blocks
+==1969== Reachable blocks (those to which a pointer was found) are not shown.
+==1969== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==1969== 
+==1969== For counts of detected and suppressed errors, rerun with: -v
+==1969== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
 \end{verbatim}
 
 Em suma, tendo em conta a eficiência e os resultados que obtivemos, podemos concluir que conseguimos atingir as metas propostas com este projeto, dado que os tempos de execução, tanto do \textit{load} como das interrogações, foram bastante positivos. Com os \textit{getters} e \textit{setters} por nós definidos para as nossas estruturas, conseguimos sempre, com a modulação e separação dos ficheiros que fizemos, respeitar o encapsulamento da informação.
