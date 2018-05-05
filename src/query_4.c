@@ -49,8 +49,12 @@ LONG_list questions_with_tag_aux(GTree* com_post, GHashTable* com_tags, char* ta
 
 	Tag tag = getTag(com_tags, tagName);
 
-	if(!tag) return create_list(0);
-
+	if(!tag){	
+		free(date_begin);
+		free(date_end);
+		return create_list(0);
+    }
+    
 	long tagID = getTagID(tag);
 
 	GArray* questionsID = g_array_new(FALSE, FALSE, sizeof(long));

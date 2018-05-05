@@ -4,7 +4,7 @@ LDIR=lib
 DDIR=../doc
 RDIR=../tex
 OLDIR=$(ODIR)/lib
-ROOT=../
+ROOT=..
 
 
 CC=gcc
