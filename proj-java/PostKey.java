@@ -28,7 +28,7 @@ public class PostKey {
 
     public PostKey(){
         this.data = "";
-        this.id = -1;
+        this.id = -2;
     }
 
     public PostKey(String data, int id){

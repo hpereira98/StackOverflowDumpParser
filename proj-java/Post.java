@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Objects;
+
 public class Post {
 
     private int id;
@@ -6,7 +9,7 @@ public class Post {
     private int type_id;
     private int parent_id;
     private String data;
-    private Arraylist<Tag> tags;
+    private ArrayList<Tag> tags;
     private int score;
     private int n_comments;
     private int n_answers;
@@ -63,11 +66,11 @@ public class Post {
         this.data = data;
     }
 
-    public Arraylist<Tag> getTags() { // FIXME: 21-05-2018
+    public ArrayList<Tag> getTags() { // FIXME: 21-05-2018
         return this.tags;
     }
 
-    public void setTags(Arraylist<Tag> tags) {
+    public void setTags(ArrayList<Tag> tags) {
         this.tags = tags;
     }
 
@@ -96,14 +99,54 @@ public class Post {
     }
 
 
-    // Construtores
 
 
-    public Post() {
 
+    // Equals & Clone & toString
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Post post = (Post) o;
+
+        return this.id == post.getID() &&
+               this.titulo.equals(post.getTitulo()) &&
+               this.owner_id == post.getOwnerID() &&
+               this.type_id == post.getTypeID() &&
+               this.parent_id == post.getParentID() &&
+               this.data .equals(post.getData()) &&
+               this.tags.equals(post.getTags()) &&
+               this.score == post.getScore() &&
+               this.n_comments == post.getNComments() &&
+               this.n_answers == post.getNAnswers();
     }
 
-    public Post(int id, String titulo, int owner_id, int type_id, int parent_id, String data, Arraylist<Tag> tags, int score, int n_comments, int n_answers) {
+    public Post clone(){
+        return new Post(this);
+    }
+
+    public String toString(){
+        return ""; // FIXME: 22-05-2018
+    }
+
+
+    // Construtores
+
+    public Post() {
+        this.id = -2;
+        this.titulo = "";
+        this.owner_id = -2;
+        this.type_id = -1;
+        this.parent_id = -2;
+        this.data = "";
+        this.tags = new ArrayList<>();
+        this.score = -1;
+        this.n_comments = -1;
+        this.n_answers = -1;
+    }
+
+    public Post(int id, String titulo, int owner_id, int type_id, int parent_id, String data, ArrayList<Tag> tags, int score, int n_comments, int n_answers) {
         this.id = id;
         this.titulo = titulo;
         this.owner_id = owner_id;
@@ -117,6 +160,15 @@ public class Post {
     }
 
     public Post(Post outro){
-
+        this.id = outro.getID();
+        this.titulo = outro.getTitulo();
+        this.owner_id = outro.getOwnerID();
+        this.type_id = outro.getTypeID();
+        this.parent_id = outro.getParentID();
+        this.data = outro.getData();
+        this.tags = outro.getTags();
+        this.score = outro.getScore();
+        this.n_comments = outro.getNComments();
+        this.n_answers = outro.getNAnswers();
     }
 }

@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 public class Tag {
 
     private String nome;
@@ -24,11 +26,34 @@ public class Tag {
     }
 
 
+    
+    // Equals & Clone & toString
+    
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        
+        Tag tag = (Tag) o;
+        
+        return this.id == tag.getID() &&
+               this.nome.equals(tag.getNome());
+    }
+    
+    public Tag clone(){
+        return new Tag(this);
+    }
+    
+    public String toString(){
+        return ""; // FIXME: 22-05-2018 
+    }
+    
+
+
     // Construtores
 
     public Tag(){
         this.nome = "";
-        this.id = -1;
+        this.id = -2;
     }
 
     public Tag(String nome, int id){
