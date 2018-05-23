@@ -61,6 +61,25 @@ public class User {
         this.user_posts = user_posts;
     }
 
+    // Equals & Clone
+
+    public User clone(){
+        return new User(this);
+    }
+
+    public boolean equals (Object o) {
+        if (o == this) return true;
+        if (o == null || this.getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        return this.id == user.getID() &&
+                this.display_name.equals(user.getDisplayName()) &&
+                this.n_posts == user.getNPosts() &&
+                this.reputacao == user.getRep() &&
+                this.short_bio.equals(user.getShortBio()) &&
+                this.user_posts.equals(user.getUserPosts());
+    }
 
     // Construtores
 
