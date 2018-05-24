@@ -1,7 +1,7 @@
 public class PostKey implements Comparable<PostKey>{
 
     private String data;
-    private int id;
+    private long id;
 
 
 
@@ -16,11 +16,11 @@ public class PostKey implements Comparable<PostKey>{
         this.data = data;
     }
 
-    public int getID() {
+    public long getID() {
         return this.id;
     }
 
-    public void setID(int id) {
+    public void setID(long id) {
         this.id = id;
     }
 
@@ -47,7 +47,7 @@ public class PostKey implements Comparable<PostKey>{
         this.id = -2;
     }
 
-    public PostKey(String data, int id){
+    public PostKey(String data, long id){
         this.data = data;
         this.id = id;
     }
@@ -60,8 +60,8 @@ public class PostKey implements Comparable<PostKey>{
     // COMPARATOR
 
     public int compareTo(PostKey pK) {
-        int test = this.getData().compareTo(pK.getData());
-        if (test==0) test=this.getID() - (pK.getID());
-        return test;
+        long test = this.getData().compareTo(pK.getData());
+        if (test==0) test=this.getID() - pK.getID();
+        return (int) test;
     }
 }

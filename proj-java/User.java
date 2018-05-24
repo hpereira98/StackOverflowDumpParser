@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 public class User {
 
-    private int id;
+    private long id;
     private String display_name;
     private int n_posts;
     private int reputacao;
@@ -13,11 +13,11 @@ public class User {
 
     // Getters & Setters
 
-    public int getID() {
+    public long getID() {
         return this.id;
     }
 
-    public void setID(int id) {
+    public void setID(long id) {
         this.id = id;
     }
 
@@ -92,7 +92,7 @@ public class User {
         this.user_posts = new ArrayList<>();
     }
 
-    public User(int id, String display_name, int n_posts, int reputacao, String short_bio, ArrayList<Post> user_posts) {
+    public User(long id, String display_name, int n_posts, int reputacao, String short_bio, ArrayList<Post> user_posts) {
         this.id = id;
         this.display_name = display_name;
         this.n_posts = n_posts;

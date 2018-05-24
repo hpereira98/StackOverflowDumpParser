@@ -3,11 +3,11 @@ import java.util.Objects;
 
 public class Post {
 
-    private int id;
+    private long id;
     private String titulo;
-    private int owner_id;
+    private long owner_id;
     private int type_id;
-    private int parent_id;
+    private long parent_id;
     private String data;
     private ArrayList<Tag> tags;
     private int score;
@@ -18,11 +18,11 @@ public class Post {
     // Getters & Setters
 
 
-    public int getID() {
+    public long getID() {
         return this.id;
     }
 
-    public void setID(int id) {
+    public void setID(long id) {
         this.id = id;
     }
 
@@ -34,11 +34,11 @@ public class Post {
         this.titulo = titulo;
     }
 
-    public int getOwnerID() {
+    public long getOwnerID() {
         return this.owner_id;
     }
 
-    public void setOwnerID(int owner_id) {
+    public void setOwnerID(long owner_id) {
         this.owner_id = owner_id;
     }
 
@@ -50,11 +50,11 @@ public class Post {
         this.type_id = type_id;
     }
 
-    public int getParentID() {
+    public long getParentID() {
         return this.parent_id;
     }
 
-    public void setParentID(int parent_id) {
+    public void setParentID(long parent_id) {
         this.parent_id = parent_id;
     }
 
@@ -146,7 +146,7 @@ public class Post {
         this.n_answers = -1;
     }
 
-    public Post(int id, String titulo, int owner_id, int type_id, int parent_id, String data, ArrayList<Tag> tags, int score, int n_comments, int n_answers) {
+    public Post(long id, String titulo, long owner_id, int type_id, long parent_id, String data, ArrayList<Tag> tags, int score, int n_comments, int n_answers) {
         this.id = id;
         this.titulo = titulo;
         this.owner_id = owner_id;

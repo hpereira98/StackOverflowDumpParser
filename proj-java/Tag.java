@@ -3,7 +3,7 @@ import java.util.Objects;
 public class Tag {
 
     private String nome;
-    private int id;
+    private long id;
 
 
 
@@ -17,11 +17,11 @@ public class Tag {
         this.nome = nome;
     }
 
-    public int getID() {
+    public long getID() {
         return this.id;
     }
 
-    public void setID(int id) {
+    public void setID(long id) {
         this.id = id;
     }
 
@@ -56,7 +56,7 @@ public class Tag {
         this.id = -2;
     }
 
-    public Tag(String nome, int id){
+    public Tag(String nome, long id){
         this.nome = nome;
         this.id = id;
     }
