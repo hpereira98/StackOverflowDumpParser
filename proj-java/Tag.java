@@ -42,11 +42,6 @@ public class Tag {
     public Tag clone(){
         return new Tag(this);
     }
-    
-    public String toString(){
-        return ""; // FIXME: 22-05-2018 
-    }
-    
 
 
     // Construtores
@@ -64,5 +59,12 @@ public class Tag {
     public Tag(Tag outra){
         this.nome = outra.getNome();
         this.id = outra.getID();
+    }
+
+    public String toString() {
+        return "Tag{" +
+                "nome='" + nome + '\'' +
+                ", id=" + id +
+                '}';
     }
 }

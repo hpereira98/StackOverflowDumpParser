@@ -13,16 +13,27 @@ public class TCD {
 
     // PARSER
 
-    public void readFile (String path) throws XMLStreamException {
+    public void readFiles (String path) throws XMLStreamException {
+        double startTime = System.nanoTime();
         readFileUsers(path + "/Users.xml");
+        double stopTime = System.nanoTime();
+        System.out.println("EXEC USERS: "+((stopTime - startTime)/1000000000.0)+"seg");
+
+        startTime = System.nanoTime();
         readFileTags(path + "/Tags.xml");
+        stopTime = System.nanoTime();
+        System.out.println("EXEC TAGS: "+((stopTime - startTime)/1000000000.0)+"seg");
+
+        startTime = System.nanoTime();
         readFilePosts(path + "/Posts.xml");
+        stopTime = System.nanoTime();
+        System.out.println("EXEC POSTS: "+((stopTime - startTime)/1000000000.0)+"seg");
     }
 
 
     // PARSER USERS
 
-    public void readFileUsers(String path) throws XMLStreamException {
+    private void readFileUsers(String path) throws XMLStreamException {
         XMLInputFactory input = XMLInputFactory.newInstance();
         XMLStreamReader reader = null;
 
@@ -38,23 +49,24 @@ public class TCD {
 
                 switch (eventType) {
                     case XMLStreamReader.START_ELEMENT:
-                        for (int i=0; i < reader.getAttributeCount(); i++) {
-                            switch (reader.getAttributeLocalName(i)) {
-                                case "Id":
-                                    id = Long.parseLong(reader.getAttributeValue(i));
-                                    break;
-                                case "DisplayName":
-                                    name = reader.getAttributeValue(i);
-                                    break;
-                                case "Reputation":
-                                    rep = Integer.parseInt(reader.getAttributeValue(i));
-                                    break;
-                                case "AboutMe":
-                                    bio = (reader.getAttributeValue(i));
-                                    break;
+                        String qName = reader.getName().getLocalPart();
+                        if (qName.equalsIgnoreCase("row")) {
+                            for (int i = 0; i < reader.getAttributeCount(); i++) {
+                                switch (reader.getAttributeLocalName(i)) {
+                                    case "Id":
+                                        id = Long.parseLong(reader.getAttributeValue(i));
+                                        break;
+                                    case "DisplayName":
+                                        name = reader.getAttributeValue(i);
+                                        break;
+                                    case "Reputation":
+                                        rep = Integer.parseInt(reader.getAttributeValue(i));
+                                        break;
+                                    case "AboutMe":
+                                        bio = (reader.getAttributeValue(i));
+                                        break;
+                                }
                             }
-                        }
-                        if (id!=-2) {
                             User user = new User(id, name, 0, rep, bio, new ArrayList<>());
                             users.put(id,user);
                         }
@@ -73,7 +85,7 @@ public class TCD {
 
     // PARSER POSTS
 
-    public void readFilePosts(String path) throws XMLStreamException {
+    private void readFilePosts(String path) throws XMLStreamException {
         XMLInputFactory input = XMLInputFactory.newInstance();
         XMLStreamReader reader = null;
 
@@ -95,41 +107,42 @@ public class TCD {
 
                 switch (eventType) {
                     case XMLStreamReader.START_ELEMENT:
-                        for (int i=0; i < reader.getAttributeCount(); i++) {
-                            switch (reader.getAttributeLocalName(i)) {
-                                case "Id":
-                                    id = Long.parseLong(reader.getAttributeValue(i));
-                                    break;
-                                case "Title":
-                                    titulo = reader.getAttributeValue(i);
-                                    break;
-                                case "OwnerUserId":
-                                    owner_id = Long.parseLong(reader.getAttributeValue(i));
-                                    break;
-                                case "PostTypeId":
-                                    type_id = Integer.parseInt(reader.getAttributeValue(i));
-                                    break;
-                                case "ParentId":
-                                    parent_id = Long.parseLong(reader.getAttributeValue(i));
-                                    break;
-                                case "CreationDate":
-                                    data = reader.getAttributeValue(i);
-                                    break;
-                                case "Tags":
-                                    tags_str = reader.getAttributeValue(i);
-                                case "Score":
-                                    score = Integer.parseInt(reader.getAttributeValue(i));
-                                    break;
-                                case "CommentCount":
-                                    n_comments = Integer.parseInt(reader.getAttributeValue(i));
-                                    break;
-                                case "AnswerCount":
-                                    n_answers = Integer.parseInt(reader.getAttributeValue(i));
-                                    break;
+                        String qName = reader.getName().getLocalPart();
+                        if (qName.equalsIgnoreCase("row")) {
+                            for (int i=0; i < reader.getAttributeCount(); i++) {
+                                switch (reader.getAttributeLocalName(i)) {
+                                    case "Id":
+                                        id = Long.parseLong(reader.getAttributeValue(i));
+                                        break;
+                                    case "Title":
+                                        titulo = reader.getAttributeValue(i);
+                                        break;
+                                    case "OwnerUserId":
+                                        owner_id = Long.parseLong(reader.getAttributeValue(i));
+                                        break;
+                                    case "PostTypeId":
+                                        type_id = Integer.parseInt(reader.getAttributeValue(i));
+                                        break;
+                                    case "ParentId":
+                                        parent_id = Long.parseLong(reader.getAttributeValue(i));
+                                        break;
+                                    case "CreationDate":
+                                        data = reader.getAttributeValue(i);
+                                        break;
+                                    case "Tags":
+                                        tags_str = reader.getAttributeValue(i);
+                                        break;
+                                    case "Score":
+                                        score = Integer.parseInt(reader.getAttributeValue(i));
+                                        break;
+                                    case "CommentCount":
+                                        n_comments = Integer.parseInt(reader.getAttributeValue(i));
+                                        break;
+                                    case "AnswerCount":
+                                        n_answers = Integer.parseInt(reader.getAttributeValue(i));
+                                        break;
+                                }
                             }
-                        }
-                        if (id!=-2) {
-                            //inserir nas estruturas
                             PostKey key = new PostKey(data, id);
                             Post post = new Post(id, titulo, owner_id, type_id, parent_id, data, tagsToList(tags_str), score, n_comments, n_answers);
                             posts.put(key, post);
@@ -160,7 +173,7 @@ public class TCD {
 
     // PARSER TAGS
 
-    public void readFileTags(String path) throws XMLStreamException {
+    private void readFileTags(String path) throws XMLStreamException {
         XMLInputFactory input = XMLInputFactory.newInstance();
         XMLStreamReader reader = null;
 
@@ -174,17 +187,18 @@ public class TCD {
 
                 switch (eventType) {
                     case XMLStreamReader.START_ELEMENT:
-                        for (int i=0; i < reader.getAttributeCount(); i++) {
-                            switch (reader.getAttributeLocalName(i)) {
-                                case "Id":
-                                    id = Long.parseLong(reader.getAttributeValue(i));
-                                    break;
-                                case "TagName":
-                                    name = reader.getAttributeValue(i);
-                                    break;
+                        String qName = reader.getName().getLocalPart();
+                        if (qName.equalsIgnoreCase("row")) {
+                            for (int i = 0; i < reader.getAttributeCount(); i++) {
+                                switch (reader.getAttributeLocalName(i)) {
+                                    case "Id":
+                                        id = Long.parseLong(reader.getAttributeValue(i));
+                                        break;
+                                    case "TagName":
+                                        name = reader.getAttributeValue(i);
+                                        break;
+                                }
                             }
-                        }
-                        if (id!=-2) {
                             Tag tag = new Tag(name,id);
                             tags.put(name,tag);
                         }
@@ -204,15 +218,17 @@ public class TCD {
     // Separa tags de uma string e passa para ArrayList
 
     private ArrayList<Tag> tagsToList(String str) {
-        str = str.replace("<","").replace(">",",");
-        str = str.substring(0,str.length() - 1);
-        String[] strs = str.split(",");
-
         ArrayList<Tag> lista = new ArrayList<>();
 
-        for (String string : strs) {
-            Tag nova = tags.get(string);
-            if (nova!=null) lista.add(nova);
+        if (str!=null && str.length()>1){
+            str = str.replace("<","").replace(">",",");
+            str = str.substring(0,str.length() - 1);
+            String[] strs = str.split(",");
+
+            for (String string : strs) {
+                Tag nova = tags.get(string);
+                if (nova!=null) lista.add(nova);
+            }
         }
 
         return lista;
@@ -329,5 +345,12 @@ public class TCD {
         this.tags=outro.getTags();
     }
 
-
+    public String toString() {
+        return "TCD{" +
+                "users=" + users.toString() +
+                ", posts=" + posts.toString() +
+                ", postAux=" + postAux.toString() +
+                ", tags=" + tags.toString() +
+                '}';
+    }
 }

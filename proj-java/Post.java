@@ -126,10 +126,6 @@ public class Post {
         return new Post(this);
     }
 
-    public String toString(){
-        return ""; // FIXME: 22-05-2018
-    }
-
 
     // Construtores
 
@@ -170,5 +166,20 @@ public class Post {
         this.score = outro.getScore();
         this.n_comments = outro.getNComments();
         this.n_answers = outro.getNAnswers();
+    }
+
+    public String toString() {
+        return "Post{" +
+                "id=" + id +
+                ", titulo='" + titulo + '\'' +
+                ", owner_id=" + owner_id +
+                ", type_id=" + type_id +
+                ", parent_id=" + parent_id +
+                ", data='" + data + '\'' +
+                ", tags=" + tags.toString() +
+                ", score=" + score +
+                ", n_comments=" + n_comments +
+                ", n_answers=" + n_answers +
+                '}';
     }
 }

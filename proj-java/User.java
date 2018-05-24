@@ -109,4 +109,15 @@ public class User {
         this.short_bio = outro.getShortBio();
         this.user_posts = outro.getUserPosts();
     }
+
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", display_name='" + display_name + '\'' +
+                ", n_posts=" + n_posts +
+                ", reputacao=" + reputacao +
+                ", short_bio='" + short_bio + '\'' +
+                ", user_posts=" + user_posts.toString() +
+                '}';
+    }
 }
