@@ -10,6 +10,51 @@ public class TCD {
     private Map<Long,String> postAux;
     private Map<String,Tag> tags;
 
+    // QUERIES:
+
+    // auxiliares
+
+    private Post getPost(long id) throws PostNotFoundException {
+
+        String data = postAux.get(id);
+        if (data == null) throw new PostNotFoundException("Post "+id+" não foi encontrado.");
+        else {
+            PostKey key = new PostKey(data, id);
+
+            return posts.get(key).clone();
+        }
+    }
+
+    // Q1: info from post
+
+    public void info_from_post(long id) { // FIXME: Mudar o tipo para a estrutura q os stores derem
+
+        try {
+            Post post = getPost(id);
+
+            switch (post.getTypeID()) {
+                case 1: long owner_id = post.getOwnerID();
+                        User user = users.get(owner_id).clone(); // FIXME: clone?
+                        // return new STR_pair(post.getTitulo(),user.getDisplayName());
+                        System.out.println("Titulo: "+post.getTitulo()+", Nome: "+user.getDisplayName());
+                        break;
+
+                case 2: long parent_id = post.getParentID();
+                        Post qPost = getPost(parent_id);
+                        User qUser = users.get(qPost.getOwnerID()).clone(); // FIXME: clone?
+                        // return new STR_par(qPost.getTitulo(),qUser.getDisplayName());
+                        System.out.println("Titulo: "+qPost.getTitulo()+", Nome: "+qUser.getDisplayName());
+                        break;
+            }
+        } catch (PostNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    // Q2:
+
+
+
 
     // PARSER
 

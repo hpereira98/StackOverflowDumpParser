@@ -23,5 +23,7 @@ public class Programa {
         System.out.println(com.getTags().toString());
 
         System.out.println("Print efetuado com sucesso!");*/
+
+        com.info_from_post(1456);
     }
 }
