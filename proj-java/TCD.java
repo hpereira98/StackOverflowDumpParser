@@ -3,6 +3,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.*;
 
+import common.Pair;
+
+import java.util.stream.Collectors;
+
 public class TCD {
 
     private Map<Long,User> users;
@@ -27,7 +31,7 @@ public class TCD {
 
     // Q1: info from post
 
-    public void info_from_post(long id) { // FIXME: Mudar o tipo para a estrutura q os stores derem
+    public Pair<String,String> infoFromPost(long id) { // FIXME: Mudar o tipo para a estrutura q os stores derem
 
         try {
             Post post = getPost(id);
@@ -35,23 +39,29 @@ public class TCD {
             switch (post.getTypeID()) {
                 case 1: long owner_id = post.getOwnerID();
                         User user = users.get(owner_id).clone(); // FIXME: clone?
-                        // return new STR_pair(post.getTitulo(),user.getDisplayName());
                         System.out.println("Titulo: "+post.getTitulo()+", Nome: "+user.getDisplayName());
-                        break;
+                        return new Pair<>(post.getTitulo(),user.getDisplayName());
 
                 case 2: long parent_id = post.getParentID();
                         Post qPost = getPost(parent_id);
                         User qUser = users.get(qPost.getOwnerID()).clone(); // FIXME: clone?
-                        // return new STR_par(qPost.getTitulo(),qUser.getDisplayName());
                         System.out.println("Titulo: "+qPost.getTitulo()+", Nome: "+qUser.getDisplayName());
-                        break;
+                        return new Pair<>(qPost.getTitulo(),qUser.getDisplayName());
             }
         } catch (PostNotFoundException e) {
             System.out.println(e.getMessage());
         }
+        return null;
     }
 
     // Q2:
+
+    public List<Long> topMostActive(int N) { // FIXME: corrigir tipo
+        TreeSet<User> tree = new TreeSet<>((u1,u2)->u1.getNPosts()-u2.getNPosts());
+        tree.addAll(users.values());
+
+        //.........
+    }
 
 
 

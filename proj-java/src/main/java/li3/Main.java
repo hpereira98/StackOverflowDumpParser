@@ -21,7 +21,7 @@ public class Main {
         /* -------------------------------------------------------------------------------------------*/
 
         long before, after;
-        TADCommunity qe = new TCDExample();
+        li3.TADCommunity qe = new TCDExample();
 
         /*
             LOAD PHASE
