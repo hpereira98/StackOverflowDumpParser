@@ -1,5 +1,6 @@
+package src.main.java.engine;
+
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class Post {
 
@@ -169,7 +170,7 @@ public class Post {
     }
 
     public String toString() {
-        return "Post{" +
+        return "src.main.java.engine.Post{" +
                 "id=" + id +
                 ", titulo='" + titulo + '\'' +
                 ", owner_id=" + owner_id +

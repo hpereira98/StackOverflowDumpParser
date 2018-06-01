@@ -11,6 +11,6 @@ Esta ferramenta é normalmente disponibilizada nos gestores de pacotes com o nom
 Para compilar o projeto e corrê-lo com a *class* **Main** fornecida, deve-se executar o comando
 
 ```bash
-./run.sh [DUMP_PATH]
+./run.sh [../../dumpexemplo/android]
 ```
 

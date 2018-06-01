@@ -1,3 +1,5 @@
+package src.main.java.engine;
+
 import java.util.ArrayList;
 
 public class User {
@@ -111,7 +113,7 @@ public class User {
     }
 
     public String toString() {
-        return "User{" +
+        return "src.main.java.engine.User{" +
                 "id=" + id +
                 ", display_name='" + display_name + '\'' +
                 ", n_posts=" + n_posts +

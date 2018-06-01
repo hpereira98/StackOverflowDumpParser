@@ -1,3 +1,5 @@
+package src.main.java.engine;
+
 public class PostKey implements Comparable<PostKey>{
 
     private String data;

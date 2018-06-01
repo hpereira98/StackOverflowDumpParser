@@ -1,4 +1,4 @@
-import java.util.Objects;
+package src.main.java.engine;
 
 public class Tag {
 
@@ -62,7 +62,7 @@ public class Tag {
     }
 
     public String toString() {
-        return "Tag{" +
+        return "src.main.java.engine.Tag{" +
                 "nome='" + nome + '\'' +
                 ", id=" + id +
                 '}';
