@@ -5,7 +5,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 public class MyLog {
 
