@@ -1,5 +1,5 @@
 
-
+/*
 // QUERY 2
 
 public List<Long> top_most_active(int n){
@@ -90,8 +90,58 @@ public Pair<String, List<Long>> getUserInfo(long id){
 }
 
 
-
+*/
 
 // QUERY 6
 
+public List<Long> mostVotedAnswers(int N, LocalDate begin, LocalDate end) {
+    Set<Post> setAux = new TreeSet<>((t1,t2)-> {if (t2.getScore()==t1.getScore()) t2.getID()-t1.getID();
+                                                else t2.getScore() - t1.getScore();})
 
+    this.posts.values().stream()
+        .filter((t) -> t.getTypeID()==2 && t.getData().isAfter(begin) && t.getData().isBefore(end))
+        .forEach(t -> setAux.add(t.clone()));
+
+    return setAux.stream().limit(N).mapToLong(Post :: getID).collect(Collectors.toList());
+}
+
+// QUERY 7
+
+public List<Long> mostAnsweredQuestions(int N, LocalDate begin, LocalDate end){
+    Set<Post> setAux = new TreeSet<>((t1,t2)-> {if (t2.getgetNAnswers()==t1.getgetNAnswers()) t2.getID()-t1.getID();
+                                                else t2.getNAnswers() - t1.getNAnswers();})
+
+    this.post.values().stream()
+        .filter((t)->t.getTypeID()==1 && t.getData().isAfter(begin) && t.getData().isBefore(end))
+        .forEach(t -> setAux.add(t.clone()));
+
+    return setAux.stream().limit(N).mapToLong(Post :: getID).collect(Collectors.toList());
+}
+
+// QUERY 8
+
+public List<Long> containsWord(int N, String word) {
+    // os posts já estao ordenados por data? Fazer clone?
+    return this.posts.values().stream()
+            .filter(t -> t.getTypeID()==1 && t.getTitulo().contains(word))
+            .limit(N)
+            .mapToLong(Post :: getID)
+            .collect(Collectors.toList());
+}
+
+// QUERY 9
+
+public List<Long> bothParticipated(int N, long id1, long id2) {
+    Set<Post> userPosts1 = new TreeSet<>((d1,d2) -> d2.getData().compareTo(d1.getData()));
+    this.users.get(id1).getUserPosts().stream()
+        .map(p -> {if (p.getTypeID()==2) p = this.posts.get(p.getParentID());})
+        .forEach(p -> userPosts1.add(p.clone()));
+
+    Set<Post> userPosts2 = new TreeSet<>((d1,d2) -> d2.getData().compareTo(d1.getData()));
+    this.users.get(id2).getUserPosts().stream()
+        .map(p -> {if (p.getTypeID()==2) p = this.posts.get(p.getParentID());})
+        .forEach(p -> userPosts2.add(p.clone()));
+
+    return userPosts1.stream().filter(f -> userPosts2.contains(f)).limit(N)
+            .mapToLong(Post :: getID).collect(Collectors.toList());
+}
