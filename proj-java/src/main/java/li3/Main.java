@@ -2,8 +2,9 @@ package li3;
 
 import common.MyLog;
 import common.Pair;
-import engine.TCD;
+import engine.*;
 
+import javax.xml.stream.XMLStreamException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
@@ -31,19 +32,30 @@ public class Main {
         qe.load(args[0]);
         after = System.currentTimeMillis();
         logtime.writeLog("LOAD -> "+(after-before)+" ms");
-        } catch(IndexOutOfBoundsException e){
+        }
+        catch(IndexOutOfBoundsException e){
             System.out.println("Deve passar o caminho do dump como argumento.");
+        }
+        catch(XMLStreamException e){
+            System.out.println("Erro no parser");
         }
 
         /*
            Query 1
         */
-        before = System.currentTimeMillis();
-        Pair<String,String> q1 = qe.infoFromPost(801049);
-        after = System.currentTimeMillis();
-        logtime.writeLog("Query 1: -> "+(after-before)+" ms");
-        log.writeLog("Query1 -> " + q1);
-
+        try {
+            before = System.currentTimeMillis();
+            Pair<String, String> q1 = qe.infoFromPost(801049);
+            after = System.currentTimeMillis();
+            logtime.writeLog("Query 1: -> " + (after - before) + " ms");
+            log.writeLog("Query1 -> " + q1);
+        }
+        catch (UserNotFoundException e){
+            System.out.println("user not found " +e.getMessage());
+        }
+        catch (PostNotFoundException e){
+            System.out.println("post not found " +e.getMessage());
+        }
         /*
            Query 2
         */
@@ -66,21 +78,30 @@ public class Main {
         /*
            Query 4
         */
-        before = System.currentTimeMillis();
-        List<Long> query4 = qe.questionsWithTag("package-management", LocalDate.of(2013, Month.MARCH, 1),
-                LocalDate.of(2013, Month.MARCH,31));
-        after = System.currentTimeMillis();
-        logtime.writeLog("Query 4 -> " + (after - before) + " ms");
-        log.writeLog("Query 4 -> " + query4);
-
+        try {
+            before = System.currentTimeMillis();
+            List<Long> query4 = qe.questionsWithTag("package-management", LocalDate.of(2013, Month.MARCH, 1),
+                    LocalDate.of(2013, Month.MARCH, 31));
+            after = System.currentTimeMillis();
+            logtime.writeLog("Query 4 -> " + (after - before) + " ms");
+            log.writeLog("Query 4 -> " + query4);
+        }
+        catch (TagNotFoundException e){
+            System.out.println("tag nao encontrada " +e.getMessage());
+        }
         /*
            Query 5
         */
-        before = System.currentTimeMillis();
-        Pair<String, List<Long>> q5 = qe.getUserInfo(15811);
-        after = System.currentTimeMillis();
-        logtime.writeLog("Query 5 -> "+(after-before)+" ms");
-        log.writeLog("Query 5 -> "+q5);
+        try {
+            before = System.currentTimeMillis();
+            Pair<String, List<Long>> q5 = qe.getUserInfo(15811);
+            after = System.currentTimeMillis();
+            logtime.writeLog("Query 5 -> " + (after - before) + " ms");
+            log.writeLog("Query 5 -> " + q5);
+        }
+        catch (UserNotFoundException  e){
+            System.out.println("User nao encontrado " +e.getMessage());
+        }
 
         /*
            Query 6
@@ -114,31 +135,48 @@ public class Main {
         /*
            Query 9
         */
-        before = System.currentTimeMillis();
-        List<Long> q9 = qe.bothParticipated(10, 87, 5691);
-        after = System.currentTimeMillis();
-        logtime.writeLog("Query9 -> " + (after - before) + " ms");
-        log.writeLog("Query 9 -> " + q9);
+        try {
+            before = System.currentTimeMillis();
+            List<Long> q9 = qe.bothParticipated(10, 87, 5691);
+            after = System.currentTimeMillis();
+            logtime.writeLog("Query9 -> " + (after - before) + " ms");
+            log.writeLog("Query 9 -> " + q9);
+        }
+        catch (UserNotFoundException e){
+            System.out.println("user nao existe" + e.getMessage());
+        }
 
         /*
            Query 10
         */
-        before = System.currentTimeMillis();
-        long q10 = qe.betterAnswer(30334);
-        after = System.currentTimeMillis();
-        logtime.writeLog("Query 10 -> "+(after-before)+" ms");
-        log.writeLog("Query 10 -> "+q10);
+        try {
+            before = System.currentTimeMillis();
+            long q10 = qe.betterAnswer(30334);
+            after = System.currentTimeMillis();
+            logtime.writeLog("Query 10 -> " + (after - before) + " ms");
+            log.writeLog("Query 10 -> " + q10);
+        }
+        catch (PostNotFoundException e){
+            System.out.println("erro10");
+        }
+        catch (QuestionWithoutAnswersException e){
+            System.out.println("sem repostas");
+        }
 
         /*
             Query 11
         */
-        before = System.currentTimeMillis();
-        List<Long> q11 = qe.mostUsedBestRep(5, LocalDate.of(2013,Month.NOVEMBER,01),
-                LocalDate.of(2013,Month.NOVEMBER,30));
-        after = System.currentTimeMillis();
-        logtime.writeLog("Query 11 -> "+(after-before)+" ms");
-        log.writeLog("Query 11 -> "+q11);
-
+        try {
+            before = System.currentTimeMillis();
+            List<Long> q11 = qe.mostUsedBestRep(5, LocalDate.of(2013, Month.NOVEMBER, 01),
+                    LocalDate.of(2013, Month.NOVEMBER, 30));
+            after = System.currentTimeMillis();
+            logtime.writeLog("Query 11 -> " + (after - before) + " ms");
+            log.writeLog("Query 11 -> " + q11);
+        }
+        catch (Exception e){
+         System.out.println(e.getMessage());
+        }
         /*
             CLEAN PHASE
          */

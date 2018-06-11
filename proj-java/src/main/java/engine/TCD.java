@@ -6,6 +6,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.nio.file.attribute.UserPrincipalNotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -19,22 +20,6 @@ public class TCD implements li3.TADCommunity {
     private Map<PostKey, Post> posts;
     private Map<Long, LocalDateTime> postAux;
     private Map<String, Tag> tags;
-
-    // QUERIES:
-
-    // auxiliares
-
-    private Post getPost(long id) throws PostNotFoundException {
-
-        LocalDateTime data = postAux.get(id);
-        if (data == null) throw new PostNotFoundException("src.main.java.engine.Post " + id + " não foi encontrado.");
-        else {
-            PostKey key = new PostKey(data, id);
-
-            return posts.get(key).clone();
-        }
-    }
-
 
     // PARSER USERS
 
@@ -342,43 +327,34 @@ public class TCD implements li3.TADCommunity {
     /* -------------------------------- DEFINIÇÃO DAS QUERIES --------------------------------*/
     // ****************** ver das exceptions
     // Load
-    public void load(String path) {
-        try {
+    public void load(String path) throws XMLStreamException {
             loadUsers(path + "/Users.xml");
             loadTags(path + "/Tags.xml");
             loadPosts(path + "/Posts.xml");
-        } catch (XMLStreamException e) {
-            e.printStackTrace();
-        }
     }
 
 
     // Query 1
-    public Pair<String, String> infoFromPost(long id) {
-        try {
-            String titulo, nome;
-            User user = null;
-            Post post = getPost(id);
+    public Pair<String, String> infoFromPost(long id) throws PostNotFoundException, UserNotFoundException {
+        String titulo, nome;
+        User user = null;
+        Post post = getPost(id);
 
-            switch (post.getTypeID()) {
-                case 1:
-                    long owner_id = post.getOwnerID();
-                    user = this.users.get(owner_id);
-                    break;
+        switch (post.getTypeID()) {
+            case 1:
+                long owner_id = post.getOwnerID();
+                user = getUser(owner_id);
+                break;
 
-                case 2:
-                    long parent_id = post.getParentID();
-                    post = getPost(parent_id);
-                    user = this.users.get(post.getOwnerID());
-                    break;
-            }
-
-
-            return new Pair<>(post.getTitulo(), user.getDisplayName());
-        } catch (PostNotFoundException e) {
-            e.printStackTrace();
+            case 2:
+                long parent_id = post.getParentID();
+                post = getPost(parent_id);
+                user = getUser(post.getOwnerID());
+                break;
         }
-        return null; // tirar, so meti para compilar
+
+
+        return new Pair<>(post.getTitulo(), user.getDisplayName());
     }
 
     // Query 2
@@ -468,8 +444,8 @@ public class TCD implements li3.TADCommunity {
 }
 */
     //Query 4 - versao com stream
-    public List<Long> questionsWithTag(String tag_name, LocalDate begin, LocalDate end) {
-        Tag tag = this.tags.get(tag_name); // throws tag inexistente exception.....
+    public List<Long> questionsWithTag(String tag_name, LocalDate begin, LocalDate end) throws TagNotFoundException {
+        Tag tag = getTag(tag_name);
 
         return this.posts.values().stream()
                                   .filter(p -> isBetween(p.getData().toLocalDate(), begin, end) && p.getTags().contains(tag) )
@@ -478,9 +454,9 @@ public class TCD implements li3.TADCommunity {
     }
 
 
-    // Query 5 -- user not found exception
-    public Pair<String, List<Long>> getUserInfo(long id) {
-        User user = this.users.get(id); // != null
+    // Query 5
+    public Pair<String, List<Long>> getUserInfo(long id) throws UserNotFoundException{
+        User user = getUser(id);
 
         // estes posts já vão estar por data nao é, Pedro? acho que sugeriste isso
         List<Long> ids = user.getUserPosts().stream()
@@ -537,12 +513,12 @@ public class TCD implements li3.TADCommunity {
     }
 
     // Query 9
-    public List<Long> bothParticipated(int N, long id1, long id2){
-        User user1 = this.users.get(id1); // com exceptions seria ter uma funcao para fazer isto que lancaria a exception
-        User user2 = this.users.get(id2);
+    public List<Long> bothParticipated(int N, long id1, long id2) throws UserNotFoundException {
+        User user1 = getUser(id1);
+        User user2 = getUser(id2);
 
-        Set<Post> user1_posts = user1.getUserPosts();
-        Set<Post> user2_posts = user2.getUserPosts();
+        List<Post> user1_posts = user1.getUserPosts();
+        List<Post> user2_posts = user2.getUserPosts();
 
         swapAnswerToQuestion(user1_posts);
         swapAnswerToQuestion(user2_posts);
@@ -556,7 +532,7 @@ public class TCD implements li3.TADCommunity {
     }
 
     // Funcao para trocar as respostas pela respetiva pergunta
-    private void swapAnswerToQuestion(Set<Post> posts){
+    private void swapAnswerToQuestion(Collection<Post> posts){
         List<Post> respostas = posts.stream().filter(p -> p.getTypeID()==2)
                                              .collect(Collectors.toList());
 
@@ -571,12 +547,16 @@ public class TCD implements li3.TADCommunity {
     }
 
     // Query 10
-    public long betterAnswer(long id){
+    public long betterAnswer(long id) throws PostNotFoundException, QuestionWithoutAnswersException{
+        Post post = getPost(id); // apenas serve para verificar se o post existe ou nao
         Set<Post> answers_by_score = new TreeSet<>((p1,p2) -> Double.compare(answer_score(p2), answer_score(p1)));
 
         this.posts.values().stream()
                            .filter(p -> p.getTypeID() == 2 && p.getParentID() == id)
                            .forEach(p -> answers_by_score.add(p));
+
+        if(answers_by_score.size() == 0)
+            throw new QuestionWithoutAnswersException(Long.toString(id));
 
         return ((TreeSet<Post>) answers_by_score).first().getID();
     }
@@ -633,6 +613,35 @@ public class TCD implements li3.TADCommunity {
 
     private static boolean isBetween(LocalDate to_check, LocalDate begin, LocalDate end) {
         return to_check.isAfter(begin) && to_check.isBefore(end);
+    }
+
+    private Post getPost(long id) throws PostNotFoundException {
+        LocalDateTime data = postAux.get(id);
+
+        if (data == null)
+            throw new PostNotFoundException(Long.toString(id));
+
+        PostKey key = new PostKey(data, id);
+
+        return posts.get(key);
+    }
+
+    private User getUser(long id) throws UserNotFoundException {
+        User user = this.users.get(id);
+
+        if(user == null)
+            throw new UserNotFoundException(Long.toString(id));
+
+        return user;
+    }
+
+    private Tag getTag(String tag_name) throws TagNotFoundException {
+        Tag tag = this.tags.get(tag_name);
+
+        if(tag == null)
+            throw new TagNotFoundException(tag_name);
+
+        return tag;
     }
 
 }

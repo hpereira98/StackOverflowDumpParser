@@ -1,5 +1,8 @@
 package engine;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -54,7 +57,7 @@ public class User {
         this.short_bio = short_bio;
     }
 
-    public Set<Post> getUserPosts() { return new TreeSet<>(this.user_posts);}
+    public List<Post> getUserPosts() { return new ArrayList<>(this.user_posts);}
 
     public void setUserPosts(Set<Post> user_posts) { this.user_posts = user_posts; }
 
@@ -102,7 +105,8 @@ public class User {
         this.n_posts = n_posts;
         this.reputacao = reputacao;
         this.short_bio = short_bio;
-        this.user_posts = new TreeSet<>(user_posts);
+        this.user_posts = new TreeSet<>((p1,p2) -> p2.getData().compareTo(p1.getData()));
+        this.user_posts.addAll(user_posts);
     }
 
     public User(User outro){
@@ -111,7 +115,8 @@ public class User {
         this.n_posts = outro.getNPosts();
         this.reputacao = outro.getRep();
         this.short_bio = outro.getShortBio();
-        this.user_posts = outro.getUserPosts();
+        this.user_posts = new TreeSet<>((p1,p2) -> p2.getData().compareTo(p1.getData()));
+        this.user_posts.addAll(outro.getUserPosts());
     }
 
     public String toString() {
