@@ -1,4 +1,4 @@
-package src.main.java.engine;
+package engine;
 
 public class Tag {
 

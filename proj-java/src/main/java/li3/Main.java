@@ -2,7 +2,7 @@ package li3;
 
 import common.MyLog;
 import common.Pair;
-import engine.TCDExample;
+import engine.TCD;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -21,7 +21,7 @@ public class Main {
         /* -------------------------------------------------------------------------------------------*/
 
         long before, after;
-        li3.TADCommunity qe = new TCDExample();
+        li3.TADCommunity qe = new TCD();
 
         /*
             LOAD PHASE

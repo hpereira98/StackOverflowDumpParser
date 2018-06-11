@@ -1,5 +1,6 @@
-package src.main.java.engine;
+package engine;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Post {
@@ -9,7 +10,7 @@ public class Post {
     private long owner_id;
     private int type_id;
     private long parent_id;
-    private String data;
+    private LocalDateTime data;
     private ArrayList<Tag> tags;
     private int score;
     private int n_comments;
@@ -59,11 +60,11 @@ public class Post {
         this.parent_id = parent_id;
     }
 
-    public String getData() {
+    public LocalDateTime getData() {
         return this.data;
     }
 
-    public void setData(String data) {
+    public void setData(LocalDateTime data) {
         this.data = data;
     }
 
@@ -136,14 +137,14 @@ public class Post {
         this.owner_id = -2;
         this.type_id = -1;
         this.parent_id = -2;
-        this.data = "";
+        this.data = null; // mudar e ver se mantemos todos os construtores ou so o que usamos
         this.tags = new ArrayList<>();
         this.score = -1;
         this.n_comments = -1;
         this.n_answers = -1;
     }
 
-    public Post(long id, String titulo, long owner_id, int type_id, long parent_id, String data, ArrayList<Tag> tags, int score, int n_comments, int n_answers) {
+    public Post(long id, String titulo, long owner_id, int type_id, long parent_id, LocalDateTime data, ArrayList<Tag> tags, int score, int n_comments, int n_answers) {
         this.id = id;
         this.titulo = titulo;
         this.owner_id = owner_id;

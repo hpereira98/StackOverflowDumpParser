@@ -1,4 +1,4 @@
-package src.main.java.engine;
+package engine;
 
 import java.util.ArrayList;
 
@@ -15,9 +15,7 @@ public class User {
 
     // Getters & Setters
 
-    public long getID() {
-        return this.id;
-    }
+    public long getID() { return this.id; }
 
     public void setID(long id) {
         this.id = id;
