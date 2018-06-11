@@ -21,7 +21,7 @@
   showstringspaces=false,
   basicstyle=\footnotesize\ttfamily,
   keywordstyle=\bfseries\color{green!40!black},
-  morekeywords={User, Tag, Post},keywordstyle=\bfseries\color{green!40!black},
+  morekeywords={User, Tag, Post, PostKey},keywordstyle=\bfseries\color{green!40!black},
   commentstyle=\itshape\color{gray},
   stringstyle=\color{orange},
 }
@@ -115,11 +115,14 @@ concretos e abstratos de dados.
 
 
 \begin{lstlisting}
-public class TCD implements li3.TADCommunity {
-    private Map<Long, User> users;
-    private Map<PostKey, Post> posts;
-    private Map<Long,String> postAux;
-    private Map<String, Tag> tags;
+	public class TCD implements li3.TADCommunity {
+	    private Map<Long, User> users;
+	    private Map<PostKey, Post> posts;
+	    private Map<Long,String> postAux;
+	    private Map<String, Tag> tags;
+
+	    ...
+	}
 \end{lstlisting}
 
 
@@ -136,56 +139,53 @@ como a unicidade de cada uma das chaves. No caso de dois Posts terem o mesmo \te
 um Post, foi criada a função \textit{getPost}, cuja execução se divide nas duas tarefas descritas anteriormente: dado o ID de um Post, criar uma variável do tipo 
 \textit{postKey}, com o ID e o \textit{timestamp} presente na tabela de Hash \textit{postAux} e, de seguida, proceder a uma procura binária na árvore dos Posts.
 
-Por sua vez, definimos também uma estrutura para os utilizadores, para os Posts e para as Tags, de forma a permitir que a informação útil contida em cada \textit{row} dos 
-ficheiros XML fosse guardada em variáveis representativas das entidade aqui enumeradas e posteriormente inseridas nas tabelas/árvore acima descritas. As estruturas descritas 
-no \textit{Listing} \ref{structs} foram tornadas opacas, sendo apenas possível a sua criação, alteração ou consulta da informação por estas contidas, através de funções 
-definidas no ficheiro que contém a declaração da estrutura e cuja assinatura tenha sido exportada no respetivo \textit{header file}. Deste modo, não só garantimos um acesso 
-controlado aos campos internos de cada estrutura, como dotamos o projeto de um maior nível de abstração e modularidade.
 
 \begin{lstlisting}
-public class User {	
-    private long id;
-    private String display_name;
-    private int n_posts;
-    private int reputacao;
-    private String short_bio;
-    private Set<Post> user_posts;
+	public class User {	
+	    private long id;
+	    private String display_name;
+	    private int n_posts;
+	    private int reputacao;
+	    private String short_bio;
+	    private Set<Post> user_posts;
 
-    ...
-}
+	    ...
+	}
+\end{lstlisting}
 
+\begin{lstlisting}
+	public class Post {
+	    private long id;
+	    private String titulo;
+	    private long owner_id;
+	    private int type_id;
+	    private long parent_id;
+	    private LocalDateTime data;
+	    private ArrayList<Tag> tags;
+	    private int score;
+	    private int n_comments;
+	    private int n_answers;
 
-public class Post {
-    private long id;
-    private String titulo;
-    private long owner_id;
-    private int type_id;
-    private long parent_id;
-    private LocalDateTime data;
-    private ArrayList<Tag> tags;
-    private int score;
-    private int n_comments;
-    private int n_answers;
+	    ...
+	}
+\end{lstlisting}
 
-    ...
-}
+\begin{lstlisting}
+	public class PostKey implements Comparable<PostKey>{
+	    private LocalDateTime data;
+	    private long id;
 
+	    ...
+	}
+\end{lstlisting}
 
-public class PostKey implements Comparable<PostKey>{
-    private LocalDateTime data;
-    private long id;
+\begin{lstlisting}
+	public class Tag {
+	    private String nome;
+	    private long id;
 
-    ...
-}
-
-
-public class Tag {
-    private String nome;
-    private long id;
-
-    ...
-}
-
+	    ...
+	}
 \end{lstlisting}
 
 
@@ -200,6 +200,8 @@ public class Tag {
 Nesta secção, iremos explicitar a nossa abordagem às interrogações descritas no enunciado, deste vez na linguagem Java, mostrando algumas partes do código que 
 achamos importante incluir de forma a facilitar a justificação da abordagem referida.
 
+%% FALAR DO STAX NA LOAD !-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!
+
 
 %% QUERY 1
 \subsection{Info From Post}
@@ -208,7 +210,7 @@ A primeira interrogação tinha como objetivo definir uma função que retornass
 deverá retornar informações (título e utilizador) da pergunta correspondente.
 
 \begin{lstlisting}
-public Pair<String,String> infoFromPost(long id);
+	public Pair<String,String> infoFromPost(long id);
 \end{lstlisting}
 
 
@@ -216,11 +218,10 @@ public Pair<String,String> infoFromPost(long id);
 %% QUERY 2
 \subsection{Top Most Active}
 
-Na segunda interrogação, era-nos pedida uma função que criasse uma lista com os N utilizadores mais ativos, isto é, com o maior número de Posts. Essa lista seria, 
-portanto, uma \textit{LONG\_list}.
+Na segunda interrogação, era-nos pedida uma função que criasse uma lista com os N utilizadores mais ativos, isto é, com o maior número de Posts.
 
 \begin{lstlisting}
-public List<Long> topMostActive(int N);
+	public List<Long> topMostActive(int N);
 \end{lstlisting}
 
 
@@ -233,7 +234,7 @@ Nesta terceira \textit{query}, a função que desenvolvemos tinha como objetivo 
 efetuados num dado período de tempo.
 
 \begin{lstlisting}
-public Pair<Long,Long> totalPosts(LocalDate begin, LocalDate end);
+	public Pair<Long,Long> totalPosts(LocalDate begin, LocalDate end);
 \end{lstlisting}
 
 
@@ -245,7 +246,7 @@ A quarta interrogação pedia que criássemos uma lista com os IDs das perguntas
 lista teria de ser ordenada em cronologia inversa.
 
 \begin{lstlisting}
-public List<Long> questionsWithTag(String tag, LocalDate begin, LocalDate end);
+	public List<Long> questionsWithTag(String tag, LocalDate begin, LocalDate end);
 \end{lstlisting}
 
 
@@ -253,7 +254,7 @@ public List<Long> questionsWithTag(String tag, LocalDate begin, LocalDate end);
 \subsection{Get User Info}
 
 \begin{lstlisting}
-public Pair<String, List<Long>> getUserInfo(long id);
+	public Pair<String, List<Long>> getUserInfo(long id);
 \end{lstlisting}
 
 
@@ -264,16 +265,16 @@ public Pair<String, List<Long>> getUserInfo(long id);
 A sexta interrogação tinha como objetivo dar os IDs das N respostas com mais votos, em ordem decrescente do número de votos, num dado intervalo de tempo.
 
 \begin{lstlisting}
-public List<Long> mostVotedAnswers(int N, LocalDate begin, LocalDate end);
+	public List<Long> mostVotedAnswers(int N, LocalDate begin, LocalDate end);
 \end{lstlisting}
 
 
 %% QUERY 7
 \subsection{Most Answered Questions}
-A sétima interrogação é muito idêntica à sexta \textit{query}. Pedia-nos que criássemos uma lista ordenada com as perguntas mais respondidas, num dado intervalo de tempo.
+A sétima interrogação é muito idêntica à sexta. Pedia-nos que criássemos uma lista ordenada com as perguntas mais respondidas, num dado intervalo de tempo.
 
 \begin{lstlisting}
-public List<Long> mostAnsweredQuestions(int N, LocalDate begin, LocalDate end);
+	public List<Long> mostAnsweredQuestions(int N, LocalDate begin, LocalDate end);
 \end{lstlisting}
 
 
@@ -284,7 +285,7 @@ public List<Long> mostAnsweredQuestions(int N, LocalDate begin, LocalDate end);
 O objetivo da oitava \textit{query} era, dada uma palavra, devolver uma lista com os IDs das N perguntas cujos títulos a contenham, ordenados por cronologia inversa.
 
 \begin{lstlisting}
-public List<Long> containsWord(int N, String word);
+	public List<Long> containsWord(int N, String word);
 \end{lstlisting}
 
 
@@ -296,7 +297,7 @@ Nesta nona interrogação, tivemos o "desafio" de, dados os IDs de dois utilizad
 utilizadores específicos. Estes podem interagir de três diferentes formas: um deles faz a pergunta e o outro a resposta (e vice-versa) e ambos responderem a uma mesma pergunta.
 
 \begin{lstlisting}
-public List<Long> bothParticipated(int N, long id1, long id2);
+	public List<Long> bothParticipated(int N, long id1, long id2);
 \end{lstlisting}
 
 
@@ -306,11 +307,11 @@ public List<Long> bothParticipated(int N, long id1, long id2);
 A décima interrogação pedia que, dada uma determinada pergunta, obtivéssemos a melhor resposta, através da seguinte função de média ponderada:
 
 \begin{verbatim}
-(score*0.45) + (reputation*0.25) + (votes*0.2) + (comments*0.1)
+	(score*0.45) + (reputation*0.25) + (votes*0.2) + (comments*0.1)
 \end{verbatim}
 
 \begin{lstlisting}
-public long betterAnswer(long id);
+	public long betterAnswer(long id);
 \end{lstlisting}
 
 Ora, como a diferença entre os \textit{UpVotes} e os \textit{DownVotes} é igual ao Score, decidimos não utilizar o ficheiro Votes.xml e utilizar o Score presente no 
@@ -324,7 +325,7 @@ para verificar quais são respostas para essa pergunta e selecionar, então, a r
 \subsection{Most Used Best Rep}
 
 \begin{lstlisting}
-public List<Long> mostUsedBestRep(int N, LocalDate begin, LocalDate end);
+	public List<Long> mostUsedBestRep(int N, LocalDate begin, LocalDate end);
 \end{lstlisting}
 
 Nesta décima primeira (e última) \textit{query}, era pretendido que, dado um intervalo arbitrário de tempo, fosse possível obter os IDs das N \textit{tags} mais 
@@ -339,57 +340,66 @@ utilizadas pelos N utilizadores com melhor reputação.
 
 \subsection{Análise dos resultados}
 
+\begin{table}[h] 
+	\caption{Tempos de execução}
+	\begin{subtable}{.5\linewidth}
+		\centering
+		\caption{Android}
+		\scalebox{0.85}{
+		\begin{tabular}{ll}
+		Interrogação: & Tempo (em milisegundos): \\
+		1             & 0.                 \\
+		2             & 0.                 \\
+		3             & 0.                 \\
+		4             & 0.                 \\
+		5             & 0.                 \\
+		6             & 0.                 \\
+		7             & 0.                 \\
+		8             & 0.                 \\
+		9             & 0.                 \\
+		10            & 0.                 \\
+		11            & 0.   
+		\end{tabular}}
+	\end{subtable}
+
+	\begin{subtable}{.5\linewidth} 
+		\centering
+		\caption{Ubuntu}
+		\scalebox{0.85}{
+		\begin{tabular}{ll}
+		Interrogação: & Tempo (em milisegundos): \\
+		1             & 0.                 \\
+		2             & 0.                 \\
+		3             & 0.                 \\
+		4             & 0.                 \\
+		5             & 0.                 \\
+		6             & 0.                 \\
+		7             & 0.                 \\
+		8             & 0.                 \\
+		9             & 0.                 \\
+		10            & 0.                 \\
+		11            & 0.  
+		\end{tabular}}
+	\end{subtable}
+\end{table}
+
 
 \subsection{Comparação do resultados}
 
-RESULTADOS EM C:
+%% COMPARAÇÃO LOADS !-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!
 
-\begin{table}[h]
-\centering
-\caption{Tempos de Execução - input nº 1}
-\scalebox{0.85}{
-\begin{tabular}{ll}
-Interrogação: & Tempo (em segundos): \\
-1             & 0.000024             \\
-2             & 0.143056             \\
-3             & 0.047433             \\
-4             & 0.161335             \\
-5             & 0.005250             \\
-6             & 0.039786             \\
-7             & 0.062277             \\
-8             & 0.110665             \\
-9             & 0.000371             \\
-10            & 0.129559             \\
-11            & 0.159771   
-\end{tabular}}
-\end{table}
+%% COMPARAÇÃO QUERIES ANDROID !-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!
 
-\begin{table}[h]
-\centering
-\caption{Tempos de Execução - input nº 2}
-\scalebox{0.85}{
-\begin{tabular}{ll}
-Interrogação: & Tempo (em segundos): \\
-1             & 0.000035             \\
-2             & 0.141657             \\
-3             & 0.133918             \\
-4             & 0.136191             \\
-5             & 0.006277             \\
-6             & 0.096734             \\
-7             & 0.126107             \\
-8             & 0.117705             \\
-9             & 0.000102             \\
-10            & 0.135200             \\
-11            & 0.162032  
-\end{tabular}}
-\end{table}
-
-
+%% COMPARAÇÃO QUERIES UBUNTU !-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!
 
 
 
 %% CONCLUSÃO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusão}
+
+
+%%  DIZER QUAL O MELHOR !-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!
+
 
 Este projeto foi extremamente enriquecedor para o grupo, uma vez que nos permitiu trabalhar com um tipo diferente de dados, o XML, e nos ensinou a trabalhar com ele. 
 Tivemos que nos esforçar bastante para conseguirmos atingir os objetivos estabelecidos, tendo sempre em atenção o encapsulamento do código e a sua eficiência. O trabalho 
