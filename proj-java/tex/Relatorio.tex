@@ -1,0 +1,417 @@
+%% RELATÓRIO DO PROJETO EM JAVA DE LI3
+
+\documentclass[a4paper, 11pt, oneside]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc} 
+\usepackage[portuguese]{babel}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{multicol}
+\usepackage{listingsutf8}
+
+
+%% DEFINIÇÃO DOS SNIPPETS EM JAVA
+\usepackage{listings}
+\lstdefinestyle{customc}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  language=Java,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{green!40!black},
+  morekeywords={User, Tag, Post, PostKey},keywordstyle=\bfseries\color{green!40!black},
+  commentstyle=\itshape\color{gray},
+  stringstyle=\color{orange},
+}
+
+\lstset{escapechar=@,style=customc}
+
+
+%%RELATÓRIO
+
+\begin{document} 
+
+\begin{titlepage}
+
+
+	\centering 
+	
+	\scshape
+	
+	\vspace*{\baselineskip}
+	
+	
+	\rule{\textwidth}{1.6pt}\vspace*{-\baselineskip}\vspace*{2pt}
+	\rule{\textwidth}{0.4pt}
+	
+	\vspace{0.75\baselineskip}
+	
+	{\LARGE RELATÓRIO DO PROJETO EM JAVA} 
+	
+	\vspace{0.75\baselineskip} 
+	
+	\rule{\textwidth}{0.4pt}\vspace*{-\baselineskip}\vspace{3.2pt}
+	\rule{\textwidth}{1.6pt}
+	
+	\vspace{2\baselineskip}
+	
+	Laboratórios de Informática III
+	
+	\vspace*{3\baselineskip}
+	
+	Grupo 24:
+	
+	\vspace{0.5\baselineskip}
+	
+	{\scshape\Large Henrique Pereira (a80261) \\ Pedro Moreira (a82364) \\ Pedro Ferreira (a81135) \\}
+	
+	\vspace{0.5\baselineskip}
+	
+	\textit{Universidade do Minho \\ Mestrado Integrado em Engenharia Informática}
+	
+	\vfill
+
+	\includegraphics[width=40mm]{logoUM.jpg}
+
+	\vspace{0.3\baselineskip}
+	
+	2018
+
+\end{titlepage}
+
+%% ÌNDICE
+
+\tableofcontents
+
+\newpage
+
+%% INTRODUÇÃO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Introdução}
+
+No âmbito da unidade curricular \underline{Laboratórios de Informática III}, do 2º ano do Mestrado Integrado em Engenharia Informática, foi-nos proposta a realização de 
+um projeto que consiste no desenvolvimento de um sistema capaz de processar ficheiros XML, armazenando as várias informações utilizadas pelo Stack Overflow (uma das 
+comunidades de perguntas e respostas mais utilizadas atualmente por programadores em todo o mundo). Além disso, após o tratamento da informação, o sistema teria de ser capaz 
+de responder eficientemente a um conjunto de interrogações (explicitado na secção \ref{queries}). Esta aplicação teria que ser obrigatoriamente desenvolvida em \textit{Java}.
+
+As estruturas por nós definidas serão apresentadas e justificadas na secção \ref{structs}.
+
+Um ponto fulcral deste trabalho é conciliar a eficiência com o encapsulamento, sem comprometer nenhum destes.
+
+
+
+
+%% ESTRUTURAS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\section{Estrutura}
+\label{structs}
+
+Para a realização da segunda fase do projeto tivemos de definir várias classes de dados em \textit{Java}, de maneira a respeitarmos o enunciado, no que toca aos tipos 
+concretos e abstratos de dados.
+
+
+
+\begin{lstlisting}
+	public class TCD implements li3.TADCommunity {
+	    private Map<Long, User> users;
+	    private Map<PostKey, Post> posts;
+	    private Map<Long,String> postAux;
+	    private Map<String, Tag> tags;
+
+	    ...
+	}
+\end{lstlisting}
+
+
+A nossa decisão de utilizar HashMap vai de encontro ao propósito de aceder diretamente à informação por nós pretendida, no caso de um utilizador, a partir de um ID, no caso
+de uma Tag, a partir do seu nome. Porém, para os Posts, decidimos utilizar uma estrutura diferente, neste caso um TreeMap, pois necessitávamos de uma ordem (neste caso 
+cronológica) de recolha da informação dos Posts da estrutura que faz uma associação do tipo chave-valor, sendo a ordem dos elementos estabelecida pela comparação das chaves. 
+No entanto, sendo os Posts uma unidade central no enunciado proposto, o grupo deparou-se com a necessidade de obter informação relativa a um certo Post, dado o seu \textit{ID}, 
+da forma mais eficiente possível. Claramente, realizar uma travessia (\textit{in-order}) na árvore até encontrar o desejado não seria uma boa solução. De forma a otimizar o 
+pretendido, foi adicionada à estrutura \textit{TCD} um HashMap cuja chave corresponde ao ID de um Post e o valor armazenado ao \textit{timestamp} do mesmo, considerado até ao 
+milissegundo. Deste modo, por comparação de chaves da árvore seria possível efetuar uma procura binária. Contudo verificou-se a exitência de diferentes posts cujos \textit{
+timestamps} eram iguais, e a estrutura usada para os armazenar não contempla chaves repetidas. Assim, foi criada a estrutura \textit{postKey}, também esta tornada opaca e 
+devidamente encapsulada, apenas contendo a data e o ID de um Post, que passou a ser usada como chave de inserção na árvore. Desta forma garantiu-se não só a ordenação pretendida 
+como a unicidade de cada uma das chaves. No caso de dois Posts terem o mesmo \textit{timestamp}, considerou-se como sendo maior o Post com menor ID. Para efeitos de procura de 
+um Post, foi criada a função \textit{getPost}, cuja execução se divide nas duas tarefas descritas anteriormente: dado o ID de um Post, criar uma variável do tipo 
+\textit{postKey}, com o ID e o \textit{timestamp} presente na tabela de Hash \textit{postAux} e, de seguida, proceder a uma procura binária na árvore dos Posts.
+
+
+\begin{lstlisting}
+	public class User {	
+	    private long id;
+	    private String display_name;
+	    private int n_posts;
+	    private int reputacao;
+	    private String short_bio;
+	    private Set<Post> user_posts;
+
+	    ...
+	}
+\end{lstlisting}
+
+\begin{lstlisting}
+	public class Post {
+	    private long id;
+	    private String titulo;
+	    private long owner_id;
+	    private int type_id;
+	    private long parent_id;
+	    private LocalDateTime data;
+	    private ArrayList<Tag> tags;
+	    private int score;
+	    private int n_comments;
+	    private int n_answers;
+
+	    ...
+	}
+\end{lstlisting}
+
+\begin{lstlisting}
+	public class PostKey implements Comparable<PostKey>{
+	    private LocalDateTime data;
+	    private long id;
+
+	    ...
+	}
+\end{lstlisting}
+
+\begin{lstlisting}
+	public class Tag {
+	    private String nome;
+	    private long id;
+
+	    ...
+	}
+\end{lstlisting}
+
+
+
+%% QUERIES
+
+%% Interrogações e Abordagem %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Interrogações e Abordagem}
+
+\label{queries}
+Nesta secção, iremos explicitar a nossa abordagem às interrogações descritas no enunciado, deste vez na linguagem Java, mostrando algumas partes do código que 
+achamos importante incluir de forma a facilitar a justificação da abordagem referida.
+
+%% FALAR DO STAX NA LOAD !-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!
+
+
+%% QUERY 1
+\subsection{Info From Post}
+
+A primeira interrogação tinha como objetivo definir uma função que retornasse o título e o nome do autor dado um ID de um Post. Se o Post for uma resposta, a função 
+deverá retornar informações (título e utilizador) da pergunta correspondente.
+
+\begin{lstlisting}
+	public Pair<String,String> infoFromPost(long id);
+\end{lstlisting}
+
+
+
+%% QUERY 2
+\subsection{Top Most Active}
+
+Na segunda interrogação, era-nos pedida uma função que criasse uma lista com os N utilizadores mais ativos, isto é, com o maior número de Posts.
+
+\begin{lstlisting}
+	public List<Long> topMostActive(int N);
+\end{lstlisting}
+
+
+
+
+%% QUERY 3
+\subsection{Total Posts}
+
+Nesta terceira \textit{query}, a função que desenvolvemos tinha como objetivo obter o número total de posts (identificando perguntas e respostas separadamente) 
+efetuados num dado período de tempo.
+
+\begin{lstlisting}
+	public Pair<Long,Long> totalPosts(LocalDate begin, LocalDate end);
+\end{lstlisting}
+
+
+
+%% QUERY 4
+\subsection{Questions with Tag}
+
+A quarta interrogação pedia que criássemos uma lista com os IDs das perguntas que, num dado intervalo de tempo, contivessem uma certa \textit{tag}, sendo que essa 
+lista teria de ser ordenada em cronologia inversa.
+
+\begin{lstlisting}
+	public List<Long> questionsWithTag(String tag, LocalDate begin, LocalDate end);
+\end{lstlisting}
+
+
+%% QUERY 5
+\subsection{Get User Info}
+
+\begin{lstlisting}
+	public Pair<String, List<Long>> getUserInfo(long id);
+\end{lstlisting}
+
+
+
+%% QUERY 6
+\subsection{Most Voted Answers}
+
+A sexta interrogação tinha como objetivo dar os IDs das N respostas com mais votos, em ordem decrescente do número de votos, num dado intervalo de tempo.
+
+\begin{lstlisting}
+	public List<Long> mostVotedAnswers(int N, LocalDate begin, LocalDate end);
+\end{lstlisting}
+
+
+%% QUERY 7
+\subsection{Most Answered Questions}
+A sétima interrogação é muito idêntica à sexta. Pedia-nos que criássemos uma lista ordenada com as perguntas mais respondidas, num dado intervalo de tempo.
+
+\begin{lstlisting}
+	public List<Long> mostAnsweredQuestions(int N, LocalDate begin, LocalDate end);
+\end{lstlisting}
+
+
+
+%% QUERY 8
+\subsection{Contains Word}
+
+O objetivo da oitava \textit{query} era, dada uma palavra, devolver uma lista com os IDs das N perguntas cujos títulos a contenham, ordenados por cronologia inversa.
+
+\begin{lstlisting}
+	public List<Long> containsWord(int N, String word);
+\end{lstlisting}
+
+
+
+%% QUERY 9
+\subsection{Both Participated}
+
+Nesta nona interrogação, tivemos o "desafio" de, dados os IDs de dois utilizadores, devolver as últimas N perguntas (cronologia inversa) em que participaram dois 
+utilizadores específicos. Estes podem interagir de três diferentes formas: um deles faz a pergunta e o outro a resposta (e vice-versa) e ambos responderem a uma mesma pergunta.
+
+\begin{lstlisting}
+	public List<Long> bothParticipated(int N, long id1, long id2);
+\end{lstlisting}
+
+
+%% QUERY 10
+\subsection{Better Answer}
+
+A décima interrogação pedia que, dada uma determinada pergunta, obtivéssemos a melhor resposta, através da seguinte função de média ponderada:
+
+\begin{verbatim}
+	(score*0.45) + (reputation*0.25) + (votes*0.2) + (comments*0.1)
+\end{verbatim}
+
+\begin{lstlisting}
+	public long betterAnswer(long id);
+\end{lstlisting}
+
+Ora, como a diferença entre os \textit{UpVotes} e os \textit{DownVotes} é igual ao Score, decidimos não utilizar o ficheiro Votes.xml e utilizar o Score presente no 
+ficheiro dos Posts. Os restantes parâmetros encontram-se guardados na estrutura por nós definida após ser executado o \textit{load}.
+
+Para conseguirmos responder ao que nos foi pedido, tivemos de verificar se o ID do Post dado correspondia a uma pergunta e, se assim fosse, iterar a árvore dos Posts 
+para verificar quais são respostas para essa pergunta e selecionar, então, a resposta com a maior pontuação, calculada pela média acima referida.
+
+
+%% QUERY 11
+\subsection{Most Used Best Rep}
+
+\begin{lstlisting}
+	public List<Long> mostUsedBestRep(int N, LocalDate begin, LocalDate end);
+\end{lstlisting}
+
+Nesta décima primeira (e última) \textit{query}, era pretendido que, dado um intervalo arbitrário de tempo, fosse possível obter os IDs das N \textit{tags} mais 
+utilizadas pelos N utilizadores com melhor reputação.
+
+
+
+
+
+%% RESULTADOS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Resultados}
+
+\subsection{Análise dos resultados}
+
+\begin{table}[h] 
+	\caption{Tempos de execução}
+	\begin{subtable}{.5\linewidth}
+		\centering
+		\caption{Android}
+		\scalebox{0.85}{
+		\begin{tabular}{ll}
+		Interrogação: & Tempo (em milisegundos): \\
+		1             & 0.                 \\
+		2             & 0.                 \\
+		3             & 0.                 \\
+		4             & 0.                 \\
+		5             & 0.                 \\
+		6             & 0.                 \\
+		7             & 0.                 \\
+		8             & 0.                 \\
+		9             & 0.                 \\
+		10            & 0.                 \\
+		11            & 0.   
+		\end{tabular}}
+	\end{subtable}
+
+	\begin{subtable}{.5\linewidth} 
+		\centering
+		\caption{Ubuntu}
+		\scalebox{0.85}{
+		\begin{tabular}{ll}
+		Interrogação: & Tempo (em milisegundos): \\
+		1             & 0.                 \\
+		2             & 0.                 \\
+		3             & 0.                 \\
+		4             & 0.                 \\
+		5             & 0.                 \\
+		6             & 0.                 \\
+		7             & 0.                 \\
+		8             & 0.                 \\
+		9             & 0.                 \\
+		10            & 0.                 \\
+		11            & 0.  
+		\end{tabular}}
+	\end{subtable}
+\end{table}
+
+
+\subsection{Comparação do resultados}
+
+%% COMPARAÇÃO LOADS !-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!
+
+%% COMPARAÇÃO QUERIES ANDROID !-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!
+
+%% COMPARAÇÃO QUERIES UBUNTU !-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!
+
+
+
+%% CONCLUSÃO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusão}
+
+
+%%  DIZER QUAL O MELHOR !-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!
+
+
+Este projeto foi extremamente enriquecedor para o grupo, uma vez que nos permitiu trabalhar com um tipo diferente de dados, o XML, e nos ensinou a trabalhar com ele. 
+Tivemos que nos esforçar bastante para conseguirmos atingir os objetivos estabelecidos, tendo sempre em atenção o encapsulamento do código e a sua eficiência. O trabalho 
+permitiu-nos também aprender a desenvolver as estruturas de que precisamos, consoante as dificuldades, exigências e necessidades que nos foram sendo impostas com o 
+desenrolar do projeto.
+
+Os resultados que obtivemos, ao correr o programa, foram iguais aos dos testes fornecidos pelos docentes, pelo que podemos concluir que a nossa implementação está correta. 
+Além disso, achamos que cumprimos o objetivo de criar um programa eficiente, visto que os tempos que obtivemos para cada interrogação, utilizando os \textit{dumps} do 
+Ubuntu e os mesmos parâmetros utilizados pelos professores nos testes, foram os seguintes (aproximadamente):
+
+
+Em suma, tendo em conta a eficiência e os resultados que obtivemos, podemos concluir que conseguimos atingir as metas propostas com este projeto, dado que os tempos de 
+execução, tanto do \textit{load} como das interrogações, foram bastante positivos. Com os \textit{getters} e \textit{setters} por nós definidos para as nossas estruturas, 
+conseguimos sempre, com a modulação e separação dos ficheiros que fizemos, respeitar o encapsulamento da informação.
+\end{document}

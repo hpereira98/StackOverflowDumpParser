@@ -1,3 +1,7 @@
 .idea/
 target/
-
+tex/*.aux
+tex/*.log
+tex/*.lol
+tex/*.out
+tex/*.toc
