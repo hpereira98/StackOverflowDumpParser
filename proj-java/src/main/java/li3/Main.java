@@ -13,20 +13,24 @@ public class Main {
 
 
     public static void main(String[] args){
+        Controller app = new Controller();
+        app.start();
+
+    }
 
         /*
             LOG CONFIGURATION
-        */
+        */ /*
         MyLog log = new MyLog("results");
         MyLog logtime = new MyLog("times");
         /* -------------------------------------------------------------------------------------------*/
-
+        /*
         long before, after;
         li3.TADCommunity qe = new TCD();
 
         /*
             LOAD PHASE
-         */
+         *//*
         try {
         before = System.currentTimeMillis();
         qe.load(args[0]);
@@ -42,7 +46,7 @@ public class Main {
 
         /*
            Query 1
-        */
+        *//*
         try {
             before = System.currentTimeMillis();
             Pair<String, String> q1 = qe.infoFromPost(801049);
@@ -58,7 +62,7 @@ public class Main {
         }
         /*
            Query 2
-        */
+        *//*
         before = System.currentTimeMillis();
         List<Long> q2 = qe.topMostActive(10);
         after = System.currentTimeMillis();
@@ -67,7 +71,7 @@ public class Main {
 
         /*
            Query 3
-        */
+        *//*
         before = System.currentTimeMillis();
         Pair<Long,Long> q3 = qe.totalPosts(LocalDate.of(2016, Month.JULY,1),
                 LocalDate.of(2016,Month.JULY,31));
@@ -77,7 +81,7 @@ public class Main {
 
         /*
            Query 4
-        */
+        *//*
         try {
             before = System.currentTimeMillis();
             List<Long> query4 = qe.questionsWithTag("package-management", LocalDate.of(2013, Month.MARCH, 1),
@@ -91,7 +95,7 @@ public class Main {
         }
         /*
            Query 5
-        */
+        *//*
         try {
             before = System.currentTimeMillis();
             Pair<String, List<Long>> q5 = qe.getUserInfo(15811);
@@ -105,7 +109,7 @@ public class Main {
 
         /*
            Query 6
-        */
+        *//*
         before = System.currentTimeMillis();
         List<Long> q6 = qe.mostVotedAnswers(5, LocalDate.of(2015, Month.NOVEMBER, 1),
                 LocalDate.of(2015, Month.NOVEMBER,30));
@@ -115,7 +119,7 @@ public class Main {
 
         /*
            Query 7
-        */
+        *//*
         before = System.currentTimeMillis();
         List<Long> q7 = qe.mostAnsweredQuestions(10, LocalDate.of(2014,Month.AUGUST,1),
                 LocalDate.of(2014,Month.AUGUST,10));
@@ -125,7 +129,7 @@ public class Main {
 
         /*
            Query 8
-        */
+        *//*
         before = System.currentTimeMillis();
         List<Long> q8 = qe.containsWord(10, "kde");
         after = System.currentTimeMillis();
@@ -134,7 +138,7 @@ public class Main {
 
         /*
            Query 9
-        */
+        *//*
         try {
             before = System.currentTimeMillis();
             List<Long> q9 = qe.bothParticipated(10, 87, 5691);
@@ -148,7 +152,7 @@ public class Main {
 
         /*
            Query 10
-        */
+        *//*
         try {
             before = System.currentTimeMillis();
             long q10 = qe.betterAnswer(30334);
@@ -165,7 +169,7 @@ public class Main {
 
         /*
             Query 11
-        */
+        *//*
         try {
             before = System.currentTimeMillis();
             List<Long> q11 = qe.mostUsedBestRep(5, LocalDate.of(2013, Month.NOVEMBER, 01),
@@ -179,14 +183,14 @@ public class Main {
         }
         /*
             CLEAN PHASE
-         */
+         *//*
         before = System.currentTimeMillis();
         qe.clear();
         after = System.currentTimeMillis();
         logtime.writeLog("CLEAN -> "+(after-before)+" ms");
 
     }
-
+*/
 }
 
 

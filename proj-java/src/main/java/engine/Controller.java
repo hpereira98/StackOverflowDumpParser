@@ -1,137 +1,206 @@
 package engine;
 
+import common.Pair;
+
+import javax.xml.stream.XMLStreamException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Scanner;
+
 
 public class Controller {
     private li3.TADCommunity qe;
 
-    public Controller(TCD com){
-        qe = new TCD(com);
-    }
-
-    private int readOp(){
-        int op;
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Operação a realizar: ");
-        op = sc.nextInt();
-        sc.close();
-        return op;
-    }
-
-    private void showOps(String[] ops){
-        for(String op : ops)
-            System.out.println(op);
-    }
-
-    private static void printSeparador(){
-        System.out.println("********LI3 - JAVA********");
+    public Controller(){ // ver com o stor se esta correto e ver como é que faz print dos resultados !!!!!!!!!!!!!!!!!!!
+        this.qe = new TCD();
     }
 
     public void start(){
         int opcao;
-        String[] menu = Menu.getMainMenu();
 
         do{
-            printSeparador();
-            showOps(menu);
-            opcao = readOp();
-            printSeparador();
+            Menu.printSeparador();
+            Menu.showMainMenuOps();
+            opcao = Menu.readOp();
+            Menu.printSeparador();
             switch(opcao){
-                case 0: break;
-                case 1: qe.load(getDumpPath()); execMenuQueries(); break;
+                case 0:  break;
+                case 1:  enteringQueriesMenu(); break;
                 default: System.out.println("Insira uma opção correta");
             }
         }while(opcao != 0);
     }
 
-    private String getDumpPath(){
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Insira o path do dump a carregar: ");
-        String path = "";
-
-        while(path.equals(""))
-            path=sc.nextLine();
-
-        return path;
-    }
-
-    private long getID(){
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Insira o ID: ");
-        long id = -2;
-
-        while(id<=-2)
-            id=sc.nextLong();
-
-        return id;
-    }
-
-    private int getN(){
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Insira o N: ");
-        int n = 0;
-
-        while(n<=0)
-            n=sc.nextInt();
-
-        return n;
-    }
-
-    private LocalDate getData(){
-        Scanner sc = new Scanner(System.in);
-        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("YYYY-MM-dd");
-        String aux="";
-        LocalDate data = null;
-        while(aux.equals("") && data==null) {
-            aux = sc.nextLine();
-            try {
-                data= LocalDate.parse(aux,dateFormat);
-            } catch (Exception e) {
-                System.out.println("Wrong Date Format");
-            }
+    private void enteringQueriesMenu(){ // é melhor meter a dar as opcoes e nao o user a escrever o path
+        String path = Menu.getDumpPath();
+        try{
+            qe.load(path);
         }
-        return data;
+        catch (XMLStreamException e){ // este print é feito no controlador ?
+            System.out.println("Erro ao carregar os dados");
+        }
+        execQueriesMenu();
     }
 
-    private String getString(){
-        Scanner sc = new Scanner(System.in);
-        String res ="";
-
-        while(res.equals(""))
-            res=sc.nextLine();
-
-        return res;
-    }
-
-    //definir funções de get em baixo usadas
-
-    public void execMenuQueries(){
+    private void execQueriesMenu(){
         int opcao;
-        String[] menu = Menu.getMenuQueries();
+
         do{
-            printSeparador();
-            showOps(menu);
-            opcao = readOp();
-            if(opcao!=0)printSeparador();
+            Menu.printSeparador();
+            Menu.showQueriesMenuOps();
+            opcao = Menu.readOp();
+            if(opcao!=0) Menu.printSeparador();
             switch(opcao){
                 case 0: break;
-                case 1: qe.infoFromPost(getID()); break;
-                case 2: qe.topMostActive(getN()); break;
-                case 3: qe.totalPosts(getData(),getData()); break;
-                case 4: qe.questionsWithTag(getString(),getData(),getData()); break;
-                case 5: qe.getUserInfo(getID()); break;
-                case 6: qe.mostVotedAnswers(getN(),getData(),getData()); break;
-                case 7: qe.mostAnsweredQuestions(getN(),getData(),getData()); break;
-                case 8: qe.containsWord(getN(),getString()); break;
-                case 9: qe.bothParticipated(getN(),getID(),getID()); break;
-                case 10: qe.betterAnswer(getID()); break;
-                case 11: qe.mostUsedBestRep(getN(),getData(),getData()); break;
+                case 1: handlerQuery1(); break;
+                case 2: handlerQuery2(); break;
+                case 3: handlerQuery3(); break;
+                case 4: handlerQuery4(); break;
+                case 5: handlerQuery5(); break;
+                case 6: handlerQuery6_7(6); break;
+                case 7: handlerQuery6_7(7); break;
+                case 8: handlerQuery8(); break;
+                case 9: handlerQuery9(); break;
+                case 10: handlerQuery10(); break;
+                case 11: handlerQuery11(); break;
                 default: System.out.println("Insira uma opção correta");
             }
         }while(opcao != 0);
     }
+
+    private void handlerQuery1() {
+        long before, after;
+        long id = Menu.getID();
+        try{
+            before = System.currentTimeMillis();
+            common.Pair<String, String> q1 = qe.infoFromPost(id);
+            after = System.currentTimeMillis();
+            //falta parte de escrita no log
+        }
+        catch (PostNotFoundException e){
+            System.out.println("O post com ID: " + e.getMessage() + " não existe.");
+        }
+        catch (UserNotFoundException e){
+            System.out.println("O User com ID: " + e.getMessage() + " não existe.");
+        }
+    }
+
+    private void handlerQuery2() {
+        int n = Menu.getN();
+
+        long before = System.currentTimeMillis();
+        List<Long> q2 = qe.topMostActive(n);
+        long after = System.currentTimeMillis();
+    }
+
+    private void handlerQuery3() {
+        LocalDate begin = Menu.getData();
+        LocalDate end = Menu.getData();
+
+        long before = System.currentTimeMillis();
+        Pair<Long,Long> q3 = qe.totalPosts(begin, end);
+        long after = System.currentTimeMillis();
+    }
+
+    private void handlerQuery4() {
+        String tag = Menu.getString();
+        LocalDate begin = Menu.getData();
+        LocalDate end = Menu.getData();
+
+        try{
+            long before = System.currentTimeMillis();
+            List<Long> q4 = qe.questionsWithTag(tag, begin, end);
+            long after = System.currentTimeMillis();
+        }
+        catch (TagNotFoundException e){
+            System.out.println("Tag " + e.getMessage() + " não existe");
+        }
+    }
+
+    private void handlerQuery5() {
+        long id = Menu.getID();
+
+        try{
+            long before = System.currentTimeMillis();
+            Pair<String, List<Long>> q5 = qe.getUserInfo(id);
+            long after = System.currentTimeMillis();
+        }
+        catch (UserNotFoundException e){
+            System.out.println("O User com ID: " + e.getMessage() + " não existe.");
+        }
+    }
+
+    private void handlerQuery6_7(int query) {
+        List<Long> result;
+        LocalDate begin = Menu.getData();
+        LocalDate end = Menu.getData();
+        int n = Menu.getN();
+
+        long before = System.currentTimeMillis();
+        if(query == 6)
+            result = qe.mostVotedAnswers(n, begin, end);
+        else
+            result = qe.mostAnsweredQuestions(n, begin, end);
+
+        long after = System.currentTimeMillis();
+    }
+
+    private void handlerQuery8() {
+        int n = Menu.getN();
+        String word = Menu.getString();
+
+        long before = System.currentTimeMillis();
+        List<Long> q8 = qe.containsWord(n, word);
+        long after = System.currentTimeMillis();
+    }
+
+
+    private void handlerQuery9(){
+        int n = Menu.getN();
+        long id1 = Menu.getID();
+        long id2 = Menu.getID();
+
+        try {
+            long before = System.currentTimeMillis();
+            List<Long> q9 = qe.bothParticipated(n, id1, id2);
+            long after = System.currentTimeMillis();
+        }
+        catch (UserNotFoundException e){
+            System.out.println("O User com ID: " + e.getMessage() + " não existe.");
+        }
+    }
+
+    private void handlerQuery10(){
+        long id = Menu.getID();
+
+        try {
+            long before = System.currentTimeMillis();
+            long q10 = qe.betterAnswer(id);
+            long after = System.currentTimeMillis();
+        }
+        catch (PostNotFoundException e){
+            System.out.println("O post com ID: " + e.getMessage() + " não existe.");
+        }
+        catch (QuestionWithoutAnswersException e){
+            System.out.println("O post com ID: " + e.getMessage() + " não tem respostas.");
+        }
+    }
+
+    private void handlerQuery11(){
+        int n = Menu.getN();
+        LocalDate begin = Menu.getData();
+        LocalDate end = Menu.getData();
+
+        long before = System.currentTimeMillis();
+        List<Long> q11 = qe.mostUsedBestRep(n, begin, end);
+        long after = System.currentTimeMillis();
+    }
+
+
+
+
 
 }
