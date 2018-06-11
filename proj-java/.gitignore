@@ -1,3 +1,7 @@
 .idea/
 target/
-
+*.aux
+*.log
+*.lol
+*.out
+*.toc
