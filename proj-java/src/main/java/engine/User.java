@@ -1,6 +1,7 @@
 package engine;
 
-import java.util.ArrayList;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class User {
 
@@ -9,7 +10,7 @@ public class User {
     private int n_posts;
     private int reputacao;
     private String short_bio;
-    private ArrayList<Post> user_posts;
+    private Set<Post> user_posts;
 
 
 
@@ -53,12 +54,15 @@ public class User {
         this.short_bio = short_bio;
     }
 
-    public ArrayList<Post> getUserPosts() {
-        return this.user_posts;
-    }
+    public Set<Post> getUserPosts() { return new TreeSet<>(this.user_posts);}
 
-    public void setUserPosts(ArrayList<Post> user_posts) {
-        this.user_posts = user_posts;
+    public void setUserPosts(Set<Post> user_posts) { this.user_posts = user_posts; }
+
+    // Método para adicionar um Post a um utilizador
+
+    public void addPost(Post post){
+        this.user_posts.add(post);
+        this.n_posts++;
     }
 
     // Equals & Clone
@@ -89,16 +93,16 @@ public class User {
         this.n_posts = -1;
         this.reputacao = -1;
         this.short_bio = "";
-        this.user_posts = new ArrayList<>();
+        this.user_posts = new TreeSet<>();
     }
 
-    public User(long id, String display_name, int n_posts, int reputacao, String short_bio, ArrayList<Post> user_posts) {
+    public User(long id, String display_name, int n_posts, int reputacao, String short_bio, Set<Post> user_posts) {
         this.id = id;
         this.display_name = display_name;
         this.n_posts = n_posts;
         this.reputacao = reputacao;
         this.short_bio = short_bio;
-        this.user_posts = user_posts;
+        this.user_posts = new TreeSet<>(user_posts);
     }
 
     public User(User outro){

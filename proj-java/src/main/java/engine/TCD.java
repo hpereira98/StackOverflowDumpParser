@@ -1,7 +1,6 @@
 package engine;
 
 import common.Pair;
-
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -18,7 +17,7 @@ public class TCD implements li3.TADCommunity {
 
     private Map<Long, User> users;
     private Map<PostKey, Post> posts;
-    private Map<Long, String> postAux;
+    private Map<Long, LocalDateTime> postAux;
     private Map<String, Tag> tags;
 
     // QUERIES:
@@ -27,7 +26,7 @@ public class TCD implements li3.TADCommunity {
 
     private Post getPost(long id) throws PostNotFoundException {
 
-        String data = postAux.get(id);
+        LocalDateTime data = postAux.get(id);
         if (data == null) throw new PostNotFoundException("src.main.java.engine.Post " + id + " não foi encontrado.");
         else {
             PostKey key = new PostKey(data, id);
@@ -73,7 +72,7 @@ public class TCD implements li3.TADCommunity {
                                         break;
                                 }
                             }
-                            User user = new User(id, name, 0, rep, bio, new ArrayList<>());
+                            User user = new User(id, name, 0, rep, bio, new TreeSet<>());
                             users.put(id, user);
                         }
                         break;
@@ -104,7 +103,7 @@ public class TCD implements li3.TADCommunity {
                 long owner_id = -2;
                 int type_id = -2;
                 long parent_id = -2;
-                String data = "";
+                LocalDateTime data = null;
                 String tags_str = "";
                 int score = 0;
                 int n_comments = 0;
@@ -132,7 +131,7 @@ public class TCD implements li3.TADCommunity {
                                         parent_id = Long.parseLong(reader.getAttributeValue(i));
                                         break;
                                     case "CreationDate":
-                                        data = reader.getAttributeValue(i);
+                                        data = LocalDateTime.parse(reader.getAttributeValue(i));
                                         break;
                                     case "Tags":
                                         tags_str = reader.getAttributeValue(i);
@@ -149,18 +148,14 @@ public class TCD implements li3.TADCommunity {
                                 }
                             }
                             PostKey key = new PostKey(data, id);
-                            Post post = new Post(id, titulo, owner_id, type_id, parent_id, LocalDateTime.parse(data), tagsToList(tags_str), score, n_comments, n_answers);
+                            Post post = new Post(id, titulo, owner_id, type_id, parent_id, data, tagsToList(tags_str), score, n_comments, n_answers);
                             posts.put(key, post);
 
                             postAux.put(id, data);
 
                             User user = users.get(owner_id);
                             if (user != null) {
-                                user.setNPosts(user.getNPosts() + 1); // n_posts++;
-
-                                ArrayList<Post> nova = user.getUserPosts();
-                                nova.add(post);
-                                user.setUserPosts(nova); // post adicionado à lista de posts do user
+                                user.addPost(post);
                             }
                         }
                         break;
@@ -279,20 +274,20 @@ public class TCD implements li3.TADCommunity {
         this.posts = novo;
     }
 
-    public Map<Long, String> getPostAux() {
-        Map<Long, String> novo = new HashMap<>();
+    public Map<Long, LocalDateTime> getPostAux() {
+        Map<Long, LocalDateTime> novo = new HashMap<>();
 
-        for (Map.Entry<Long, String> entry : postAux.entrySet()) {
+        for (Map.Entry<Long, LocalDateTime> entry : postAux.entrySet()) {
             novo.put(entry.getKey(), entry.getValue());
         }
 
         return novo;
     }
 
-    public void setPostAux(Map<Long, String> postAux) {
-        Map<Long, String> novo = new HashMap<>();
+    public void setPostAux(Map<Long, LocalDateTime> postAux) {
+        Map<Long, LocalDateTime> novo = new HashMap<>();
 
-        for (Map.Entry<Long, String> entry : postAux.entrySet()) {
+        for (Map.Entry<Long, LocalDateTime> entry : postAux.entrySet()) {
             novo.put(entry.getKey(), entry.getValue());
         }
 
@@ -324,12 +319,12 @@ public class TCD implements li3.TADCommunity {
 
     public TCD() {
         this.users = new HashMap<>();
-        this.posts = new TreeMap<>((d1, d2) -> d1.compareTo(d2));
+        this.posts = new TreeMap<>();
         this.postAux = new HashMap<>();
         this.tags = new HashMap<>();
     }
 
-    public TCD(Map<Long, User> user, Map<PostKey, Post> post, Map<Long, String> postAux, Map<String, Tag> tag) {
+    public TCD(Map<Long, User> user, Map<PostKey, Post> post, Map<Long, LocalDateTime> postAux, Map<String, Tag> tag) {
         this.users = user;
         this.posts = post;
         this.postAux = postAux;
@@ -389,16 +384,17 @@ public class TCD implements li3.TADCommunity {
     // Query 2
     public List<Long> topMostActive(int N) {
         Set<User> users_by_nposts = new TreeSet<>((u1, u2) -> {
-            if (u2.getNPosts() - u1.getNPosts() == 0)
-                return Long.compare(u2.getID(), u1.getID());
-            return Integer.compare(u2.getNPosts(), u1.getNPosts());
-        });
+                                                                if (u2.getNPosts() - u1.getNPosts() == 0)
+                                                                    return Long.compare(u2.getID(), u1.getID());
+                                                                return Integer.compare(u2.getNPosts(), u1.getNPosts());
+                                                               });
 
-        this.users.values().addAll(users_by_nposts);
+        users_by_nposts.addAll(this.users.values());
 
-        return users_by_nposts.stream().limit(N).
-                map(User::getID).
-                collect(java.util.stream.Collectors.toList());
+        return users_by_nposts.stream()
+                              .limit(N)
+                              .map(User::getID)
+                              .collect(Collectors.toList());
     }
 
 
@@ -488,9 +484,9 @@ public class TCD implements li3.TADCommunity {
 
         // estes posts já vão estar por data nao é, Pedro? acho que sugeriste isso
         List<Long> ids = user.getUserPosts().stream()
-                .limit(10)
-                .map(Post::getID)
-                .collect(Collectors.toList());
+                                            .limit(10)
+                                            .map(Post::getID)
+                                            .collect(Collectors.toList());
 
         return new Pair<>(user.getShortBio(), ids);
     }
@@ -504,8 +500,8 @@ public class TCD implements li3.TADCommunity {
                                                              });
 
         this.posts.values().stream()
-                  .filter(p -> p.getTypeID() == 2 && isBetween(p.getData().toLocalDate(), begin, end))
-                  .forEach(p -> posts_by_votes.add(p));
+                           .filter(p -> p.getTypeID() == 2 && isBetween(p.getData().toLocalDate(), begin, end))
+                           .forEach(p -> posts_by_votes.add(p));
 
         return posts_by_votes.stream()
                              .limit(N)
@@ -522,13 +518,13 @@ public class TCD implements li3.TADCommunity {
                                                                   });
 
         this.posts.values().stream()
-                .filter(p -> p.getTypeID() == 1 && isBetween(p.getData().toLocalDate(), begin, end))
-                .forEach(p -> posts_by_n_answers.add(p));
+                           .filter(p -> p.getTypeID() == 1 && isBetween(p.getData().toLocalDate(), begin, end))
+                           .forEach(p -> posts_by_n_answers.add(p));
 
         return posts_by_n_answers.stream()
-                .limit(N)
-                .map(Post::getID)
-                .collect(Collectors.toList());
+                                 .limit(N)
+                                 .map(Post::getID)
+                                 .collect(Collectors.toList());
     }
 
     // Query 8
@@ -541,32 +537,91 @@ public class TCD implements li3.TADCommunity {
     }
 
     // Query 9
-    public List<Long> bothParticipated(int N, long id1, long id2) {
-        return Arrays.asList(594L);
-    }/*
-    public List<Long> bothParticipated(int N, long id1, long id2) {
-        Set<Post> userPosts1 = new TreeSet<>((d1,d2) -> d2.getData().compareTo(d1.getData()));
-        this.users.get(id1).getUserPosts().stream()
-                .map(p -> {if (p.getTypeID()==2) p = this.posts.get(p.getParentID());})
-                .forEach(p -> userPosts1.add(p.clone()));
+    public List<Long> bothParticipated(int N, long id1, long id2){
+        User user1 = this.users.get(id1); // com exceptions seria ter uma funcao para fazer isto que lancaria a exception
+        User user2 = this.users.get(id2);
 
-        Set<Post> userPosts2 = new TreeSet<>((d1,d2) -> d2.getData().compareTo(d1.getData()));
-        this.users.get(id2).getUserPosts().stream()
-                .map(p -> {if (p.getTypeID()==2) p = this.posts.get(p.getParentID());})
-                .forEach(p -> userPosts2.add(p.clone()));
+        Set<Post> user1_posts = user1.getUserPosts();
+        Set<Post> user2_posts = user2.getUserPosts();
 
-        return userPosts1.stream().filter(f -> userPosts2.contains(f)).limit(N)
-                .mapToLong(Post :: getID).collect(Collectors.toList());
+        swapAnswerToQuestion(user1_posts);
+        swapAnswerToQuestion(user2_posts);
+
+        user1_posts.retainAll(user2_posts);
+
+        return user1_posts.stream()
+                         .limit(N)
+                         .map(Post::getID)
+                         .collect(Collectors.toList());
     }
-    */
+
+    // Funcao para trocar as respostas pela respetiva pergunta
+    private void swapAnswerToQuestion(Set<Post> posts){
+        List<Post> respostas = posts.stream().filter(p -> p.getTypeID()==2)
+                                             .collect(Collectors.toList());
+
+        posts.removeAll(respostas); // remover todas as respostas do set
+
+        for(Post r : respostas){ // procurar a pergunta para a qual a resposta foi dada e colocar no set
+            Long parent_id = r.getParentID();
+            LocalDateTime data = this.postAux.get(parent_id);
+            PostKey aux = new PostKey(data, parent_id);
+            posts.add(this.posts.get(aux));
+        }
+    }
+
     // Query 10
-    public long betterAnswer(long id) {
-        return 175891;
+    public long betterAnswer(long id){
+        Set<Post> answers_by_score = new TreeSet<>((p1,p2) -> Double.compare(answer_score(p2), answer_score(p1)));
+
+        this.posts.values().stream()
+                           .filter(p -> p.getTypeID() == 2 && p.getParentID() == id)
+                           .forEach(p -> answers_by_score.add(p));
+
+        return ((TreeSet<Post>) answers_by_score).first().getID();
+    }
+
+    // Funcao para calcular o score de um post segundo formula presente no enunciado
+    private double answer_score(Post post){
+         double owner_rep = this.users.get(post.getOwnerID()).getRep();
+
+         return post.getScore() * 0.65 +
+                owner_rep * 0.25 +
+                post.getNComments() * 0.1;
     }
 
     // Query 11
     public List<Long> mostUsedBestRep(int N, LocalDate begin, LocalDate end) {
-        return Arrays.asList(6L, 29L, 72L, 163L, 587L);
+        int i=0;
+        Set<User> users_by_rep = new TreeSet<>((u1, u2) -> {
+                                                            if (u2.getRep() - u1.getRep() == 0)
+                                                                return Long.compare(u2.getID(), u1.getID());
+                                                            return Integer.compare(u2.getRep(), u1.getRep());
+                                                            });
+
+        users_by_rep.addAll(this.users.values());
+
+        List<Tag> tags = new ArrayList<>();
+
+        Iterator<User> it = users_by_rep.iterator();
+        User user;
+        while(i<N && it.hasNext()){
+            user = it.next();
+            user.getUserPosts().stream()
+                               .filter(p -> p.getTypeID()==1 && isBetween(p.getData().toLocalDate(), begin, end))
+                               .forEach(p -> tags.addAll(p.getTags()));
+            i++;
+        }
+        // neste momentos temos uma lista com todas as tags a serem contadas (com repeticoes)
+        // Map com id - num_ocur
+        Map<Long, Long> tags_ocur = tags.stream()
+                                        .collect(Collectors.groupingBy(Tag::getID, Collectors.counting()));
+
+        return tags_ocur.entrySet().stream()
+                                   .sorted(Map.Entry.<Long,Long>comparingByValue().reversed())
+                                   .limit(N)
+                                   .map(Map.Entry::getKey)
+                                   .collect(Collectors.toList());
     }
 
     public void clear() {
@@ -574,7 +629,7 @@ public class TCD implements li3.TADCommunity {
     }
 
 
-// Função para ver se uma data pertence a um dado intervalo de datas
+    // Função para ver se uma data pertence a um dado intervalo de datas
 
     private static boolean isBetween(LocalDate to_check, LocalDate begin, LocalDate end) {
         return to_check.isAfter(begin) && to_check.isBefore(end);

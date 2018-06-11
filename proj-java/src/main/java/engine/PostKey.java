@@ -1,8 +1,10 @@
 package engine;
 
+import java.time.LocalDateTime;
+
 public class PostKey implements Comparable<PostKey>{
 
-    private String data;
+    private LocalDateTime data;
     private long id;
 
 
@@ -10,11 +12,11 @@ public class PostKey implements Comparable<PostKey>{
 
     // Getters & Setters
 
-    public String getData() {
+    public LocalDateTime getData() {
         return this.data;
     }
 
-    public void setData(String data) {
+    public void setData(LocalDateTime data) {
         this.data = data;
     }
 
@@ -45,11 +47,11 @@ public class PostKey implements Comparable<PostKey>{
     // Construtores
 
     public PostKey(){
-        this.data = "";
+        this.data = null;
         this.id = -2;
     }
 
-    public PostKey(String data, long id){
+    public PostKey(LocalDateTime data, long id){
         this.data = data;
         this.id = id;
     }
