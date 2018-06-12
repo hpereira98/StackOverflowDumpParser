@@ -7,33 +7,35 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
 public class Menu implements Serializable {
 
-    private static String[][] operacoes = {
-                {//Menu inicial
-                 "1 - Load",
-                 "0 - Sair"},
-                {//Menu Load
-                 "1 - Android Dump",
-                 "2 - Ubuntu Dump",
-                 "0 - Retroceder"},
-                {//Menu queries
-                 "1 - Info From Post",
-                 "2 - Top Most Active",
-                 "3 - Total Posts",
-                 "4 - Questions With Tag",
-                 "5 - Get User Info",
-                 "6 - Most Voted Answers",
-                 "7 - Most Answered Questions",
-                 "8 - Contains Word",
-                 "9 - Both Participated",
-                 "10 - Better Answer",
-                 "11 - Most Used Best Rep",
-                 "0 - Retroceder"}
-    };
+    private List<List<String>> menus;
+
+    public Menu(){
+        this.menus = new ArrayList<>();
+
+        this.menus.add(Arrays.asList("1 - Load",
+                                     "0 - Sair"));
+
+        this.menus.add(Arrays.asList("1 - Info From Post",
+                                     "2 - Top Most Active",
+                                     "3 - Total Posts",
+                                     "4 - Questions With Tag",
+                                     "5 - Get User Info",
+                                     "6 - Most Voted Answers",
+                                     "7 - Most Answered Questions",
+                                     "8 - Contains Word",
+                                     "9 - Both Participated",
+                                     "10 - Better Answer",
+                                     "11 - Most Used Best Rep",
+                                     "0 - Retroceder"));
+    }
+
 
     public static void printTempo(long time) {
         System.out.println("Tempo em ms: ");
@@ -89,18 +91,13 @@ public class Menu implements Serializable {
         System.out.println("********LI3 - JAVA********");
     }
 
-    public static void showMainMenuOps(){
-        for(String op : operacoes[0])
+    public void showMainMenuOps(){
+        for(String op : this.menus.get(0))
             System.out.println(op);
     }
 
-    public static void showLoadMenuOps(){
-        for(String op : operacoes[1])
-            System.out.println(op);
-    }
-
-    public static void showQueriesMenuOps(){
-        for(String op : operacoes[2])
+    public void showQueriesMenuOps(){
+        for(String op : this.menus.get(1))
             System.out.println(op);
     }
 
@@ -130,18 +127,6 @@ public class Menu implements Serializable {
         return n;
     }
 
-    private static boolean isDate(String string){
-            LocalDate data = null;
-            DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("uuuu-MM-dd").withResolverStyle(ResolverStyle.STRICT);;
-            try {
-                data = LocalDate.parse(string, dateFormat);
-                return true;
-            }
-            catch (DateTimeParseException e) {
-                return false;
-            }
-    }
-
     public static LocalDate getData(int tipo){ //tipo 0: begin date, tipo 1: end date
         Scanner sc = new Scanner(System.in);
         String aux="";
@@ -158,6 +143,18 @@ public class Menu implements Serializable {
         }
         data = LocalDate.parse(aux);
         return data;
+    }
+
+    private static boolean isDate(String string){
+        LocalDate data = null;
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("uuuu-MM-dd").withResolverStyle(ResolverStyle.STRICT);;
+        try {
+            data = LocalDate.parse(string, dateFormat);
+            return true;
+        }
+        catch (DateTimeParseException e) {
+            return false;
+        }
     }
 
     public static String getString(int tipo){ //tipo 0: tag para as query4; tipo 1: palavra para a Query8

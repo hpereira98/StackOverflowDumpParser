@@ -2,24 +2,22 @@ package engine;
 
 import common.MyLog;
 import common.Pair;
+import li3.TADCommunity;
 
-import javax.xml.stream.XMLStreamException;
-import java.io.FileNotFoundException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Scanner;
+
 
 
 public class Controller {
-    private li3.TADCommunity qe;
+    private TADCommunity qe;
+    private Menu menu;
     private MyLog log;
     private  MyLog logtime;
 
     public Controller(){ // ver com o stor se esta correto e ver como é que faz print dos resultados !!!!!!!!!!!!!!!!!!!
         this.qe = new TCD();
+        this.menu = new Menu();
         this.log = new MyLog("results");
         this.logtime = new MyLog("times");
     }
@@ -29,7 +27,7 @@ public class Controller {
 
         do{
             Menu.printSeparador();
-            Menu.showMainMenuOps();
+            menu.showMainMenuOps();
             opcao = Menu.readOp();
             switch(opcao){
                 case 0:  System.out.println("\nAté à próxima!"); break;
@@ -69,7 +67,7 @@ public class Controller {
 
         do{
             Menu.printSeparador();
-            Menu.showQueriesMenuOps();
+            menu.showQueriesMenuOps();
             opcao = Menu.readOp();
             if(opcao!=0) Menu.printSeparador();
             switch(opcao){

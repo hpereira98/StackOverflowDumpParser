@@ -20,6 +20,16 @@ public class TCD implements li3.TADCommunity {
     private Map<Long, LocalDateTime> postAux;
     private Map<String, Tag> tags;
 
+
+    // CONSTRUCTORS
+
+    public TCD() {
+        this.users = new HashMap<>();
+        this.posts = new TreeMap<>();
+        this.postAux = new HashMap<>();
+        this.tags = new HashMap<>();
+    }
+
     // PARSER USERS
 
     private void loadUsers(String path) throws XMLStreamException, FileNotFoundException {
@@ -204,124 +214,22 @@ public class TCD implements li3.TADCommunity {
         return lista;
     }
 
-    // GETTERS E SETTERS
-
-    public Map<Long, User> getUsers() {
-        Map<Long, User> novo = new HashMap<>();
-
-        for (Map.Entry<Long, User> entry : this.users.entrySet()) {
-            novo.put(entry.getKey(), entry.getValue().clone());
-        }
-
-        return novo;
-    }
-
-    public void setUsers(Map<Long, User> users) {
-        Map<Long, User> novo = new HashMap<>();
-
-        for (Map.Entry<Long, User> entry : users.entrySet()) {
-            novo.put(entry.getKey(), entry.getValue().clone());
-        }
-
-        this.users = novo;
-    }
-
-    public Map<PostKey, Post> getPosts() {
-        Map<PostKey, Post> novo = new HashMap<>();
-
-        for (Map.Entry<PostKey, Post> entry : posts.entrySet()) {
-            novo.put(entry.getKey(), entry.getValue().clone());
-        }
-
-        return novo;
-    }
-
-    public void setPosts(Map<PostKey, Post> posts) {
-        Map<PostKey, Post> novo = new HashMap<>();
-
-        for (Map.Entry<PostKey, Post> entry : posts.entrySet()) {
-            novo.put(entry.getKey(), entry.getValue().clone());
-        }
-
-        this.posts = novo;
-    }
-
-    public Map<Long, LocalDateTime> getPostAux() {
-        Map<Long, LocalDateTime> novo = new HashMap<>();
-
-        for (Map.Entry<Long, LocalDateTime> entry : postAux.entrySet()) {
-            novo.put(entry.getKey(), entry.getValue());
-        }
-
-        return novo;
-    }
-
-    public void setPostAux(Map<Long, LocalDateTime> postAux) {
-        Map<Long, LocalDateTime> novo = new HashMap<>();
-
-        for (Map.Entry<Long, LocalDateTime> entry : postAux.entrySet()) {
-            novo.put(entry.getKey(), entry.getValue());
-        }
-
-        this.postAux = novo;
-    }
-
-    public Map<String, Tag> getTags() {
-        Map<String, Tag> novo = new HashMap<>();
-
-        for (Map.Entry<String, Tag> entry : tags.entrySet()) {
-            novo.put(entry.getKey(), entry.getValue().clone());
-        }
-
-        return novo;
-    }
-
-    public void setTags(Map<String, Tag> tags) {
-        Map<String, Tag> novo = new HashMap<>();
-
-        for (Map.Entry<String, Tag> entry : tags.entrySet()) {
-            novo.put(entry.getKey(), entry.getValue().clone());
-        }
-
-        this.tags = novo;
-    }
 
 
-    // CONSTRUCTORS
 
-    public TCD() {
-        this.users = new HashMap<>();
-        this.posts = new TreeMap<>();
-        this.postAux = new HashMap<>();
-        this.tags = new HashMap<>();
-    }
-
-    public TCD(Map<Long, User> user, Map<PostKey, Post> post, Map<Long, LocalDateTime> postAux, Map<String, Tag> tag) {
-        this.users = user;
-        this.posts = post;
-        this.postAux = postAux;
-        this.tags = tag;
-    }
-
-    public TCD(TCD outro) {
-        this.users = outro.getUsers();
-        this.posts = outro.getPosts();
-        this.postAux = outro.getPostAux();
-        this.tags = outro.getTags();
-    }
 
 
     /* -------------------------------- DEFINIÇÃO DAS QUERIES --------------------------------*/
     // ****************** ver das exceptions
     // Load
     public void load(String path) throws LoadDataErrorException {
-            try {
-                loadUsers(path + "/Users.xml");
-                loadTags(path + "/Tags.xml");
-                loadPosts(path + "/Posts.xml");
-            } catch (XMLStreamException | FileNotFoundException e) {
-                throw new LoadDataErrorException(e.getMessage());
-            }
+        try {
+            loadUsers(path + "/Users.xml");
+            loadTags(path + "/Tags.xml");
+            loadPosts(path + "/Posts.xml");
+        } catch (XMLStreamException | FileNotFoundException e) {
+            throw new LoadDataErrorException(e.getMessage());
+        }
     }
 
 
@@ -388,6 +296,7 @@ public class TCD implements li3.TADCommunity {
         return new Pair<Long, Long>(n_questions, n_answers);
     }*/
     // Versao stream query 3
+
     public Pair<Long, Long> totalPosts(LocalDate begin, LocalDate end){
         long n_questions = 0, n_answers = 0;
 
@@ -514,9 +423,9 @@ public class TCD implements li3.TADCommunity {
         user1_posts.retainAll(user2_posts);
 
         return user1_posts.stream()
-                         .limit(N)
-                         .map(Post::getID)
-                         .collect(Collectors.toList());
+                          .limit(N)
+                          .map(Post::getID)
+                          .collect(Collectors.toList());
     }
 
     // Funcao para trocar as respostas pela respetiva pergunta
@@ -529,8 +438,10 @@ public class TCD implements li3.TADCommunity {
         for(Post r : respostas){ // procurar a pergunta para a qual a resposta foi dada e colocar no set
             Long parent_id = r.getParentID();
             LocalDateTime data = this.postAux.get(parent_id);
-            PostKey aux = new PostKey(data, parent_id);
-            posts.add(this.posts.get(aux));
+            if(data != null){
+                PostKey aux = new PostKey(data, parent_id);
+                posts.add(this.posts.get(aux));
+            }
         }
     }
 
@@ -600,7 +511,7 @@ public class TCD implements li3.TADCommunity {
     // Função para ver se uma data pertence a um dado intervalo de datas
 
     private static boolean isBetween(LocalDate to_check, LocalDate begin, LocalDate end) {
-        return ((to_check.isAfter(begin) && to_check.isBefore(end)) || to_check.equals(begin) || to_check.equals(end));
+        return (to_check.isAfter(begin) && to_check.isBefore(end)) || to_check.equals(begin) || to_check.equals(end);
     }
 
     private Post getPost(long id) throws PostNotFoundException {
