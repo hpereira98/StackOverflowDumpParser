@@ -10,11 +10,16 @@ import java.util.List;
 
 
 public class Controller {
+
     private TADCommunity qe;
     private Menu menu;
     private MyLog log;
     private  MyLog logtime;
 
+
+    /**
+     * Construtor default da classe Controller
+     */
     public Controller(){ // ver com o stor se esta correto e ver como é que faz print dos resultados !!!!!!!!!!!!!!!!!!!
         this.qe = new TCD();
         this.menu = new Menu();
@@ -22,6 +27,10 @@ public class Controller {
         this.logtime = new MyLog("times");
     }
 
+
+    /**
+     * Método que inicia apresentação do programa ao utilizador
+     */
     public void start(){
         int opcao;
 
@@ -37,6 +46,9 @@ public class Controller {
         }while(opcao != 0);
     }
 
+    /**
+     * Método que trata da execução do load do dump
+     */
     private void loadMenu(){
         long before, after;
         String path="";
@@ -62,6 +74,9 @@ public class Controller {
 
     }
 
+    /**
+     * Método que trata da seleção da query a executar
+     */
     private void execQueriesMenu(){
         int opcao;
 
@@ -88,6 +103,9 @@ public class Controller {
         }while(opcao != 0);
     }
 
+    /**
+     * Método que trata da execução da query 1
+     */
     private void handlerQuery1() {
         long before, after;
         long id = Menu.getID();
@@ -108,6 +126,9 @@ public class Controller {
         }
     }
 
+    /**
+     * Método que trata da execução da query 2
+     */
     private void handlerQuery2() {
         int n = Menu.getN();
 
@@ -120,6 +141,9 @@ public class Controller {
         Menu.printLongList(q2); // PRINT RESULT
     }
 
+    /**
+     * Método que trata da execução da query 3
+     */
     private void handlerQuery3() {
         LocalDate begin = Menu.getData(0);
         LocalDate end = Menu.getData(1);
@@ -133,6 +157,9 @@ public class Controller {
         Menu.printResultQ3(q3); // PRINT RESULT
     }
 
+    /**
+     * Método que trata da execução da query 4
+     */
     private void handlerQuery4() {
         String tag = Menu.getString(0);
         LocalDate begin = Menu.getData(0);
@@ -152,6 +179,9 @@ public class Controller {
         }
     }
 
+    /**
+     * Método que trata da execução da query 5
+     */
     private void handlerQuery5() {
         long id = Menu.getID();
 
@@ -169,6 +199,10 @@ public class Controller {
         }
     }
 
+    /**
+     * Método que trata da execução das queries 6 e 7
+     * @param query a tratar (6 ou 7)
+     */
     private void handlerQuery6_7(int query) {
         List<Long> result;
         LocalDate begin = Menu.getData(0);
@@ -188,6 +222,9 @@ public class Controller {
         Menu.printLongList(result); // PRINT RESULT
     }
 
+    /**
+     * Método que trata da execução da query 8
+     */
     private void handlerQuery8() {
         int n = Menu.getN();
         String word = Menu.getString(1);
@@ -201,7 +238,9 @@ public class Controller {
         Menu.printLongList(q8); // PRINT RESULT
     }
 
-
+    /**
+     * Método que trata da execução da query 9
+     */
     private void handlerQuery9(){
         int n = Menu.getN();
         long id1 = Menu.getID();
@@ -221,6 +260,9 @@ public class Controller {
         }
     }
 
+    /**
+     * Método que trata da execução da query 10
+     */
     private void handlerQuery10(){
         long id = Menu.getID();
 
@@ -241,6 +283,9 @@ public class Controller {
         }
     }
 
+    /**
+     * Método que trata da execução da query 11
+     */
     private void handlerQuery11(){
         int n = Menu.getN();
         LocalDate begin = Menu.getData(0);

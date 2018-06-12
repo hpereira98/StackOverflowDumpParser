@@ -200,7 +200,7 @@ um Post, foi criada a função \textit{getPost}, cuja execução se divide nas d
 Nesta secção, iremos explicitar a nossa abordagem às interrogações descritas no enunciado, deste vez na linguagem Java, mostrando algumas partes do código que 
 achamos importante incluir de forma a facilitar a justificação da abordagem referida.
 
-%% FALAR DO STAX NA LOAD !-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!
+%% FALAR DO STAX NA LOAD !-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!
 
 
 %% QUERY 1
@@ -237,6 +237,7 @@ efetuados num dado período de tempo.
 	public Pair<Long,Long> totalPosts(LocalDate begin, LocalDate end);
 \end{lstlisting}
 
+%% Comparação das duas versões
 
 
 %% QUERY 4
@@ -248,6 +249,9 @@ lista teria de ser ordenada em cronologia inversa.
 \begin{lstlisting}
 	public List<Long> questionsWithTag(String tag, LocalDate begin, LocalDate end);
 \end{lstlisting}
+
+%% Comparação das duas versões
+
 
 
 %% QUERY 5
@@ -324,12 +328,14 @@ para verificar quais são respostas para essa pergunta e selecionar, então, a r
 %% QUERY 11
 \subsection{Most Used Best Rep}
 
+Nesta décima primeira (e última) \textit{query}, era pretendido que, dado um intervalo arbitrário de tempo, fosse possível obter os IDs das N \textit{tags} mais 
+utilizadas pelos N utilizadores com melhor reputação.
+
 \begin{lstlisting}
 	public List<Long> mostUsedBestRep(int N, LocalDate begin, LocalDate end);
 \end{lstlisting}
 
-Nesta décima primeira (e última) \textit{query}, era pretendido que, dado um intervalo arbitrário de tempo, fosse possível obter os IDs das N \textit{tags} mais 
-utilizadas pelos N utilizadores com melhor reputação.
+
 
 
 
@@ -341,56 +347,32 @@ utilizadas pelos N utilizadores com melhor reputação.
 \subsection{Análise dos resultados}
 
 \begin{table}[h] 
-	\caption{Tempos de execução - Dump Ubuntu}
-	\begin{subtable}{.5\linewidth}
-		\centering
-		\caption{Input nº 1}
-		\scalebox{0.85}{
-		\begin{tabular}{ll}
-		Interrogação: & Tempo (em milisegundos): \\
-		1             & 0.0                      \\
-		2             & 0.                 \\
-		3             & 50.0                     \\
-		4             & 47.0                     \\
-		5             & 1.0                      \\
-		6             & 39.0                     \\
-		7             & 0.                 \\
-		8             & 7.0                      \\
-		9             & 0.                 \\
-		10            & 28.0                     \\
-		11            & 182.0   
-		\end{tabular}}
-	\end{subtable}
-
-	\begin{subtable}{.5\linewidth} 
-		\centering
-		\caption{Input nº 2}
-		\scalebox{0.85}{
-		\begin{tabular}{ll}
-		Interrogação: & Tempo (em milisegundos): \\
-		1             & 0.0                      \\
-		2             & 0.                 \\
-		3             & 54.0                     \\
-		4             & 47.0                     \\
-		5             & 1.0                      \\
-		6             & 42.0                     \\
-		7             & 0.                 \\
-		8             & 11.0                     \\
-		9             & 0.                 \\
-		10            & 28.0                     \\
-		11            & 198.0  
-		\end{tabular}}
-	\end{subtable}
+	\centering
+	\caption{Tempo (ms) - Ubuntu}	
+	\begin{tabular}{c|c|c}
+	Interrogação: & Input nº1:      & Input nº2:      \\
+	1             & 0.01            & 0.01            \\
+	2             & 198.0           & 197.0           \\
+	3             & 50.0            & 54.0            \\
+	4             & 47.0            & 47.0            \\
+	5             & 1.0             & 1.0             \\
+	6             & 39.0            & 42.0            \\
+	7             & 43.0            & 48.0            \\
+	8             & 7.0             & 11.0            \\
+	9             & 2.0             & 0.0             \\
+	10            & 28.0            & 28.0            \\
+	11            & 182.0           & 198.0  
+	\end{tabular}
 \end{table}
+
 
 
 \subsection{Comparação do resultados}
 
-%% COMPARAÇÃO LOADS !-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!
+%% COMPARAÇÃO LOADS !-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!
 
-%% COMPARAÇÃO QUERIES ANDROID !-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!
 
-%% COMPARAÇÃO QUERIES UBUNTU !-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!
+%% COMPARAÇÃO QUERIES UBUNTU !-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!
 
 
 
@@ -398,7 +380,7 @@ utilizadas pelos N utilizadores com melhor reputação.
 \section{Conclusão}
 
 
-%%  DIZER QUAL O MELHOR !-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!
+%%  DIZER QUAL O MELHOR !-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!
 
 
 Este projeto foi extremamente enriquecedor para o grupo, uma vez que nos permitiu trabalhar com um tipo diferente de dados, o XML, e nos ensinou a trabalhar com ele. 

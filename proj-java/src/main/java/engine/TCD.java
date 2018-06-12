@@ -21,8 +21,9 @@ public class TCD implements li3.TADCommunity {
     private Map<String, Tag> tags;
 
 
-    // CONSTRUCTORS
-
+    /**
+     * Construtor default da classe TCD
+     */
     public TCD() {
         this.users = new HashMap<>();
         this.posts = new TreeMap<>();
@@ -30,8 +31,16 @@ public class TCD implements li3.TADCommunity {
         this.tags = new HashMap<>();
     }
 
-    // PARSER USERS
 
+
+    // PARSER
+
+    /**
+     * Método que carrega para a estrutura os users
+     * @param path diretoria do dump
+     * @throws XMLStreamException
+     * @throws FileNotFoundException
+     */
     private void loadUsers(String path) throws XMLStreamException, FileNotFoundException {
         XMLInputFactory input = XMLInputFactory.newInstance();
         XMLStreamReader reader = null;
@@ -77,8 +86,13 @@ public class TCD implements li3.TADCommunity {
         reader.close();
     }
 
-    // PARSER POSTS
 
+    /**
+     * Método que carrega para a estrutura os posts
+     * @param path diretoria do dump
+     * @throws XMLStreamException
+     * @throws FileNotFoundException
+     */
     private void loadPosts(String path) throws XMLStreamException, FileNotFoundException {
         XMLInputFactory input = XMLInputFactory.newInstance();
         XMLStreamReader reader = null;
@@ -156,8 +170,13 @@ public class TCD implements li3.TADCommunity {
         reader.close();
     }
 
-    // PARSER TAGS
 
+    /**
+     * Método que carrega para a estrutura as tags
+     * @param path diretoria do dump
+     * @throws XMLStreamException
+     * @throws FileNotFoundException
+     */
     private void loadTags(String path) throws XMLStreamException, FileNotFoundException {
         XMLInputFactory input = XMLInputFactory.newInstance();
         XMLStreamReader reader = null;
@@ -195,8 +214,12 @@ public class TCD implements li3.TADCommunity {
         reader.close();
     }
 
-    // Separa tags de uma string e passa para ArrayList
 
+    /**
+     * Método que separa as tags duma string para ArrayList
+     * @param str string com todas as tags
+     * @return lista com as tags separadas
+     */
     private ArrayList<Tag> tagsToList(String str) {
         ArrayList<Tag> lista = new ArrayList<>();
 
@@ -220,8 +243,13 @@ public class TCD implements li3.TADCommunity {
 
 
     /* -------------------------------- DEFINIÇÃO DAS QUERIES --------------------------------*/
-    // ****************** ver das exceptions
-    // Load
+
+
+    /**
+     * Método que carrega todos os dados para a estrutura
+     * @param path diretoria do dump
+     * @throws LoadDataErrorException
+     */
     public void load(String path) throws LoadDataErrorException {
         try {
             loadUsers(path + "/Users.xml");
@@ -233,7 +261,16 @@ public class TCD implements li3.TADCommunity {
     }
 
 
+
     // Query 1
+
+    /**
+     * Método que, dado o ID de um Post, devolve um Par com o título da pergunta correspondente ao Post e o nome do User.
+     * @param id
+     * @return
+     * @throws PostNotFoundException
+     * @throws UserNotFoundException
+     */
     public Pair<String, String> infoFromPost(long id) throws PostNotFoundException, UserNotFoundException {
         String titulo, nome;
         User user = null;
@@ -256,7 +293,14 @@ public class TCD implements li3.TADCommunity {
         return new Pair<>(post.getTitulo(), user.getDisplayName());
     }
 
+
     // Query 2
+
+    /**
+     * Método que lista os utilizadores mais ativos da comunidade.
+     * @param N
+     * @return
+     */
     public List<Long> topMostActive(int N) {
         Set<User> users_by_nposts = new TreeSet<>((u1, u2) -> {
                                                                 if (u2.getNPosts() - u1.getNPosts() == 0)
@@ -295,8 +339,15 @@ public class TCD implements li3.TADCommunity {
 
         return new Pair<Long, Long>(n_questions, n_answers);
     }*/
-    // Versao stream query 3
 
+    // Versao stream
+
+    /**
+     * Método que, dado um intervalo de tempo, conta quantas perguntas e quantas respostas foram feitas durante o mesmo.
+     * @param begin
+     * @param end
+     * @return
+     */
     public Pair<Long, Long> totalPosts(LocalDate begin, LocalDate end){
         long n_questions = 0, n_answers = 0;
 
@@ -340,7 +391,17 @@ public class TCD implements li3.TADCommunity {
         return r;
     }
 */
-    //Query 4 - versao com stream
+
+    //versao com stream
+
+    /**
+     * Método que, dado um intervalo de tempo e uma tag, retorna uma LONG_list contendo os IDs de perguntas, feitas no intervalo, que contenham essa tag.
+     * @param tag_name
+     * @param begin
+     * @param end
+     * @return
+     * @throws TagNotFoundException
+     */
     public List<Long> questionsWithTag(String tag_name, LocalDate begin, LocalDate end) throws TagNotFoundException {
         Tag tag = getTag(tag_name);
 
@@ -352,6 +413,13 @@ public class TCD implements li3.TADCommunity {
 
 
     // Query 5
+
+    /**
+     * Método que dado um ID retorna informação sobre o correspondente User.
+     * @param id
+     * @return
+     * @throws UserNotFoundException
+     */
     public Pair<String, List<Long>> getUserInfo(long id) throws UserNotFoundException{
         User user = getUser(id);
 
@@ -364,7 +432,16 @@ public class TCD implements li3.TADCommunity {
         return new Pair<>(user.getShortBio(), ids);
     }
 
+
     // Query 6
+
+    /**
+     * Método que, dado um inteiro e um intervalo de datas, retorna uma lista com IDs das respostas com mais votos.
+     * @param N
+     * @param begin
+     * @param end
+     * @return
+     */
     public List<Long> mostVotedAnswers(int N, LocalDate begin, LocalDate end) {
         Set<Post> posts_by_votes = new TreeSet<>((p1, p2) -> {
                                                                 if (p2.getScore() == p1.getScore())
@@ -382,7 +459,16 @@ public class TCD implements li3.TADCommunity {
                              .collect(Collectors.toList());
     }
 
+
     // Query 7
+
+    /**
+     * Método que, dado um inteiro e um intervalo de datas, retorna uma lista com IDs das perguntas com mais respostas.
+     * @param N
+     * @param begin
+     * @param end
+     * @return
+     */
     public List<Long> mostAnsweredQuestions(int N, LocalDate begin, LocalDate end) {
         Set<Post> posts_by_n_answers = new TreeSet<>((p1, p2) -> {
                                                                     if (p2.getNAnswers() == p1.getNAnswers())
@@ -400,7 +486,15 @@ public class TCD implements li3.TADCommunity {
                                  .collect(Collectors.toList());
     }
 
+
     // Query 8
+
+    /**
+     * Método que, dada uma palavra e um inteiro N, retorna uma lista com, no máximo N, IDs de perguntas cujos títulos contenham a palavra dada.
+     * @param N
+     * @param word
+     * @return
+     */
     public List<Long> containsWord(int N, String word) {
         return this.posts.values().stream()
                                   .filter(t -> t.getTypeID() == 1 && t.getTitulo().contains(word))
@@ -409,7 +503,17 @@ public class TCD implements li3.TADCommunity {
                                   .collect(Collectors.toList());
     }
 
+
     // Query 9
+
+    /**
+     * Método que lista, no máximo, os N IDs dos Posts em que dois utilizadores participam.
+     * @param N
+     * @param id1
+     * @param id2
+     * @return
+     * @throws UserNotFoundException
+     */
     public List<Long> bothParticipated(int N, long id1, long id2) throws UserNotFoundException {
         User user1 = getUser(id1);
         User user2 = getUser(id2);
@@ -428,7 +532,12 @@ public class TCD implements li3.TADCommunity {
                           .collect(Collectors.toList());
     }
 
-    // Funcao para trocar as respostas pela respetiva pergunta
+
+
+    /**
+     * Método para trocar as respostas pela respetiva pergunta
+     * @param posts
+     */
     private void swapAnswerToQuestion(Collection<Post> posts){
         List<Post> respostas = posts.stream().filter(p -> p.getTypeID()==2)
                                              .collect(Collectors.toList());
@@ -445,7 +554,16 @@ public class TCD implements li3.TADCommunity {
         }
     }
 
+
     // Query 10
+
+    /**
+     * Método que, dado um ID de uma pergunta, devolve o ID da melhor resposta.
+     * @param id
+     * @return
+     * @throws PostNotFoundException
+     * @throws QuestionWithoutAnswersException
+     */
     public long betterAnswer(long id) throws PostNotFoundException, QuestionWithoutAnswersException{
         Post post = getPost(id); // apenas serve para verificar se o post existe ou nao
         Set<Post> answers_by_score = new TreeSet<>((p1,p2) -> Double.compare(answer_score(p2), answer_score(p1)));
@@ -460,7 +578,12 @@ public class TCD implements li3.TADCommunity {
         return ((TreeSet<Post>) answers_by_score).first().getID();
     }
 
-    // Funcao para calcular o score de um post segundo formula presente no enunciado
+
+    /**
+     * Método para calcular o score de um post
+     * @param post
+     * @return
+     */
     private double answer_score(Post post){
          double owner_rep = this.users.get(post.getOwnerID()).getRep();
 
@@ -469,7 +592,16 @@ public class TCD implements li3.TADCommunity {
                 post.getNComments() * 0.1;
     }
 
+
     // Query 11
+
+    /**
+     * Método que lista as tags mais usadas, pelos N utilizadores com melhor reputação, durante um dado intervalo de tempo.
+     * @param N
+     * @param begin
+     * @param end
+     * @return
+     */
     public List<Long> mostUsedBestRep(int N, LocalDate begin, LocalDate end) {
         int i=0;
         Set<User> users_by_rep = new TreeSet<>((u1, u2) -> {
@@ -491,7 +623,7 @@ public class TCD implements li3.TADCommunity {
                                .forEach(p -> tags.addAll(p.getTags()));
             i++;
         }
-        // neste momentos temos uma lista com todas as tags a serem contadas (com repeticoes)
+        // neste momento temos uma lista com todas as tags a serem contadas (com repeticoes)
         // Map com id - num_ocur
         Map<Long, Long> tags_ocur = tags.stream()
                                         .collect(Collectors.groupingBy(Tag::getID, Collectors.counting()));
@@ -508,12 +640,24 @@ public class TCD implements li3.TADCommunity {
     }
 
 
-    // Função para ver se uma data pertence a um dado intervalo de datas
 
+    /**
+     * Método que verifica se uma data pertence a um dado intervalo (inclusive)
+     * @param to_check
+     * @param begin
+     * @param end
+     * @return
+     */
     private static boolean isBetween(LocalDate to_check, LocalDate begin, LocalDate end) {
         return (to_check.isAfter(begin) && to_check.isBefore(end)) || to_check.equals(begin) || to_check.equals(end);
     }
 
+    /**
+     * Método que, dado um id, retorna o Post correspondente
+     * @param id
+     * @return
+     * @throws PostNotFoundException
+     */
     private Post getPost(long id) throws PostNotFoundException {
         LocalDateTime data = postAux.get(id);
 
@@ -525,6 +669,13 @@ public class TCD implements li3.TADCommunity {
         return posts.get(key);
     }
 
+
+    /**
+     * Método que, dado um id, retorna o User correspondente
+     * @param id
+     * @return
+     * @throws UserNotFoundException
+     */
     private User getUser(long id) throws UserNotFoundException {
         User user = this.users.get(id);
 
@@ -534,6 +685,13 @@ public class TCD implements li3.TADCommunity {
         return user;
     }
 
+
+    /**
+     * Método que, dado o nome duma Tag, retorna a Tag correspondente
+     * @param tag_name
+     * @return
+     * @throws TagNotFoundException
+     */
     private Tag getTag(String tag_name) throws TagNotFoundException {
         Tag tag = this.tags.get(tag_name);
 

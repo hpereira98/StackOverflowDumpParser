@@ -16,6 +16,9 @@ public class Menu implements Serializable {
 
     private List<List<String>> menus;
 
+    /**
+     * Construtor default da classe Menu
+     */
     public Menu(){
         this.menus = new ArrayList<>();
 
@@ -37,11 +40,19 @@ public class Menu implements Serializable {
     }
 
 
+    /**
+     * Método que imprime o tempo
+     * @param time
+     */
     public static void printTempo(long time) {
         System.out.println("Tempo em ms: ");
         System.out.println(time);
     }
 
+    /**
+     * Método que imprime o resultado da query 1
+     * @param par
+     */
     public static void printResultQ1(Pair<String,String> par){
         System.out.println("Resultado: ");
         System.out.println("Nome do autor: " + par.getSnd());
@@ -49,6 +60,10 @@ public class Menu implements Serializable {
         holdResultDisplay();
     }
 
+    /**
+     * Método que imprime o resultado da query 3
+     * @param par
+     */
     public static void printResultQ3(Pair<Long,Long> par){
         System.out.println("Resultado: ");
         System.out.println("Número de perguntas: " + par.getFst());
@@ -56,6 +71,9 @@ public class Menu implements Serializable {
         holdResultDisplay();
     }
 
+    /**
+     * Método que imprime uma lista
+     */
     public static void printLongList (List<Long> list){
         int i=1;
         System.out.println("Resultado: ");
@@ -65,6 +83,10 @@ public class Menu implements Serializable {
         holdResultDisplay();
     }
 
+    /**
+     * Método que imprime o resultado da query 5
+     * @param par
+     */
     public static void printResultQ5 (Pair<String, List<Long>> par){
         System.out.println("Resultado: ");
         System.out.println("Short Bio: " + par.getFst());
@@ -72,12 +94,19 @@ public class Menu implements Serializable {
         printLongList(par.getSnd());
     }
 
+    /**
+     * Método que imprime o resultado da query 10
+     * @param id
+     */
     public static void printResultQ10 (Long id){
         System.out.println("Resultado: ");
         System.out.println("Melhor resposta: " + id);
         holdResultDisplay();
     }
 
+    /**
+     * Método que lê a opção do utilizador
+     */
     public static int readOp(){
         int op=-1;
         Scanner sc = new Scanner(System.in);
@@ -87,20 +116,32 @@ public class Menu implements Serializable {
         return op;
     }
 
+    /**
+     * Método que imprime um separador
+     */
     public static void printSeparador(){
         System.out.println("********LI3 - JAVA********");
     }
 
+    /**
+     * Método que imprime o menu inicial
+     */
     public void showMainMenuOps(){
         for(String op : this.menus.get(0))
             System.out.println(op);
     }
 
+    /**
+     * Método que imprime o menu das queries disponiveis
+     */
     public void showQueriesMenuOps(){
         for(String op : this.menus.get(1))
             System.out.println(op);
     }
 
+    /**
+     * Método que lê um ID
+     */
     public static long getID(){
         Scanner sc = new Scanner(System.in);
         System.out.println("Insira o ID: ");
@@ -114,6 +155,9 @@ public class Menu implements Serializable {
         return id;
     }
 
+    /**
+     * Método que lê um número
+     */
     public static int getN(){
         Scanner sc = new Scanner(System.in);
         System.out.println("Insira o N: ");
@@ -127,6 +171,9 @@ public class Menu implements Serializable {
         return n;
     }
 
+    /**
+     * Método que lê uma data no formato (YYYY-MM-dd)
+     */
     public static LocalDate getData(int tipo){ //tipo 0: begin date, tipo 1: end date
         Scanner sc = new Scanner(System.in);
         String aux="";
@@ -145,6 +192,11 @@ public class Menu implements Serializable {
         return data;
     }
 
+    /**
+     * Método que verifica se uma data é do formato (YYYY-MM-dd)
+     * @param string
+     * @return
+     */
     private static boolean isDate(String string){
         LocalDate data = null;
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("uuuu-MM-dd").withResolverStyle(ResolverStyle.STRICT);;
@@ -157,6 +209,11 @@ public class Menu implements Serializable {
         }
     }
 
+    /**
+     * Método que lê uma String
+     * @param tipo
+     * @return
+     */
     public static String getString(int tipo){ //tipo 0: tag para as query4; tipo 1: palavra para a Query8
         Scanner sc = new Scanner(System.in);
         String res ="";
@@ -169,6 +226,10 @@ public class Menu implements Serializable {
         return res;
     }
 
+    /**
+     * Método que lê o path do dump
+     * @return
+     */
     public static String getDumpPath(){ //tipo 0: tag para as query4; tipo 1: palavra para a Query8
         Scanner sc = new Scanner(System.in);
         String path ="";
@@ -180,6 +241,9 @@ public class Menu implements Serializable {
         return path;
     }
 
+    /**
+     *
+     */
     private static void holdResultDisplay(){
         Scanner sc = new Scanner(System.in);
         System.out.println("0 - Retroceder");
