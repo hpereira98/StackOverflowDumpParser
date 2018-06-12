@@ -31,219 +31,10 @@ public class TCD implements li3.TADCommunity {
         this.tags = new HashMap<>();
     }
 
+    /* -------------------------------- DEFINIÇÃO DAS QUERIES -------------------------------- */
 
 
-    // PARSER
-
-    /**
-     * Método que carrega para a estrutura os users
-     * @param path diretoria do dump
-     * @throws XMLStreamException
-     * @throws FileNotFoundException
-     */
-    private void loadUsers(String path) throws XMLStreamException, FileNotFoundException {
-        XMLInputFactory input = XMLInputFactory.newInstance();
-        XMLStreamReader reader = null;
-
-        reader = input.createXMLStreamReader(new FileInputStream(path));
-
-        while (reader.hasNext()) {
-            int eventType = reader.next();
-            long id = -2;
-            String name = "";
-            int rep = 0;
-            String bio = "";
-
-            switch (eventType) {
-                case XMLStreamReader.START_ELEMENT:
-                    String qName = reader.getName().getLocalPart();
-                    if (qName.equalsIgnoreCase("row")) {
-                        for (int i = 0; i < reader.getAttributeCount(); i++) {
-                            switch (reader.getAttributeLocalName(i)) {
-                                case "Id":
-                                    id = Long.parseLong(reader.getAttributeValue(i));
-                                    break;
-                                case "DisplayName":
-                                    name = reader.getAttributeValue(i);
-                                    break;
-                                case "Reputation":
-                                    rep = Integer.parseInt(reader.getAttributeValue(i));
-                                    break;
-                                case "AboutMe":
-                                    bio = (reader.getAttributeValue(i));
-                                    break;
-                            }
-                        }
-                        User user = new User(id, name, 0, rep, bio, new TreeSet<>());
-                        users.put(id, user);
-                    }
-                    break;
-
-                    case XMLStreamReader.END_ELEMENT:
-                        break;
-            }
-        }
-        reader.close();
-    }
-
-
-    /**
-     * Método que carrega para a estrutura os posts
-     * @param path diretoria do dump
-     * @throws XMLStreamException
-     * @throws FileNotFoundException
-     */
-    private void loadPosts(String path) throws XMLStreamException, FileNotFoundException {
-        XMLInputFactory input = XMLInputFactory.newInstance();
-        XMLStreamReader reader = null;
-
-        reader = input.createXMLStreamReader(new FileInputStream(path));
-
-        while (reader.hasNext()) {
-            int eventType = reader.next();
-            long id = -2;
-            String titulo = "";
-            long owner_id = -2;
-            int type_id = -2;
-            long parent_id = -2;
-            LocalDateTime data = null;
-            String tags_str = "";
-            int score = 0;
-            int n_comments = 0;
-            int n_answers = 0;
-
-            switch (eventType) {
-                case XMLStreamReader.START_ELEMENT:
-                    String qName = reader.getName().getLocalPart();
-                    if (qName.equalsIgnoreCase("row")) {
-                        for (int i = 0; i < reader.getAttributeCount(); i++) {
-                            switch (reader.getAttributeLocalName(i)) {
-                                case "Id":
-                                    id = Long.parseLong(reader.getAttributeValue(i));
-                                    break;
-                                case "Title":
-                                    titulo = reader.getAttributeValue(i);
-                                    break;
-                                case "OwnerUserId":
-                                    owner_id = Long.parseLong(reader.getAttributeValue(i));
-                                    break;
-                                case "PostTypeId":
-                                    type_id = Integer.parseInt(reader.getAttributeValue(i));
-                                    break;
-                                case "ParentId":
-                                    parent_id = Long.parseLong(reader.getAttributeValue(i));
-                                    break;
-                                case "CreationDate":
-                                    data = LocalDateTime.parse(reader.getAttributeValue(i));
-                                    break;
-                                case "Tags":
-                                    tags_str = reader.getAttributeValue(i);
-                                    break;
-                                case "Score":
-                                    score = Integer.parseInt(reader.getAttributeValue(i));
-                                    break;
-                                case "CommentCount":
-                                    n_comments = Integer.parseInt(reader.getAttributeValue(i));
-                                    break;
-                                case "AnswerCount":
-                                    n_answers = Integer.parseInt(reader.getAttributeValue(i));
-                                    break;
-                            }
-                        }
-                        PostKey key = new PostKey(data, id);
-                        Post post = new Post(id, titulo, owner_id, type_id, parent_id, data, tagsToList(tags_str), score, n_comments, n_answers);
-                        posts.put(key, post);
-
-                        postAux.put(id, data);
-
-                        User user = users.get(owner_id);
-                        if (user != null) {
-                            user.addPost(post);
-                        }
-                    }
-                    break;
-
-                    case XMLStreamReader.END_ELEMENT:
-                        break;
-            }
-        }
-        reader.close();
-    }
-
-
-    /**
-     * Método que carrega para a estrutura as tags
-     * @param path diretoria do dump
-     * @throws XMLStreamException
-     * @throws FileNotFoundException
-     */
-    private void loadTags(String path) throws XMLStreamException, FileNotFoundException {
-        XMLInputFactory input = XMLInputFactory.newInstance();
-        XMLStreamReader reader = null;
-
-        reader = input.createXMLStreamReader(new FileInputStream(path));
-
-        while (reader.hasNext()) {
-            int eventType = reader.next();
-            long id = -2;
-            String name = "";
-
-            switch (eventType) {
-                case XMLStreamReader.START_ELEMENT:
-                    String qName = reader.getName().getLocalPart();
-                    if (qName.equalsIgnoreCase("row")) {
-                        for (int i = 0; i < reader.getAttributeCount(); i++) {
-                            switch (reader.getAttributeLocalName(i)) {
-                                case "Id":
-                                    id = Long.parseLong(reader.getAttributeValue(i));
-                                    break;
-                                case "TagName":
-                                    name = reader.getAttributeValue(i);
-                                    break;
-                            }
-                        }
-                        Tag tag = new Tag(name, id);
-                        tags.put(name, tag);
-                    }
-                    break;
-
-                    case XMLStreamReader.END_ELEMENT:
-                        break;
-            }
-        }
-        reader.close();
-    }
-
-
-    /**
-     * Método que separa as tags duma string para ArrayList
-     * @param str string com todas as tags
-     * @return lista com as tags separadas
-     */
-    private ArrayList<Tag> tagsToList(String str) {
-        ArrayList<Tag> lista = new ArrayList<>();
-
-        if (str != null && str.length() > 1) {
-            str = str.replace("<", "").replace(">", ",");
-            str = str.substring(0, str.length() - 1);
-            String[] strs = str.split(",");
-
-            for (String string : strs) {
-                Tag nova = this.tags.get(string);
-                if (nova != null) lista.add(nova);
-            }
-        }
-
-        return lista;
-    }
-
-
-
-
-
-
-    /* -------------------------------- DEFINIÇÃO DAS QUERIES --------------------------------*/
-
+    // Load
 
     /**
      * Método que carrega todos os dados para a estrutura
@@ -304,7 +95,7 @@ public class TCD implements li3.TADCommunity {
     public List<Long> topMostActive(int N) {
         Set<User> users_by_nposts = new TreeSet<>((u1, u2) -> {
                                                                 if (u2.getNPosts() - u1.getNPosts() == 0)
-                                                                    return Long.compare(u2.getID(), u1.getID());
+                                                                    return Long.compare(u1.getID(), u2.getID());
                                                                 return Integer.compare(u2.getNPosts(), u1.getNPosts());
                                                                });
 
@@ -358,6 +149,7 @@ public class TCD implements li3.TADCommunity {
 
         List<Post> questions = posts_by_type.get(1);
         List<Post> answers = posts_by_type.get(2);
+
         if(questions != null) n_questions = questions.size();
         if(answers != null) n_answers = answers.size();
 
@@ -518,8 +310,8 @@ public class TCD implements li3.TADCommunity {
         User user1 = getUser(id1);
         User user2 = getUser(id2);
 
-        List<Post> user1_posts = user1.getUserPosts();
-        List<Post> user2_posts = user2.getUserPosts();
+        Set<Post> user1_posts = user1.getUserPosts();
+        Set<Post> user2_posts = user2.getUserPosts();
 
         swapAnswerToQuestion(user1_posts);
         swapAnswerToQuestion(user2_posts);
@@ -533,28 +325,6 @@ public class TCD implements li3.TADCommunity {
     }
 
 
-
-    /**
-     * Método para trocar as respostas pela respetiva pergunta
-     * @param posts
-     */
-    private void swapAnswerToQuestion(Collection<Post> posts){
-        List<Post> respostas = posts.stream().filter(p -> p.getTypeID()==2)
-                                             .collect(Collectors.toList());
-
-        posts.removeAll(respostas); // remover todas as respostas do set
-
-        for(Post r : respostas){ // procurar a pergunta para a qual a resposta foi dada e colocar no set
-            Long parent_id = r.getParentID();
-            LocalDateTime data = this.postAux.get(parent_id);
-            if(data != null){
-                PostKey aux = new PostKey(data, parent_id);
-                posts.add(this.posts.get(aux));
-            }
-        }
-    }
-
-
     // Query 10
 
     /**
@@ -565,7 +335,7 @@ public class TCD implements li3.TADCommunity {
      * @throws QuestionWithoutAnswersException
      */
     public long betterAnswer(long id) throws PostNotFoundException, QuestionWithoutAnswersException{
-        Post post = getPost(id); // apenas serve para verificar se o post existe ou nao
+        Post post = getPost(id); // apenas serve para verificar se o post existe ou nao, se nao existir lança excepção
         Set<Post> answers_by_score = new TreeSet<>((p1,p2) -> Double.compare(answer_score(p2), answer_score(p1)));
 
         this.posts.values().stream()
@@ -579,18 +349,6 @@ public class TCD implements li3.TADCommunity {
     }
 
 
-    /**
-     * Método para calcular o score de um post
-     * @param post
-     * @return
-     */
-    private double answer_score(Post post){
-         double owner_rep = this.users.get(post.getOwnerID()).getRep();
-
-         return post.getScore() * 0.65 +
-                owner_rep * 0.25 +
-                post.getNComments() * 0.1;
-    }
 
 
     // Query 11
@@ -623,13 +381,18 @@ public class TCD implements li3.TADCommunity {
                                .forEach(p -> tags.addAll(p.getTags()));
             i++;
         }
-        // neste momento temos uma lista com todas as tags a serem contadas (com repeticoes)
-        // Map com id - num_ocur
+
         Map<Long, Long> tags_ocur = tags.stream()
                                         .collect(Collectors.groupingBy(Tag::getID, Collectors.counting()));
 
+        Comparator<Map.Entry<Long,Long>> comp = (e1,e2) -> {
+                                                            if(e1.getValue() == e2.getValue())
+                                                                return Long.compare(e1.getKey(), e2.getKey());
+                                                            return Long.compare(e2.getValue(), e1.getValue());
+                                                            };
+
         return tags_ocur.entrySet().stream()
-                                   .sorted(Map.Entry.<Long,Long>comparingByValue().reversed())
+                                   .sorted(comp)
                                    .limit(N)
                                    .map(Map.Entry::getKey)
                                    .collect(Collectors.toList());
@@ -639,6 +402,7 @@ public class TCD implements li3.TADCommunity {
 
     }
 
+    /* -------------------------------- Funções e métodos auxiliares às queries -------------------------------- */
 
 
     /**
@@ -699,6 +463,250 @@ public class TCD implements li3.TADCommunity {
             throw new TagNotFoundException(tag_name);
 
         return tag;
+    }
+
+
+
+    // Auxiliares do parser
+
+    /**
+     * Método que carrega para a estrutura os users
+     * @param path diretoria do dump
+     * @throws XMLStreamException
+     * @throws FileNotFoundException
+     */
+    private void loadUsers(String path) throws XMLStreamException, FileNotFoundException {
+        XMLInputFactory input = XMLInputFactory.newInstance();
+        XMLStreamReader reader = null;
+
+        reader = input.createXMLStreamReader(new FileInputStream(path));
+
+        while (reader.hasNext()) {
+            int eventType = reader.next();
+            long id = -2;
+            String name = "";
+            int rep = 0;
+            String bio = "";
+
+            switch (eventType) {
+                case XMLStreamReader.START_ELEMENT:
+                    String qName = reader.getName().getLocalPart();
+                    if (qName.equalsIgnoreCase("row")) {
+                        for (int i = 0; i < reader.getAttributeCount(); i++) {
+                            switch (reader.getAttributeLocalName(i)) {
+                                case "Id":
+                                    id = Long.parseLong(reader.getAttributeValue(i));
+                                    break;
+                                case "DisplayName":
+                                    name = reader.getAttributeValue(i);
+                                    break;
+                                case "Reputation":
+                                    rep = Integer.parseInt(reader.getAttributeValue(i));
+                                    break;
+                                case "AboutMe":
+                                    bio = (reader.getAttributeValue(i));
+                                    break;
+                            }
+                        }
+                        User user = new User(id, name, 0, rep, bio, new TreeSet<>());
+                        users.put(id, user);
+                    }
+                    break;
+
+                case XMLStreamReader.END_ELEMENT:
+                    break;
+            }
+        }
+        reader.close();
+    }
+
+
+    /**
+     * Método que carrega para a estrutura os posts
+     * @param path diretoria do dump
+     * @throws XMLStreamException
+     * @throws FileNotFoundException
+     */
+    private void loadPosts(String path) throws XMLStreamException, FileNotFoundException {
+        XMLInputFactory input = XMLInputFactory.newInstance();
+        XMLStreamReader reader = null;
+
+        reader = input.createXMLStreamReader(new FileInputStream(path));
+
+        while (reader.hasNext()) {
+            int eventType = reader.next();
+            long id = -2;
+            String titulo = "";
+            long owner_id = -2;
+            int type_id = -2;
+            long parent_id = -2;
+            LocalDateTime data = null;
+            String tags_str = "";
+            int score = 0;
+            int n_comments = 0;
+            int n_answers = 0;
+
+            switch (eventType) {
+                case XMLStreamReader.START_ELEMENT:
+                    String qName = reader.getName().getLocalPart();
+                    if (qName.equalsIgnoreCase("row")) {
+                        for (int i = 0; i < reader.getAttributeCount(); i++) {
+                            switch (reader.getAttributeLocalName(i)) {
+                                case "Id":
+                                    id = Long.parseLong(reader.getAttributeValue(i));
+                                    break;
+                                case "Title":
+                                    titulo = reader.getAttributeValue(i);
+                                    break;
+                                case "OwnerUserId":
+                                    owner_id = Long.parseLong(reader.getAttributeValue(i));
+                                    break;
+                                case "PostTypeId":
+                                    type_id = Integer.parseInt(reader.getAttributeValue(i));
+                                    break;
+                                case "ParentId":
+                                    parent_id = Long.parseLong(reader.getAttributeValue(i));
+                                    break;
+                                case "CreationDate":
+                                    data = LocalDateTime.parse(reader.getAttributeValue(i));
+                                    break;
+                                case "Tags":
+                                    tags_str = reader.getAttributeValue(i);
+                                    break;
+                                case "Score":
+                                    score = Integer.parseInt(reader.getAttributeValue(i));
+                                    break;
+                                case "CommentCount":
+                                    n_comments = Integer.parseInt(reader.getAttributeValue(i));
+                                    break;
+                                case "AnswerCount":
+                                    n_answers = Integer.parseInt(reader.getAttributeValue(i));
+                                    break;
+                            }
+                        }
+
+                        PostKey key = new PostKey(data, id);
+                        Post post = new Post(id, titulo, owner_id, type_id, parent_id, data, tagsToList(tags_str), score, n_comments, n_answers);
+
+                        posts.put(key, post);
+                        postAux.put(id, data);
+
+                        User user = users.get(owner_id);
+                        if (user != null) {
+                            user.addPost(post);
+                        }
+                    }
+                    break;
+
+                case XMLStreamReader.END_ELEMENT:
+                    break;
+            }
+        }
+        reader.close();
+    }
+
+
+    /**
+     * Método que carrega para a estrutura as tags
+     * @param path diretoria do dump
+     * @throws XMLStreamException
+     * @throws FileNotFoundException
+     */
+    private void loadTags(String path) throws XMLStreamException, FileNotFoundException {
+        XMLInputFactory input = XMLInputFactory.newInstance();
+        XMLStreamReader reader = null;
+
+        reader = input.createXMLStreamReader(new FileInputStream(path));
+
+        while (reader.hasNext()) {
+            int eventType = reader.next();
+            long id = -2;
+            String name = "";
+
+            switch (eventType) {
+                case XMLStreamReader.START_ELEMENT:
+                    String qName = reader.getName().getLocalPart();
+                    if (qName.equalsIgnoreCase("row")) {
+                        for (int i = 0; i < reader.getAttributeCount(); i++) {
+                            switch (reader.getAttributeLocalName(i)) {
+                                case "Id":
+                                    id = Long.parseLong(reader.getAttributeValue(i));
+                                    break;
+                                case "TagName":
+                                    name = reader.getAttributeValue(i);
+                                    break;
+                            }
+                        }
+                        Tag tag = new Tag(name, id);
+                        tags.put(name, tag);
+                    }
+                    break;
+
+                case XMLStreamReader.END_ELEMENT:
+                    break;
+            }
+        }
+        reader.close();
+    }
+
+
+    /**
+     * Método que separa as tags duma string para List de string
+     * @param str string com todas as tags
+     * @return lista com as tags separadas
+     */
+    private List<Tag> tagsToList(String str) {
+       List<Tag> lista = new ArrayList<>();
+
+        if (str != null && str.length() > 1) {
+            str = str.replace("<", "").replace(">", ",");
+            str = str.substring(0, str.length() - 1);
+            String[] strs = str.split(",");
+
+            for (String string : strs) {
+                Tag nova = this.tags.get(string);
+                if (nova != null) lista.add(nova);
+            }
+        }
+
+        return lista;
+    }
+
+    // Auxiliar query 9
+
+    /**
+     * Método para trocar as respostas pela respetiva pergunta
+     * @param posts
+     */
+    private void swapAnswerToQuestion(Collection<Post> posts){
+        List<Post> respostas = posts.stream().filter(p -> p.getTypeID()==2)
+                .collect(Collectors.toList());
+
+        posts.removeAll(respostas); // remover todas as respostas do set
+
+        for(Post r : respostas){ // procurar a pergunta para a qual a resposta foi dada e colocar no set
+            Long parent_id = r.getParentID();
+            LocalDateTime data = this.postAux.get(parent_id);
+            if(data != null){
+                PostKey aux = new PostKey(data, parent_id);
+                posts.add(this.posts.get(aux));
+            }
+        }
+    }
+
+    // Auxiliar query 10
+
+    /**
+     * Método para calcular o score de um post
+     * @param post
+     * @return
+     */
+    private double answer_score(Post post){
+        double owner_rep = this.users.get(post.getOwnerID()).getRep();
+
+        return post.getScore() * 0.65 +
+                owner_rep * 0.25 +
+                post.getNComments() * 0.1;
     }
 
 }

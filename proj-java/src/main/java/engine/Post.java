@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Post {
+public class Post implements Comparable<Post> {
 
     private long id;
     private String titulo;
@@ -17,6 +17,12 @@ public class Post {
     private int n_comments;
     private int n_answers;
 
+
+    public int compareTo(Post o) {
+        if(this.data.equals(o.getData()))
+            return Long.compare(this.id, o.getID());
+        return o.getData().compareTo(this.data);
+    }
 
     // Getters & Setters
 
@@ -269,7 +275,7 @@ public class Post {
      * @param n_comments
      * @param n_answers
      */
-    public Post(long id, String titulo, long owner_id, int type_id, long parent_id, LocalDateTime data, ArrayList<Tag> tags, int score, int n_comments, int n_answers) {
+    public Post(long id, String titulo, long owner_id, int type_id, long parent_id, LocalDateTime data, List<Tag> tags, int score, int n_comments, int n_answers) {
         this.id = id;
         this.titulo = titulo;
         this.owner_id = owner_id;

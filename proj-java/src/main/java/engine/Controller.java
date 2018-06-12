@@ -20,7 +20,7 @@ public class Controller {
     /**
      * Construtor default da classe Controller
      */
-    public Controller(){ // ver com o stor se esta correto e ver como é que faz print dos resultados !!!!!!!!!!!!!!!!!!!
+    public Controller(){
         this.qe = new TCD();
         this.menu = new Menu();
         this.log = new MyLog("results");
@@ -41,7 +41,7 @@ public class Controller {
             switch(opcao){
                 case 0:  System.out.println("\nAté à próxima!"); break;
                 case 1:  loadMenu(); break;
-                default: System.out.println("Insira uma opção correta");
+                default: System.out.println("Insira uma opção correta"); break;
             }
         }while(opcao != 0);
     }
@@ -52,6 +52,7 @@ public class Controller {
     private void loadMenu(){
         long before, after;
         String path="";
+
         while(path.equals("")) {
             Menu.printSeparador();
             path = Menu.getDumpPath();
@@ -62,8 +63,11 @@ public class Controller {
                 before = System.currentTimeMillis();
                 qe.load(path);
                 after = System.currentTimeMillis();
+
                 logtime.writeLog("LOAD -> " + (after - before) + " ms");
-                Menu.printTempo(after - before); // PRINT TEMPO
+
+                Menu.printTempo(after - before);
+
                 execQueriesMenu();
             }
             catch (LoadDataErrorException e) {
@@ -98,7 +102,7 @@ public class Controller {
                 case 9: handlerQuery9(); break;
                 case 10: handlerQuery10(); break;
                 case 11: handlerQuery11(); break;
-                default: System.out.println("Insira uma opção correta");
+                default: System.out.println("Insira uma opção correta"); break;
             }
         }while(opcao != 0);
     }
@@ -119,7 +123,7 @@ public class Controller {
             Menu.printResultQ1(q1); // PRINT RESULT
         }
         catch (PostNotFoundException e){
-            System.out.println("O post com ID: " + e.getMessage() + " não existe.");
+            System.out.println("O Post com ID: " + e.getMessage() + " não existe.");
         }
         catch (UserNotFoundException e){
             System.out.println("O User com ID: " + e.getMessage() + " não existe.");
@@ -135,8 +139,10 @@ public class Controller {
         long before = System.currentTimeMillis();
         List<Long> q2 = qe.topMostActive(n);
         long after = System.currentTimeMillis();
+
         logtime.writeLog("Query 2: -> " + (after - before) + " ms");
         log.writeLog("Query2 -> " + q2);
+
         Menu.printTempo(after-before); // PRINT TEMPO
         Menu.printLongList(q2); // PRINT RESULT
     }
@@ -151,8 +157,10 @@ public class Controller {
         long before = System.currentTimeMillis();
         Pair<Long,Long> q3 = qe.totalPosts(begin, end);
         long after = System.currentTimeMillis();
+
         logtime.writeLog("Query 3: -> " + (after - before) + " ms");
         log.writeLog("Query3 -> " + q3);
+
         Menu.printTempo(after-before); // PRINT TEMPO
         Menu.printResultQ3(q3); // PRINT RESULT
     }
@@ -169,10 +177,12 @@ public class Controller {
             long before = System.currentTimeMillis();
             List<Long> q4 = qe.questionsWithTag(tag, begin, end);
             long after = System.currentTimeMillis();
+
             logtime.writeLog("Query 4: -> " + (after - before) + " ms");
             log.writeLog("Query4 -> " + q4);
-            Menu.printTempo(after-before); // PRINT TEMPO
-            Menu.printLongList(q4); // PRINT RESULT
+
+            Menu.printTempo(after-before);
+            Menu.printLongList(q4);
         }
         catch (TagNotFoundException e){
             System.out.println("Tag " + e.getMessage() + " não existe");
@@ -189,8 +199,10 @@ public class Controller {
             long before = System.currentTimeMillis();
             Pair<String, List<Long>> q5 = qe.getUserInfo(id);
             long after = System.currentTimeMillis();
+
             logtime.writeLog("Query 5: -> " + (after - before) + " ms");
             log.writeLog("Query5 -> " + q5);
+
             Menu.printTempo(after-before); // PRINT TEMPO
             Menu.printResultQ5(q5); // PRINT RESULT
         }
@@ -210,16 +222,19 @@ public class Controller {
         int n = Menu.getN();
 
         long before = System.currentTimeMillis();
+
         if(query == 6)
             result = qe.mostVotedAnswers(n, begin, end);
         else
             result = qe.mostAnsweredQuestions(n, begin, end);
 
         long after = System.currentTimeMillis();
+
         logtime.writeLog("Query "+query+": -> " + (after - before) + " ms");
         log.writeLog("Query"+query+" -> " + qe);
-        Menu.printTempo(after-before); // PRINT TEMPO
-        Menu.printLongList(result); // PRINT RESULT
+
+        Menu.printTempo(after-before);
+        Menu.printLongList(result);
     }
 
     /**
@@ -232,10 +247,12 @@ public class Controller {
         long before = System.currentTimeMillis();
         List<Long> q8 = qe.containsWord(n, word);
         long after = System.currentTimeMillis();
+
         logtime.writeLog("Query 8: -> " + (after - before) + " ms");
         log.writeLog("Query8 -> " + q8);
-        Menu.printTempo(after-before); // PRINT TEMPO
-        Menu.printLongList(q8); // PRINT RESULT
+
+        Menu.printTempo(after-before);
+        Menu.printLongList(q8);
     }
 
     /**
@@ -250,10 +267,12 @@ public class Controller {
             long before = System.currentTimeMillis();
             List<Long> q9 = qe.bothParticipated(n, id1, id2);
             long after = System.currentTimeMillis();
+
             logtime.writeLog("Query 9: -> " + (after - before) + " ms");
             log.writeLog("Query9 -> " + q9);
-            Menu.printTempo(after-before); // PRINT TEMPO
-            Menu.printLongList(q9); // PRINT RESULT
+
+            Menu.printTempo(after-before);
+            Menu.printLongList(q9);
         }
         catch (UserNotFoundException e){
             System.out.println("O User com ID: " + e.getMessage() + " não existe.");
@@ -270,10 +289,12 @@ public class Controller {
             long before = System.currentTimeMillis();
             long q10 = qe.betterAnswer(id);
             long after = System.currentTimeMillis();
+
             logtime.writeLog("Query 10: -> " + (after - before) + " ms");
             log.writeLog("Query10 -> " + q10);
-            Menu.printTempo(after-before); // PRINT TEMPO
-            Menu.printResultQ10(q10); // PRINT RESULT
+
+            Menu.printTempo(after-before);
+            Menu.printResultQ10(q10);
         }
         catch (PostNotFoundException e){
             System.out.println("O post com ID: " + e.getMessage() + " não existe.");
@@ -294,10 +315,12 @@ public class Controller {
         long before = System.currentTimeMillis();
         List<Long> q11 = qe.mostUsedBestRep(n, begin, end);
         long after = System.currentTimeMillis();
+
         logtime.writeLog("Query 11: -> " + (after - before) + " ms");
         log.writeLog("Query11 -> " + q11);
-        Menu.printTempo(after-before); // PRINT TEMPO
-        Menu.printLongList(q11); // PRINT RESULT
+
+        Menu.printTempo(after-before);
+        Menu.printLongList(q11);
     }
 
 }

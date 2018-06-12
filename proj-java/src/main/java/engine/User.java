@@ -110,7 +110,7 @@ public class User {
      * Getter dos posts que o User fez
      * @return posts do User
      */
-    public List<Post> getUserPosts() { return new ArrayList<>(this.user_posts);}
+    public Set<Post> getUserPosts() { return new TreeSet<>(this.user_posts);}
 
     /**
      * Setter dos posts que o User fez
@@ -195,7 +195,7 @@ public class User {
         this.n_posts = n_posts;
         this.reputacao = reputacao;
         this.short_bio = short_bio;
-        this.user_posts = new TreeSet<>((p1,p2) -> p2.getData().compareTo(p1.getData()));
+        this.user_posts = new TreeSet<>();
         this.user_posts.addAll(user_posts);
     }
 
@@ -209,7 +209,7 @@ public class User {
         this.n_posts = outro.getNPosts();
         this.reputacao = outro.getRep();
         this.short_bio = outro.getShortBio();
-        this.user_posts = new TreeSet<>((p1,p2) -> p2.getData().compareTo(p1.getData()));
+        this.user_posts = new TreeSet<>();
         this.user_posts.addAll(outro.getUserPosts());
     }
 

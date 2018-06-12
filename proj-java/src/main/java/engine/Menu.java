@@ -39,15 +39,33 @@ public class Menu implements Serializable {
                                      "0 - Retroceder"));
     }
 
+    /* ---- Display dos menus ---- */
+
 
     /**
-     * Método que imprime o tempo
-     * @param time
+     * Método que imprime o menu inicial
      */
-    public static void printTempo(long time) {
-        System.out.println("Tempo em ms: ");
-        System.out.println(time);
+    public void showMainMenuOps(){
+        for(String op : this.menus.get(0))
+            System.out.println(op);
     }
+
+    /**
+     * Método que imprime o menu das queries disponiveis
+     */
+    public void showQueriesMenuOps(){
+        for(String op : this.menus.get(1))
+            System.out.println(op);
+    }
+
+    /**
+     * Método que imprime um separador
+     */
+    public static void printSeparador(){
+        System.out.println("********LI3 - JAVA********");
+    }
+
+    /* ----- Métodos para imprimir os resultados das queries ----- */
 
     /**
      * Método que imprime o resultado da query 1
@@ -78,7 +96,7 @@ public class Menu implements Serializable {
         int i=1;
         System.out.println("Resultado: ");
         for(Long id : list){
-            System.out.println((i++) + " - " + id);
+            System.out.println((i++) + "º - " + id);
         }
         holdResultDisplay();
     }
@@ -105,38 +123,30 @@ public class Menu implements Serializable {
     }
 
     /**
+     * Método que imprime o tempo que uma query demorou a executar
+     * @param time
+     */
+    public static void printTempo(long time) {
+        System.out.println("Tempo em ms: ");
+        System.out.println(time);
+    }
+
+    /* ---- Funções para leitura dos valores do stdin ---- */
+
+
+    /**
      * Método que lê a opção do utilizador
      */
     public static int readOp(){
         int op=-1;
         Scanner sc = new Scanner(System.in);
+
         System.out.println("Operação a realizar: ");
+
         while(op == -1)
             op = sc.nextInt();
+
         return op;
-    }
-
-    /**
-     * Método que imprime um separador
-     */
-    public static void printSeparador(){
-        System.out.println("********LI3 - JAVA********");
-    }
-
-    /**
-     * Método que imprime o menu inicial
-     */
-    public void showMainMenuOps(){
-        for(String op : this.menus.get(0))
-            System.out.println(op);
-    }
-
-    /**
-     * Método que imprime o menu das queries disponiveis
-     */
-    public void showQueriesMenuOps(){
-        for(String op : this.menus.get(1))
-            System.out.println(op);
     }
 
     /**
@@ -149,7 +159,7 @@ public class Menu implements Serializable {
 
         while(id<=0) {
             id = sc.nextLong();
-            if(id<=0) System.out.println("Insira uma ID válido");
+            if(id<=0) System.out.println("Insira um ID válido");
         }
 
         return id;
@@ -177,7 +187,7 @@ public class Menu implements Serializable {
     public static LocalDate getData(int tipo){ //tipo 0: begin date, tipo 1: end date
         Scanner sc = new Scanner(System.in);
         String aux="";
-        LocalDate data = null;
+        LocalDate data;
         boolean flag = false;
 
         if (tipo==0) System.out.println("Insira a data de início: (YYYY-MM-dd)");
@@ -188,25 +198,10 @@ public class Menu implements Serializable {
             flag=isDate(aux);
             if (!flag) System.out.println("Insira uma data válida");
         }
-        data = LocalDate.parse(aux);
-        return data;
-    }
 
-    /**
-     * Método que verifica se uma data é do formato (YYYY-MM-dd)
-     * @param string
-     * @return
-     */
-    private static boolean isDate(String string){
-        LocalDate data = null;
-        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("uuuu-MM-dd").withResolverStyle(ResolverStyle.STRICT);;
-        try {
-            data = LocalDate.parse(string, dateFormat);
-            return true;
-        }
-        catch (DateTimeParseException e) {
-            return false;
-        }
+        data = LocalDate.parse(aux);
+
+        return data;
     }
 
     /**
@@ -241,16 +236,36 @@ public class Menu implements Serializable {
         return path;
     }
 
-    /**
-     *
+    // Métodos auxiliares
+
+    /*
+     * Método que serve para retardar o pop-up do menu das queries e assim permitir melhor consulta dos resultados apresentados
      */
     private static void holdResultDisplay(){
         Scanner sc = new Scanner(System.in);
-        System.out.println("0 - Retroceder");
+        System.out.println("\n0 - Retroceder");
         int opcao;
         do{
             opcao = sc.nextInt();
         }while(opcao!=0);
     }
 
+    /*
+     * Método que verifica se uma data é do formato (YYYY-MM-dd)
+     * @param string
+     * @return
+     */
+    private static boolean isDate(String string){
+        LocalDate data = null;
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("uuuu-MM-dd").withResolverStyle(ResolverStyle.STRICT);;
+        try {
+            data = LocalDate.parse(string, dateFormat);
+            return true;
+        }
+        catch (DateTimeParseException e) {
+            return false;
+        }
+    }
+
 }
+
