@@ -157,34 +157,6 @@ public class TCD implements li3.TADCommunity {
     }
 
 
-    // Query 4
-/*
-    public List<Long> questionsWithTag(String tag_name, LocalDate begin, LocalDate end) throws TagNotFoundException{
-        Tag tag = getTag(tag_name);
-        List<Long> r = new ArrayList<>();
-        Set<Map.Entry<PostKey, Post>> posts_entries = this.posts.entrySet();
-
-        Iterator<Map.Entry<PostKey, Post>> it = posts_entries.iterator();
-
-        while(it.hasNext()){
-            Map.Entry<PostKey, Post> entry = it.next();
-            if(entry.getKey().getData().toLocalDate().isBefore(end)){
-                Map.Entry<PostKey, Post> entry = it.next();
-
-                Post post = entry.getValue();
-                ArrayList<Tag> tags = post.getTags();
-
-                tags.stream().filter(t -> t.getID() == tag.getID())
-                        .forEach(t -> r.add(t.getID()));
-            }
-            if(entry.getKey().getData().toLocalDate().isBefore(begin)) break;
-        }
-
-        return r;
-    }
-*/
-
-    //versao com stream
 
     /**
      * Método que, dado um intervalo de tempo e uma tag, retorna uma LONG_list contendo os IDs de perguntas, feitas no intervalo, que contenham essa tag.
@@ -236,7 +208,7 @@ public class TCD implements li3.TADCommunity {
     public List<Long> mostVotedAnswers(int N, LocalDate begin, LocalDate end) {
         Set<Post> posts_by_votes = new TreeSet<>((p1, p2) -> {
                                                                 if (p2.getScore() == p1.getScore())
-                                                                     return Long.compare(p2.getID(), p1.getID());
+                                                                     return Long.compare(p1.getID(), p2.getID());
                                                                 return p2.getScore() - p1.getScore();
                                                              });
 
@@ -263,7 +235,7 @@ public class TCD implements li3.TADCommunity {
     public List<Long> mostAnsweredQuestions(int N, LocalDate begin, LocalDate end) {
         Set<Post> posts_by_n_answers = new TreeSet<>((p1, p2) -> {
                                                                     if (p2.getNAnswers() == p1.getNAnswers())
-                                                                        return Long.compare(p2.getID(), p1.getID());
+                                                                        return Long.compare(p1.getID(), p2.getID());
                                                                     return p2.getNAnswers() - p1.getNAnswers();
                                                                   });
 

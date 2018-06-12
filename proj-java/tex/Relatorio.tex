@@ -161,7 +161,7 @@ um Post, foi criada a função \textit{getPost}, cuja execução se divide nas d
 	    private int type_id;
 	    private long parent_id;
 	    private LocalDateTime data;
-	    private ArrayList<Tag> tags;
+	    private List<Tag> tags;
 	    private int score;
 	    private int n_comments;
 	    private int n_answers;
@@ -198,8 +198,7 @@ um Post, foi criada a função \textit{getPost}, cuja execução se divide nas d
 
 \label{queries}
 Nesta secção, iremos explicitar a nossa abordagem às interrogações descritas no enunciado,
-desta vez na linguagem \textit{Java}, mostrando algumas partes do código que
-achamos importante incluir, de forma a facilitar a justificação da abordagem referida.
+desta vez na linguagem \textit{Java}.
 
 
 A primeira funcionalidade da aplicação que tivemos que implementar foi o carregamento dos dados a partir dos ficheiros XML. Para tal, assumimos uma abordagem diferente daquela que apresentamos aquando da primeira fase do Projeto em \textit{C}. Isto porque, em vez de carregarmos os documentos todos para a memória, o que seria uma má implementação para ficheiros de grande tamanho, decidimos utilizar a API do Java que permite este carregamento, mas de uma maneira faseada, ou seja, por blocos. A API utilizada foi, portanto, o \texttt{StAX} (\textit{Streaming API for XML}), que permite parsing de ficheiros XML através de \textit{streaming}. Preferimos o \texttt{StAX} face ao \texttt{SAX} pela facilidade de utilização do primeiro.
@@ -210,36 +209,20 @@ Assim sendo, utilizando esta API, fizemos o carregamento dos dados presentes no 
 %% QUERY 1
 \subsection{Info From Post}
 
-A primeira interrogação tinha como objetivo definir uma função que retornasse o título e o nome do autor dado um ID de um Post.
-Se o Post for uma resposta, a função deverá retornar informações (título e utilizador) da pergunta correspondente.
-
-\begin{lstlisting}
-	public Pair<String,String> infoFromPost(long id);
-\end{lstlisting}
-
+A resolução da primeira \textit{query} foi semelhante à estratégia adotada no projeto anterior. Através do método \textit{getPost}, presente na classe \textit{TCD}, tentamos aceder à informação relativa ao \textit{ID} passado como paramêtro. Caso o \textit{post} não exista, é lançada uma exceção que alertará o utilizador para a situação (\textit{PostNotFoundException}). Caso contrário é efetuada uma tentativa de aceder às informações do criador do \textit{post}, através do método \textit{getUser}, ou é repetido o processo caso o \textit{post} seja uma resposta, desta vez, procurando dados sobre a respetiva pergunta. 
 
 
 %% QUERY 2
 \subsection{Top Most Active}
 
-Na segunda interrogação, era-nos pedida uma função que criasse uma lista com os N utilizadores mais ativos, isto é, com o maior número de Posts.
-
-\begin{lstlisting}
-	public List<Long> topMostActive(int N);
-\end{lstlisting}
-
+Para obter a resposta desejada utilizamos como estrutura intermédia um \textit{TreeSet} criado através do seu construtor que permite que lhe seja passado um critério de ordenação como paramêtro. Para tal efeito, recorremos a uma \textit{lambda expression} de forma a suprimir a necessidade de criar uma classe especificamente para se declarar um novo comparador ou usar uma classe interna anónima, cuja leitura é complicada. De seguida inserimos todos os utilizadores nesta árvore através do método \textit{addAll}, e procedemos ao tratemento dos dados sobre a forma de \textit{stream}. Limitamos os elementos da mesma ao número de utilizadores que pretendemos obter e, de seguida, alteramos o tipo dos dados a circular na \textit{stream} para os seus \textit{ID's}, inserindo-os numa lista de imediato.
 
 
 
 %% QUERY 3
 \subsection{Total Posts}
 
-Nesta terceira \textit{query}, a função que desenvolvemos tinha como objetivo obter o número total de posts (identificando perguntas e respostas separadamente) 
-efetuados num dado período de tempo.
 
-\begin{lstlisting}
-	public Pair<Long,Long> totalPosts(LocalDate begin, LocalDate end);
-\end{lstlisting}
 
 %% Comparação das duas versões
 
@@ -247,39 +230,23 @@ efetuados num dado período de tempo.
 %% QUERY 4
 \subsection{Questions with Tag}
 
-A quarta interrogação pedia que criássemos uma lista com os IDs das perguntas que, num dado intervalo de tempo, contivessem uma certa \textit{tag}, sendo que essa 
-lista teria de ser ordenada em cronologia inversa.
-
-\begin{lstlisting}
-	public List<Long> questionsWithTag(String tag, LocalDate begin, LocalDate end);
-\end{lstlisting}
-
-%% Comparação das duas versões
-
+Mais uma vez, a estratégia usada guia-se pelas construções funcionais disponibilizados no \textit{Java 8}. A resolução passa por fazer \textit{stream} dos \textit{post's}, reter apenas aqueles que ocorreram no intervalo de datas passado como parâmetro e que contenham a tag dada. De seguida, finalizamos colecionando os \textit{ID's} dos mesmo para uma lista.
 
 
 %% QUERY 5
 \subsection{Get User Info}
 
-\begin{lstlisting}
-	public Pair<String, List<Long>> getUserInfo(long id);
-\end{lstlisting}
-
-
+Esta \textit{query} tem resolução quase imediata. Simplesmente acedemos à informação respetiva ao utilizador cujo \textit{ID} foi passado como argumento, sendo lançada a respetiva exceção caso este nao exista. Obtemos os seus últimos dez \textit{post's} recorrendo ao mecanismo funcional e por fim montamos o resultado.
 
 %% QUERY 6
 \subsection{Most Voted Answers}
 
-A sexta interrogação tinha como objetivo dar os IDs das N respostas com mais votos, em ordem decrescente do número de votos, num dado intervalo de tempo.
-
-\begin{lstlisting}
-	public List<Long> mostVotedAnswers(int N, LocalDate begin, LocalDate end);
-\end{lstlisting}
+Para solucionar esta \textit{query} criamos um \textit{TreeSet} cujo critério de ordenação tem por base o \textit{Score} dos \textit{post's} que lá vão ser inseridos. Como critério de desempate, utilizamos a ordem crescente dos \textit{ID's}. Posteriormente, todas as respostas ocorridas entre as datas passadas como argumento são inseridas no mesmo. Para finalizar, retiramos os N primeiros elementos do \textit{TreeSet} e construimos uma lista com os seus \textit{ID's}.
 
 
 %% QUERY 7
-\subsection{Most Answered Questions}
-A sétima interrogação é muito idêntica à sexta. Pedia-nos que criássemos uma lista ordenada com as perguntas mais respondidas, num dado intervalo de tempo.
+
+A resolução desta \textit{query} é em tudo identicâ à da \textit{query} anterior, à excepção do critério de ordenação usado no \textit{TreeSet}. Neste caso, o \textit{TreeSet} é populado apenas com perguntas, cuja ordem é estabelecida pelo número de respostas que estas obtiveram.
 
 \begin{lstlisting}
 	public List<Long> mostAnsweredQuestions(int N, LocalDate begin, LocalDate end);
@@ -290,55 +257,26 @@ A sétima interrogação é muito idêntica à sexta. Pedia-nos que criássemos 
 %% QUERY 8
 \subsection{Contains Word}
 
-O objetivo da oitava \textit{query} era, dada uma palavra, devolver uma lista com os IDs das N perguntas cujos títulos a contenham, ordenados por cronologia inversa.
-
-\begin{lstlisting}
-	public List<Long> containsWord(int N, String word);
-\end{lstlisting}
+Através das construções funcionais a resolução desta \textit{query} tornou-se bastante simples, e a sua leitura altamente simplificada em relação à implementação realizada em \textit{C}. Apenas foi preciso fazer \textit{stream} dos \textit{posts} e filtrar as perguntas cujo título continha a palavra passada como argumento. Para tal, usamos o método \textit{contains} presente em \textit{java.lang.String}. Novamente, limitamos o número de elementos na \textit{stream} ao tamanho que foi passado como argumento e colecionamos o resultado.
 
 
 
 %% QUERY 9
 \subsection{Both Participated}
 
-Nesta nona interrogação, tivemos o "desafio" de, dados os IDs de dois utilizadores, devolver as últimas N perguntas (cronologia inversa) em que participaram dois 
-utilizadores específicos. Estes podem interagir de três diferentes formas: um deles faz a pergunta e o outro a resposta (e vice-versa) e ambos responderem a uma mesma pergunta.
-
-\begin{lstlisting}
-	public List<Long> bothParticipated(int N, long id1, long id2);
-\end{lstlisting}
-
+De forma a chegar ao resultado correto, procedemos, tal como no projeto anterior, à evocação de um método auxiliar sobre a coleção de \textit{posts} de ambos os utilizadores passados como argumento. Esse método troca todas as ocorrências de respostas pelas respetivas perguntas. Deste modo, é nos possivel intercetar os \textit{posts} em que ambos particaparam recorrendo simplesmente ao método \textit{retainAll}. Para finalizar, colecionamos, no máximo, os N \textit{ID's} de \textit{posts} que estes tenham em comum.
 
 %% QUERY 10
 \subsection{Better Answer}
 
-A décima interrogação pedia que, dada uma determinada pergunta, obtivéssemos a melhor resposta, através da seguinte função de média ponderada:
+Nesta \textit{query} recorremos novamente à utilização de um \textit{TreeSet} como estrutura de ordenação, inserido os candidatos a resposta aquando do fecho de uma \textit{stream} de todos os \textit{posts}, filtrada para conter apenas as respostas à pergunta cujo \textit{ID} foi passado como argumento. No caso de essa pergunta não existir ou não ter resposta são lançadas as devidas exceções. Caso contrário é retornado o \textit{ID} do primeiro elemento da árvore.
 
-\begin{verbatim}
-	(score*0.45) + (reputation*0.25) + (votes*0.2) + (comments*0.1)
-\end{verbatim}
-
-\begin{lstlisting}
-	public long betterAnswer(long id);
-\end{lstlisting}
-
-Ora, como a diferença entre os \textit{UpVotes} e os \textit{DownVotes} é igual ao Score, decidimos não utilizar o ficheiro Votes.xml e utilizar o Score presente no 
-ficheiro dos Posts. Os restantes parâmetros encontram-se guardados na estrutura por nós definida após ser executado o \textit{load}.
-
-Para conseguirmos responder ao que nos foi pedido, tivemos de verificar se o ID do Post dado correspondia a uma pergunta e, se assim fosse, iterar a árvore dos Posts 
-para verificar quais são respostas para essa pergunta e selecionar, então, a resposta com a maior pontuação, calculada pela média acima referida.
 
 
 %% QUERY 11
 \subsection{Most Used Best Rep}
 
-Nesta décima primeira (e última) \textit{query}, era pretendido que, dado um intervalo arbitrário de tempo, fosse possível obter os IDs das N \textit{tags} mais 
-utilizadas pelos N utilizadores com melhor reputação.
-
-\begin{lstlisting}
-	public List<Long> mostUsedBestRep(int N, LocalDate begin, LocalDate end);
-\end{lstlisting}
-
+A abordagem à décima primeira (e última) \textit{query} pode-se dividir em três fases. Numa primeira fase, é montada uma lista com todas as \textit{tags} usadas no intervalo de tempo em causa (incluindo repetições, dado que é fundamental para o próximo passo). De seguida é criado um \textit{Map} cujas chaves correspondem ao \textit{ID} de uma \textit{tag} e o valor ao número de ocorrências da mesma. Esta tarefa foi bastante simplicada fazendo uso dos métodos \textit{groupingBy} e \textit{couting} presentes em  \textit{java.util.stream.Collectors}. 
 
 
 
