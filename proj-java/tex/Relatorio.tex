@@ -91,7 +91,7 @@
 
 \section{Introdução}
 
-No âmbito da unidade curricular \underline{Laboratórios de Informática III}, do 2º ano do Mestrado Integrado em Engenharia Informática, foi-nos proposta a realização de 
+No âmbito da unidade curricular \underline{Laboratórios de Informática III}, do 2º ano do Mestrado Integrado em Engenharia Informática, foi-nos proposta a realização de
 um projeto que consiste no desenvolvimento de um sistema capaz de processar ficheiros XML, armazenando as várias informações utilizadas pelo Stack Overflow (uma das 
 comunidades de perguntas e respostas mais utilizadas atualmente por programadores em todo o mundo). Além disso, após o tratamento da informação, o sistema teria de ser capaz 
 de responder eficientemente a um conjunto de interrogações (explicitado na secção \ref{queries}). Esta aplicação teria que ser obrigatoriamente desenvolvida em \textit{Java}.
@@ -197,17 +197,21 @@ um Post, foi criada a função \textit{getPost}, cuja execução se divide nas d
 \section{Interrogações e Abordagem}
 
 \label{queries}
-Nesta secção, iremos explicitar a nossa abordagem às interrogações descritas no enunciado, deste vez na linguagem Java, mostrando algumas partes do código que 
-achamos importante incluir de forma a facilitar a justificação da abordagem referida.
+Nesta secção, iremos explicitar a nossa abordagem às interrogações descritas no enunciado,
+desta vez na linguagem \textit{Java}, mostrando algumas partes do código que
+achamos importante incluir, de forma a facilitar a justificação da abordagem referida.
 
-%% FALAR DO STAX NA LOAD !-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!
+
+A primeira funcionalidade da aplicação que tivemos que implementar foi o carregamento dos dados a partir dos ficheiros XML. Para tal, assumimos uma abordagem diferente daquela que apresentamos aquando da primeira fase do Projeto em \textit{C}. Isto porque, em vez de carregarmos os documentos todos para a memória, o que seria uma má implementação para ficheiros de grande tamanho, decidimos utilizar a API do Java que permite este carregamento, mas de uma maneira faseada, ou seja, por blocos. A API utilizada foi, portanto, o \texttt{StAX} (\textit{Streaming API for XML}), que permite parsing de ficheiros XML através de \textit{streaming}. Preferimos o \texttt{StAX} face ao \texttt{SAX} pela facilidade de utilização do primeiro.
+
+Assim sendo, utilizando esta API, fizemos o carregamento dos dados presentes no ficheiros XML para as nossas estruturas, de forma a podermos responder às várias \textit{queries} apresentadas.
 
 
 %% QUERY 1
 \subsection{Info From Post}
 
-A primeira interrogação tinha como objetivo definir uma função que retornasse o título e o nome do autor dado um ID de um Post. Se o Post for uma resposta, a função 
-deverá retornar informações (título e utilizador) da pergunta correspondente.
+A primeira interrogação tinha como objetivo definir uma função que retornasse o título e o nome do autor dado um ID de um Post.
+Se o Post for uma resposta, a função deverá retornar informações (título e utilizador) da pergunta correspondente.
 
 \begin{lstlisting}
 	public Pair<String,String> infoFromPost(long id);
@@ -367,15 +371,40 @@ utilizadas pelos N utilizadores com melhor reputação.
 
 
 
-\subsection{Comparação do resultados}
+\subsection{Comparação dos Resultados}
 
-%% COMPARAÇÃO LOADS !-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!
-
-
-%% COMPARAÇÃO QUERIES UBUNTU !-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!-!
+De forma a ser mais fácil comparar os resultados obtidos com as nossas abordagens em \textit{C} e \textit{Java},
+desenvolvemos os gráficos \ref{graphLoad}, \ref{graphQs1} e \ref{graphQs2}, que representam os tempos de execução do carregamento dos dados (\texttt{load}) e das \textit{queries} (um gráfico para cada \textit{input}, respetivamente.
 
 
+Como podemos ver pelo gráfico \ref{graphLoad}, os tempos de execução do \texttt{load} do \textit{Java} são inferiores aos do \textit{C}, sendo que esta diferença é mais díspar quando executamos o carregamento do \textit{dump} do Ubuntu. Podemos observar que os tempos do Java para o Android e Ubuntu são de 2 segundos e 12 segundos, respetivamente, enquanto que os do C são, para os mesmos \textit{dumps}, de 3 e 19 segundos.
 
+Os gráficos \ref{graphQs1} e \ref{graphQs2} mostram-nos o seguinte:
+\begin{itemize}
+\item Na \textit{Query} 1, na \textit{Query} 5 e na \textit{Query} 9, ambos os tempos de execução da aplicação em C e Java são muito reduzidos, quando comparados com os resultados das outras interrogações.
+\item As \textit{Queries} 2 e 11, são as únicas interrogações onde o tempo de execução em Java é superior ao tempo de execução em C em cerca de 50 milissegundos. No input 1, podemos verificar também um ligeiro aumento do tempo da aplicação em Java perante o tempo daquela em C.
+\item Os tempos de execução das restantes \textit{Queries} mostram que o desempenho da aplicação em Java é bastante superior à em C, diferença esta mais denotada nas interrogações 4, 8 e 10. Os resultados dos dois inputs divergem, sendo que os tempos em C são imensamente maiores no segundo input, enquanto que os tempos em Java se mantêm.
+\end{itemize}
+
+\begin{figure}[h]
+\centering
+\includegraphics[scale=.5]{loads.png}
+\caption{Tempos de Execução - Load \label{graphLoad}}
+\end{figure}
+
+\begin{figure}[h] 
+\centering
+\includegraphics[scale=.5]{input_1.png}
+\caption{Tempos de Execução - Queries (Input 1) \label{graphQs1}}
+\end{figure}
+
+\begin{figure}[h] 
+\centering
+\includegraphics[scale=.5]{input_2.png}
+\caption{Tempos de Execução - Queries (Input 2) \label{graphQs2}}
+\end{figure}
+
+\newpage
 %% CONCLUSÃO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusão}
 
@@ -388,12 +417,16 @@ Tivemos que nos esforçar bastante para conseguirmos atingir os objetivos estabe
 permitiu-nos também aprender a desenvolver as estruturas de que precisamos, consoante as dificuldades, exigências e necessidades que nos foram sendo impostas com o 
 desenrolar do projeto.
 
-Os resultados que obtivemos, ao correr o programa, foram iguais aos dos testes fornecidos pelos docentes, pelo que podemos concluir que a nossa implementação está correta. 
-Além disso, achamos que cumprimos o objetivo de criar um programa eficiente, visto que os tempos que obtivemos para cada interrogação, utilizando os \textit{dumps} do 
+Os resultados que obtivemos, ao correr o programa, foram iguais aos dos testes fornecidos pelos docentes,
+pelo que podemos concluir que a nossa implementação está correta.
+Além disso, achamos que cumprimos o objetivo de criar um programa eficiente,
+visto que os tempos que obtivemos para cada interrogação, utilizando os \textit{dumps} do
 Ubuntu e os mesmos parâmetros utilizados pelos professores nos testes, foram os seguintes (aproximadamente):
 
 
-Em suma, tendo em conta a eficiência e os resultados que obtivemos, podemos concluir que conseguimos atingir as metas propostas com este projeto, dado que os tempos de 
-execução, tanto do \textit{load} como das interrogações, foram bastante positivos. Com os \textit{getters} e \textit{setters} por nós definidos para as nossas estruturas, 
+Em suma, tendo em conta a eficiência e os resultados que obtivemos, podemos concluir
+que conseguimos atingir as metas propostas com este projeto, dado que os tempos de
+execução, tanto do \textit{load} como das interrogações, foram bastante positivos.
+Com os \textit{getters} e \textit{setters} por nós definidos para as nossas estruturas,
 conseguimos sempre, com a modulação e separação dos ficheiros que fizemos, respeitar o encapsulamento da informação.
 \end{document}
