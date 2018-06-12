@@ -4,6 +4,7 @@ import common.MyLog;
 import common.Pair;
 
 import javax.xml.stream.XMLStreamException;
+import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -39,23 +40,14 @@ public class Controller {
     }
 
     private void loadMenu(){
-        int opcao;
         long before, after;
-        String path = null;
-        do {
+        String path="";
+        while(path.equals("")) {
             Menu.printSeparador();
-            Menu.showLoadMenuOps();
-            opcao = Menu.readOp();
-            switch(opcao){ // Dump ao nivel da pasta proj-java
-                case 0: break;
+            path = Menu.getDumpPath();
+        }
 
-                case 1: path = "../../dumpexemplo/android/"; break;
-
-                case 2: path = "../../dumpexemplo/ubuntu/"; break;
-            }
-        } while(opcao < 0 || opcao > 2);
-
-        if(opcao!=0) {
+        if(!path.equals("")) {
             try {
                 before = System.currentTimeMillis();
                 qe.load(path);
@@ -63,7 +55,8 @@ public class Controller {
                 logtime.writeLog("LOAD -> " + (after - before) + " ms");
                 Menu.printTempo(after - before); // PRINT TEMPO
                 execQueriesMenu();
-            } catch (XMLStreamException e) {
+            }
+            catch (LoadDataErrorException e) {
                 System.out.println("Erro ao carregar os dados");
             }
         }

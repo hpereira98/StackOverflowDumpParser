@@ -172,6 +172,17 @@ public class Menu implements Serializable {
         return res;
     }
 
+    public static String getDumpPath(){ //tipo 0: tag para as query4; tipo 1: palavra para a Query8
+        Scanner sc = new Scanner(System.in);
+        String path ="";
+        System.out.println("Insira o Path do Dump a carregar: ");
+
+        while(path.equals(""))
+            path=sc.nextLine();
+
+        return path;
+    }
+
     private static void holdResultDisplay(){
         Scanner sc = new Scanner(System.in);
         System.out.println("0 - Retroceder");
