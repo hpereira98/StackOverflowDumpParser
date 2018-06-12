@@ -71,11 +71,14 @@ public class Tag{
      * Método que transforma uma Tag em String
      * @return String relativa à Tag
      */
-    public String toString() {
-        return "src.main.java.engine.Tag{" +
-                "nome='" + nome + '\'' +
-                ", id=" + id +
-                '}';
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("TAG: \n");
+        sb.append("ID: "); sb.append(id); sb.append("\n");
+        sb.append("Nome: "); sb.append(nome); sb.append("\n");
+
+        return sb.toString();
     }
 
 

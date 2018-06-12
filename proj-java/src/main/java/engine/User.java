@@ -153,15 +153,18 @@ public class User {
      * Método que transforma um User em String
      * @return String relativa ao User
      */
-    public String toString() {
-        return "src.main.java.engine.User{" +
-                "id=" + id +
-                ", display_name='" + display_name + '\'' +
-                ", n_posts=" + n_posts +
-                ", reputacao=" + reputacao +
-                ", short_bio='" + short_bio + '\'' +
-                ", user_posts=" + user_posts.toString() +
-                '}';
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("USER: \n");
+        sb.append("ID: "); sb.append(id); sb.append("\n");
+        sb.append("Display Name: "); sb.append(display_name); sb.append("\n");
+        sb.append("Número de Posts: "); sb.append(n_posts); sb.append("\n");
+        sb.append("Reputação: "); sb.append(reputacao); sb.append("\n");
+        sb.append("Short Bio: "); sb.append(short_bio); sb.append("\n");
+        sb.append("User Posts: "); sb.append(user_posts); sb.append("\n");
+
+        return sb.toString();
     }
 
 

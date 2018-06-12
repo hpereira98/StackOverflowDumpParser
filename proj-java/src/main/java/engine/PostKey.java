@@ -69,6 +69,20 @@ public class PostKey implements Comparable<PostKey>{
     }
 
     /**
+     * Método que transforma um PostKey em String
+     * @return String relativa ao PostKey
+     */
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("POSTKEY: \n");
+        sb.append("ID: "); sb.append(id); sb.append("\n");
+        sb.append("Data: "); sb.append(data); sb.append("\n");
+
+        return sb.toString();
+    }
+
+    /**
      * Clone da classe PostKey
      * @return PostKey igual
      */
