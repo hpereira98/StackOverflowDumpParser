@@ -40,29 +40,41 @@ public class Menu implements Serializable {
         System.out.println(time);
     }
 
-    public static void printParLong(Pair<Long,Long> par){
+    public static void printResultQ1(Pair<String,String> par){
         System.out.println("Resultado: ");
-        System.out.println(par.toString());
+        System.out.println("Nome do autor: " + par.getSnd());
+        System.out.println("Título do post: " + par.getFst());
+        holdResultDisplay();
     }
 
-    public static void printParString(Pair<String,String> par){
+    public static void printResultQ3(Pair<Long,Long> par){
         System.out.println("Resultado: ");
-        System.out.println(par.toString());
+        System.out.println("Número perguntas: " + par.getFst());
+        System.out.println("Número respostas: " + par.getSnd());
+        holdResultDisplay();
     }
 
     public static void printLongList (List<Long> list){
+        int i=1;
         System.out.println("Resultado: ");
-        System.out.println(list.toString());
+        for(Long id : list){
+            System.out.println((i++) + " - " + id);
+        }
+        holdResultDisplay();
     }
 
-    public static void printParStringList (Pair<String, List<Long>> par){
+    public static void printResultQ5 (Pair<String, List<Long>> par){
         System.out.println("Resultado: ");
-        System.out.println(par.toString());
+        System.out.println("Short Bio: " + par.getFst());
+        System.out.println("Últimos posts:");
+        printLongList(par.getSnd());
+        holdResultDisplay();
     }
 
-    public static void printLong (Long id){
+    public static void printResultQ10 (Long id){
         System.out.println("Resultado: ");
-        System.out.println(id);
+        System.out.println("Melhor resposta: " + id);
+        holdResultDisplay();
     }
 
     public static int readOp(){
@@ -159,6 +171,15 @@ public class Menu implements Serializable {
             res=sc.nextLine();
 
         return res;
+    }
+
+    private static void holdResultDisplay(){
+        Scanner sc = new Scanner(System.in);
+        System.out.println("0 - Recuar");
+        int opcao;
+        do{
+            opcao = sc.nextInt();
+        }while(opcao!=0);
     }
 
 }

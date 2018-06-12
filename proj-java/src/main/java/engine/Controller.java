@@ -41,44 +41,34 @@ public class Controller {
     private void loadMenu(){
         int opcao;
         long before, after;
+        String path = null;
         do {
             Menu.printSeparador();
             Menu.showLoadMenuOps();
             opcao = Menu.readOp();
-            switch(opcao){
+            switch(opcao){ // Dump ao nivel da pasta proj-java
                 case 0: break;
 
-                case 1: try {
-                        before = System.currentTimeMillis();
-                        // tem que ser o Utilizador a passar o dump que quer, se não encontrar dá uma exception
-                        qe.load("C:/Users/ASUS/Dropbox/MIEI/2º Ano/2º Semestre/Laboratórios de Informática III/Projeto/dumpexemplo/android"); // os paths assim?
-                        after = System.currentTimeMillis();
-                        logtime.writeLog("LOAD -> "+(after-before)+" ms");
-                        Menu.printTempo(after-before); // PRINT TEMPO
-                        }
-                        catch (XMLStreamException e){ // este print é feito no controlador ?
-                        System.out.println("Erro ao carregar os dados");
-                        }
-                        execQueriesMenu();
-                        break;
+                case 1: path = "../dumpexemplo/android/"; break;
 
-                case 2: try{
-                        before = System.currentTimeMillis();
-                        qe.load("../../../../../../dumpexemplo/ubuntu"); // os paths assim?
-                        after = System.currentTimeMillis();
-                        logtime.writeLog("LOAD -> "+(after-before)+" ms");
-                        Menu.printTempo(after-before); // PRINT TEMPO
-                        }
-                        catch (XMLStreamException e){ // este print é feito no controlador ?
-                        System.out.println("Erro ao carregar os dados");
-                        }
-                        catch(IndexOutOfBoundsException e){
-                        System.out.println("Deve passar o caminho do dump como argumento.");
-                        }
-                        execQueriesMenu();
-                        break;
+                case 2: path = "../dumpexemplo/ubuntu/"; break;
             }
-        } while(opcao!=0);
+        } while(opcao < 0 || opcao > 2);
+
+        if(opcao!=0) {
+            try {
+                before = System.currentTimeMillis();
+                qe.load(path);
+                after = System.currentTimeMillis();
+                logtime.writeLog("LOAD -> " + (after - before) + " ms");
+                Menu.printTempo(after - before); // PRINT TEMPO
+                execQueriesMenu();
+            } catch (XMLStreamException e) {
+                System.out.println("Erro ao carregar os dados");
+            }
+        }
+
+
     }
 
     private void execQueriesMenu(){
@@ -117,7 +107,7 @@ public class Controller {
             logtime.writeLog("Query 1: -> " + (after - before) + " ms");
             log.writeLog("Query1 -> " + q1);
             Menu.printTempo(after-before); // PRINT TEMPO
-            Menu.printParString(q1); // PRINT RESULT
+            Menu.printResultQ1(q1); // PRINT RESULT
         }
         catch (PostNotFoundException e){
             System.out.println("O post com ID: " + e.getMessage() + " não existe.");
@@ -149,7 +139,7 @@ public class Controller {
         logtime.writeLog("Query 3: -> " + (after - before) + " ms");
         log.writeLog("Query3 -> " + q3);
         Menu.printTempo(after-before); // PRINT TEMPO
-        Menu.printParLong(q3); // PRINT RESULT
+        Menu.printResultQ3(q3); // PRINT RESULT
     }
 
     private void handlerQuery4() {
@@ -181,7 +171,7 @@ public class Controller {
             logtime.writeLog("Query 5: -> " + (after - before) + " ms");
             log.writeLog("Query5 -> " + q5);
             Menu.printTempo(after-before); // PRINT TEMPO
-            Menu.printParStringList(q5); // PRINT RESULT
+            Menu.printResultQ5(q5); // PRINT RESULT
         }
         catch (UserNotFoundException e){
             System.out.println("O User com ID: " + e.getMessage() + " não existe.");
@@ -250,7 +240,7 @@ public class Controller {
             logtime.writeLog("Query 10: -> " + (after - before) + " ms");
             log.writeLog("Query10 -> " + q10);
             Menu.printTempo(after-before); // PRINT TEMPO
-            Menu.printLong(q10); // PRINT RESULT
+            Menu.printResultQ10(q10); // PRINT RESULT
         }
         catch (PostNotFoundException e){
             System.out.println("O post com ID: " + e.getMessage() + " não existe.");
