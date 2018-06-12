@@ -49,8 +49,8 @@ public class Menu implements Serializable {
 
     public static void printResultQ3(Pair<Long,Long> par){
         System.out.println("Resultado: ");
-        System.out.println("Número perguntas: " + par.getFst());
-        System.out.println("Número respostas: " + par.getSnd());
+        System.out.println("Número de perguntas: " + par.getFst());
+        System.out.println("Número de respostas: " + par.getSnd());
         holdResultDisplay();
     }
 
@@ -68,7 +68,6 @@ public class Menu implements Serializable {
         System.out.println("Short Bio: " + par.getFst());
         System.out.println("Últimos posts:");
         printLongList(par.getSnd());
-        holdResultDisplay();
     }
 
     public static void printResultQ10 (Long id){
@@ -173,9 +172,20 @@ public class Menu implements Serializable {
         return res;
     }
 
+    public static String getDumpPath(){ //tipo 0: tag para as query4; tipo 1: palavra para a Query8
+        Scanner sc = new Scanner(System.in);
+        String path ="";
+        System.out.println("Insira o Path do Dump a carregar: ");
+
+        while(path.equals(""))
+            path=sc.nextLine();
+
+        return path;
+    }
+
     private static void holdResultDisplay(){
         Scanner sc = new Scanner(System.in);
-        System.out.println("0 - Recuar");
+        System.out.println("0 - Retroceder");
         int opcao;
         do{
             opcao = sc.nextInt();

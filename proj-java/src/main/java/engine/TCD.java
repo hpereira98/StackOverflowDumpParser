@@ -22,179 +22,167 @@ public class TCD implements li3.TADCommunity {
 
     // PARSER USERS
 
-    private void loadUsers(String path) throws XMLStreamException {
+    private void loadUsers(String path) throws XMLStreamException, FileNotFoundException {
         XMLInputFactory input = XMLInputFactory.newInstance();
         XMLStreamReader reader = null;
 
-        try {
-            reader = input.createXMLStreamReader(new FileInputStream(path));
+        reader = input.createXMLStreamReader(new FileInputStream(path));
 
-            while (reader.hasNext()) {
-                int eventType = reader.next();
-                long id = -2;
-                String name = "";
-                int rep = 0;
-                String bio = "";
+        while (reader.hasNext()) {
+            int eventType = reader.next();
+            long id = -2;
+            String name = "";
+            int rep = 0;
+            String bio = "";
 
-                switch (eventType) {
-                    case XMLStreamReader.START_ELEMENT:
-                        String qName = reader.getName().getLocalPart();
-                        if (qName.equalsIgnoreCase("row")) {
-                            for (int i = 0; i < reader.getAttributeCount(); i++) {
-                                switch (reader.getAttributeLocalName(i)) {
-                                    case "Id":
-                                        id = Long.parseLong(reader.getAttributeValue(i));
-                                        break;
-                                    case "DisplayName":
-                                        name = reader.getAttributeValue(i);
-                                        break;
-                                    case "Reputation":
-                                        rep = Integer.parseInt(reader.getAttributeValue(i));
-                                        break;
-                                    case "AboutMe":
-                                        bio = (reader.getAttributeValue(i));
-                                        break;
-                                }
+            switch (eventType) {
+                case XMLStreamReader.START_ELEMENT:
+                    String qName = reader.getName().getLocalPart();
+                    if (qName.equalsIgnoreCase("row")) {
+                        for (int i = 0; i < reader.getAttributeCount(); i++) {
+                            switch (reader.getAttributeLocalName(i)) {
+                                case "Id":
+                                    id = Long.parseLong(reader.getAttributeValue(i));
+                                    break;
+                                case "DisplayName":
+                                    name = reader.getAttributeValue(i);
+                                    break;
+                                case "Reputation":
+                                    rep = Integer.parseInt(reader.getAttributeValue(i));
+                                    break;
+                                case "AboutMe":
+                                    bio = (reader.getAttributeValue(i));
+                                    break;
                             }
-                            User user = new User(id, name, 0, rep, bio, new TreeSet<>());
-                            users.put(id, user);
                         }
-                        break;
+                        User user = new User(id, name, 0, rep, bio, new TreeSet<>());
+                        users.put(id, user);
+                    }
+                    break;
 
                     case XMLStreamReader.END_ELEMENT:
                         break;
-                }
             }
-            reader.close();
-        } catch (FileNotFoundException e) {
-            System.out.println(e.getMessage());
         }
+        reader.close();
     }
 
     // PARSER POSTS
 
-    private void loadPosts(String path) throws XMLStreamException {
+    private void loadPosts(String path) throws XMLStreamException, FileNotFoundException {
         XMLInputFactory input = XMLInputFactory.newInstance();
         XMLStreamReader reader = null;
 
-        try {
-            reader = input.createXMLStreamReader(new FileInputStream(path));
+        reader = input.createXMLStreamReader(new FileInputStream(path));
 
-            while (reader.hasNext()) {
-                int eventType = reader.next();
-                long id = -2;
-                String titulo = "";
-                long owner_id = -2;
-                int type_id = -2;
-                long parent_id = -2;
-                LocalDateTime data = null;
-                String tags_str = "";
-                int score = 0;
-                int n_comments = 0;
-                int n_answers = 0;
+        while (reader.hasNext()) {
+            int eventType = reader.next();
+            long id = -2;
+            String titulo = "";
+            long owner_id = -2;
+            int type_id = -2;
+            long parent_id = -2;
+            LocalDateTime data = null;
+            String tags_str = "";
+            int score = 0;
+            int n_comments = 0;
+            int n_answers = 0;
 
-                switch (eventType) {
-                    case XMLStreamReader.START_ELEMENT:
-                        String qName = reader.getName().getLocalPart();
-                        if (qName.equalsIgnoreCase("row")) {
-                            for (int i = 0; i < reader.getAttributeCount(); i++) {
-                                switch (reader.getAttributeLocalName(i)) {
-                                    case "Id":
-                                        id = Long.parseLong(reader.getAttributeValue(i));
-                                        break;
-                                    case "Title":
-                                        titulo = reader.getAttributeValue(i);
-                                        break;
-                                    case "OwnerUserId":
-                                        owner_id = Long.parseLong(reader.getAttributeValue(i));
-                                        break;
-                                    case "PostTypeId":
-                                        type_id = Integer.parseInt(reader.getAttributeValue(i));
-                                        break;
-                                    case "ParentId":
-                                        parent_id = Long.parseLong(reader.getAttributeValue(i));
-                                        break;
-                                    case "CreationDate":
-                                        data = LocalDateTime.parse(reader.getAttributeValue(i));
-                                        break;
-                                    case "Tags":
-                                        tags_str = reader.getAttributeValue(i);
-                                        break;
-                                    case "Score":
-                                        score = Integer.parseInt(reader.getAttributeValue(i));
-                                        break;
-                                    case "CommentCount":
-                                        n_comments = Integer.parseInt(reader.getAttributeValue(i));
-                                        break;
-                                    case "AnswerCount":
-                                        n_answers = Integer.parseInt(reader.getAttributeValue(i));
-                                        break;
-                                }
-                            }
-                            PostKey key = new PostKey(data, id);
-                            Post post = new Post(id, titulo, owner_id, type_id, parent_id, data, tagsToList(tags_str), score, n_comments, n_answers);
-                            posts.put(key, post);
-
-                            postAux.put(id, data);
-
-                            User user = users.get(owner_id);
-                            if (user != null) {
-                                user.addPost(post);
+            switch (eventType) {
+                case XMLStreamReader.START_ELEMENT:
+                    String qName = reader.getName().getLocalPart();
+                    if (qName.equalsIgnoreCase("row")) {
+                        for (int i = 0; i < reader.getAttributeCount(); i++) {
+                            switch (reader.getAttributeLocalName(i)) {
+                                case "Id":
+                                    id = Long.parseLong(reader.getAttributeValue(i));
+                                    break;
+                                case "Title":
+                                    titulo = reader.getAttributeValue(i);
+                                    break;
+                                case "OwnerUserId":
+                                    owner_id = Long.parseLong(reader.getAttributeValue(i));
+                                    break;
+                                case "PostTypeId":
+                                    type_id = Integer.parseInt(reader.getAttributeValue(i));
+                                    break;
+                                case "ParentId":
+                                    parent_id = Long.parseLong(reader.getAttributeValue(i));
+                                    break;
+                                case "CreationDate":
+                                    data = LocalDateTime.parse(reader.getAttributeValue(i));
+                                    break;
+                                case "Tags":
+                                    tags_str = reader.getAttributeValue(i);
+                                    break;
+                                case "Score":
+                                    score = Integer.parseInt(reader.getAttributeValue(i));
+                                    break;
+                                case "CommentCount":
+                                    n_comments = Integer.parseInt(reader.getAttributeValue(i));
+                                    break;
+                                case "AnswerCount":
+                                    n_answers = Integer.parseInt(reader.getAttributeValue(i));
+                                    break;
                             }
                         }
-                        break;
+                        PostKey key = new PostKey(data, id);
+                        Post post = new Post(id, titulo, owner_id, type_id, parent_id, data, tagsToList(tags_str), score, n_comments, n_answers);
+                        posts.put(key, post);
+
+                        postAux.put(id, data);
+
+                        User user = users.get(owner_id);
+                        if (user != null) {
+                            user.addPost(post);
+                        }
+                    }
+                    break;
 
                     case XMLStreamReader.END_ELEMENT:
                         break;
-                }
             }
-            reader.close();
-        } catch (FileNotFoundException e) {
-            System.out.println(e.getMessage());
         }
+        reader.close();
     }
 
     // PARSER TAGS
 
-    private void loadTags(String path) throws XMLStreamException {
+    private void loadTags(String path) throws XMLStreamException, FileNotFoundException {
         XMLInputFactory input = XMLInputFactory.newInstance();
         XMLStreamReader reader = null;
 
-        try {
-            reader = input.createXMLStreamReader(new FileInputStream(path));
+        reader = input.createXMLStreamReader(new FileInputStream(path));
 
-            while (reader.hasNext()) {
-                int eventType = reader.next();
-                long id = -2;
-                String name = "";
+        while (reader.hasNext()) {
+            int eventType = reader.next();
+            long id = -2;
+            String name = "";
 
-                switch (eventType) {
-                    case XMLStreamReader.START_ELEMENT:
-                        String qName = reader.getName().getLocalPart();
-                        if (qName.equalsIgnoreCase("row")) {
-                            for (int i = 0; i < reader.getAttributeCount(); i++) {
-                                switch (reader.getAttributeLocalName(i)) {
-                                    case "Id":
-                                        id = Long.parseLong(reader.getAttributeValue(i));
-                                        break;
-                                    case "TagName":
-                                        name = reader.getAttributeValue(i);
-                                        break;
-                                }
+            switch (eventType) {
+                case XMLStreamReader.START_ELEMENT:
+                    String qName = reader.getName().getLocalPart();
+                    if (qName.equalsIgnoreCase("row")) {
+                        for (int i = 0; i < reader.getAttributeCount(); i++) {
+                            switch (reader.getAttributeLocalName(i)) {
+                                case "Id":
+                                    id = Long.parseLong(reader.getAttributeValue(i));
+                                    break;
+                                case "TagName":
+                                    name = reader.getAttributeValue(i);
+                                    break;
                             }
-                            Tag tag = new Tag(name, id);
-                            tags.put(name, tag);
                         }
-                        break;
+                        Tag tag = new Tag(name, id);
+                        tags.put(name, tag);
+                    }
+                    break;
 
                     case XMLStreamReader.END_ELEMENT:
                         break;
-                }
             }
-            reader.close();
-        } catch (FileNotFoundException e) {
-            System.out.println(e.getMessage());
         }
+        reader.close();
     }
 
     // Separa tags de uma string e passa para ArrayList
@@ -326,10 +314,14 @@ public class TCD implements li3.TADCommunity {
     /* -------------------------------- DEFINIÇÃO DAS QUERIES --------------------------------*/
     // ****************** ver das exceptions
     // Load
-    public void load(String path) throws XMLStreamException {
-            loadUsers(path + "/Users.xml");
-            loadTags(path + "/Tags.xml");
-            loadPosts(path + "/Posts.xml");
+    public void load(String path) throws LoadDataErrorException {
+            try {
+                loadUsers(path + "/Users.xml");
+                loadTags(path + "/Tags.xml");
+                loadPosts(path + "/Posts.xml");
+            } catch (XMLStreamException | FileNotFoundException e) {
+                throw new LoadDataErrorException(e.getMessage());
+            }
     }
 
 

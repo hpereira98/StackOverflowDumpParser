@@ -3,14 +3,12 @@ package li3;
 import java.time.LocalDate;
 import java.util.List;
 import common.Pair;
-import engine.PostNotFoundException;
-import engine.QuestionWithoutAnswersException;
-import engine.TagNotFoundException;
-import engine.UserNotFoundException;
+import engine.*;
+
 import javax.xml.stream.XMLStreamException;
 
 public interface TADCommunity {
-    public void load(String dumpPath) throws XMLStreamException;
+    public void load(String dumpPath) throws LoadDataErrorException;
 
     // Query 1
     public Pair<String,String> infoFromPost(long id) throws PostNotFoundException, UserNotFoundException;
