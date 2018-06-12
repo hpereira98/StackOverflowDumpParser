@@ -220,22 +220,23 @@ public class Post implements Comparable<Post> {
      * Método que transforma um Post em String
      * @return String relativa ao Post
      */
-    public String toString() {
-        return "src.main.java.engine.Post{" +
-                "id=" + id +
-                ", titulo='" + titulo + '\'' +
-                ", owner_id=" + owner_id +
-                ", type_id=" + type_id +
-                ", parent_id=" + parent_id +
-                ", data='" + data + '\'' +
-                ", tags=" + tags.toString() +
-                ", score=" + score +
-                ", n_comments=" + n_comments +
-                ", n_answers=" + n_answers +
-                '}';
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("POST: \n");
+        sb.append("ID: "); sb.append(id); sb.append("\n");
+        sb.append("Titulo: "); sb.append(titulo); sb.append("\n");
+        sb.append("Owner ID: "); sb.append(owner_id); sb.append("\n");
+        sb.append("Type ID: "); sb.append(type_id); sb.append("\n");
+        sb.append("Parent ID: "); sb.append(parent_id); sb.append("\n");
+        sb.append("Data: "); sb.append(data); sb.append("\n");
+        sb.append("Tags: "); sb.append(tags); sb.append("\n");
+        sb.append("Score: "); sb.append(score); sb.append("\n");
+        sb.append("Número de Comentários: "); sb.append(n_comments); sb.append("\n");
+        sb.append("Número de Respostas: "); sb.append(n_answers); sb.append("\n");
+
+        return sb.toString();
     }
-
-
 
     // Construtores
 
@@ -297,6 +298,8 @@ public class Post implements Comparable<Post> {
         this.n_comments = outro.getNComments();
         this.n_answers = outro.getNAnswers();
     }
+
+
 
 
 }
