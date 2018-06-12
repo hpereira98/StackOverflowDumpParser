@@ -375,35 +375,30 @@ public class TCD implements li3.TADCommunity {
 
 
     // Query 3
-    // Arranjar esta versao e depois comparar em tempo com versao de stream e meterno relatorio seria interessante
-    /*
-    public Pair<Long,Long> totalPosts(LocalDate begin, LocalDate end) {
+/*
+    public Pair<Long, Long> totalPosts(LocalDate begin, LocalDate end) {
         long n_questions = 0, n_answers = 0;
+        int i;
+        Set<Map.Entry<PostKey, Post>> posts_entries = this.posts.entrySet();
 
-        Set<Map.Entry<LocalDate, Post>> posts_entries = this.posts.entrySet();
+        Iterator<Map.Entry<PostKey, Post>> it = posts_entries.iterator();
 
-        // Avança até à data do fim
-        for(int i = 0; i < posts_entries.size(); i++){
-            if(!posts_key.getKey(i).getData().isAfter(end)) break;
-        }
+        while(it.hasNext()){
+            Map.Entry<PostKey, Post> entry = it.next();
+            if(entry.getKey().getData().toLocalDate().isBefore(end)){
+                Post post = entry.getValue();
 
-        // Percorre as datas até ser antes do inicio
-        for(i = i; i < posts_entries.size(); i++){
-            if(posts_key.get(i).getData().isBefore(begin)) break;
-
-            Post post = posts_entries.getValue(i);
-
-            if(post.getTypeID() == 1) n_questions++;
-            else n_answers++;
-
+                if(post.getTypeID() == 1) n_questions++;
+                else n_answers++;
+            }
+            if(entry.getKey().getData().toLocalDate().isBefore(begin)) break;
         }
 
         return new Pair<Long, Long>(n_questions, n_answers);
-
     }
 */
     // Versao stream query 3
-    public Pair<Long,Long> totalPosts(LocalDate begin, LocalDate end){
+    public Pair<Long, Long> totalPosts(LocalDate begin, LocalDate end){
         long n_questions = 0, n_answers = 0;
 
         Map<Integer, List<Post>> posts_by_type = this.posts.values()
@@ -416,32 +411,33 @@ public class TCD implements li3.TADCommunity {
 
         return new Pair<>(n_questions, n_answers);
     }
-    // Query 4 -- fazer o mesmo que na 3
+
+
+    // Query 4
 /*
-    public List<Long> questionsWithTag(String tag, LocalDate begin, LocalDate end) {
+    public List<Long> questionsWithTag(String tag_name, LocalDate begin, LocalDate end) throws TagNotFoundException{
         Tag tag = getTag(tag_name);
         List<Long> r = new ArrayList<>();
+        Set<Map.Entry<PostKey, Post>> posts_entries = this.posts.entrySet();
 
-        Set<MapEntry<LocalDate, Post>> posts_entries = this.posts.entrySet();
+        Iterator<Map.Entry<PostKey, Post>> it = posts_entries.iterator();
 
-        // Avança até à data do fim
-        for(int i = 0; i < posts_entries.size(); i++){
-            if(!posts_key.getKey(i).getData().isAfter(end)) break;
-        }
+        while(it.hasNext()){
+            Map.Entry<PostKey, Post> entry = it.next();
+            if(entry.getKey().getData().toLocalDate().isBefore(end)){
+                Map.Entry<PostKey, Post> entry = it.next();
 
-        // Percorre as datas até ser antes do inicio
-        for(i = i; i < posts_entries.size(); i++){
-        if(posts_key.get(i).getData().isBefore(begin)) in_date = 0;
+                Post post = entry.getValue();
+                ArrayList<Tag> tags = post.getTags();
 
-        Post post = posts_entries.getValue(i);
-        ArrayList<Tag> tags = post.getTags();
-
-        tags.stream().filter(t -> t.getID() == tag.getID())
+                tags.stream().filter(t -> t.getID() == tag.getID())
                         .forEach(t -> r.add(t.getID()));
             }
+            if(entry.getKey().getData().toLocalDate().isBefore(begin)) break;
+        }
 
-         return r;
-}
+        return r;
+    }
 */
     //Query 4 - versao com stream
     public List<Long> questionsWithTag(String tag_name, LocalDate begin, LocalDate end) throws TagNotFoundException {
