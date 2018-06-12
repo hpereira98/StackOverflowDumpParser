@@ -108,31 +108,6 @@ public class TCD implements li3.TADCommunity {
     }
 
 
-    // Query 3
-/*
-    public Pair<Long, Long> totalPosts(LocalDate begin, LocalDate end) {
-        long n_questions = 0, n_answers = 0;
-        int i;
-        Set<Map.Entry<PostKey, Post>> posts_entries = this.posts.entrySet();
-
-        Iterator<Map.Entry<PostKey, Post>> it = posts_entries.iterator();
-
-        while(it.hasNext()){
-            Map.Entry<PostKey, Post> entry = it.next();
-            if(entry.getKey().getData().toLocalDate().isBefore(end)){
-                Post post = entry.getValue();
-
-                if(post.getTypeID() == 1) n_questions++;
-                else n_answers++;
-            }
-            if(entry.getKey().getData().toLocalDate().isBefore(begin)) break;
-        }
-
-        return new Pair<Long, Long>(n_questions, n_answers);
-    }*/
-
-    // Versao stream
-
     /**
      * Método que, dado um intervalo de tempo, conta quantas perguntas e quantas respostas foram feitas durante o mesmo.
      * @param begin
