@@ -1,5 +1,6 @@
 package engine;
 
+import common.MyLog;
 import common.Pair;
 
 import javax.xml.stream.XMLStreamException;
@@ -13,9 +14,13 @@ import java.util.Scanner;
 
 public class Controller {
     private li3.TADCommunity qe;
+    private MyLog log;
+    private  MyLog logtime;
 
     public Controller(){ // ver com o stor se esta correto e ver como é que faz print dos resultados !!!!!!!!!!!!!!!!!!!
         this.qe = new TCD();
+        this.log = new MyLog("results");
+        this.logtime = new MyLog("times");
     }
 
     public void start(){
@@ -25,24 +30,55 @@ public class Controller {
             Menu.printSeparador();
             Menu.showMainMenuOps();
             opcao = Menu.readOp();
-            Menu.printSeparador();
             switch(opcao){
-                case 0:  break;
-                case 1:  enteringQueriesMenu(); break;
+                case 0:  System.out.println("\nAté à próxima!"); break;
+                case 1:  loadMenu(); break;
                 default: System.out.println("Insira uma opção correta");
             }
         }while(opcao != 0);
     }
 
-    private void enteringQueriesMenu(){ // é melhor meter a dar as opcoes e nao o user a escrever o path
-        String path = Menu.getDumpPath();
-        try{
-            qe.load(path);
-        }
-        catch (XMLStreamException e){ // este print é feito no controlador ?
-            System.out.println("Erro ao carregar os dados");
-        }
-        execQueriesMenu();
+    private void loadMenu(){
+        int opcao;
+        long before, after;
+        do {
+            Menu.printSeparador();
+            Menu.showLoadMenuOps();
+            opcao = Menu.readOp();
+            switch(opcao){
+                case 0: break;
+
+                case 1: try {
+                        before = System.currentTimeMillis();
+                        // tem que ser o Utilizador a passar o dump que quer, se não encontrar dá uma exception
+                        qe.load("C:/Users/ASUS/Dropbox/MIEI/2º Ano/2º Semestre/Laboratórios de Informática III/Projeto/dumpexemplo/android"); // os paths assim?
+                        after = System.currentTimeMillis();
+                        logtime.writeLog("LOAD -> "+(after-before)+" ms");
+                        Menu.printTempo(after-before); // PRINT TEMPO
+                        }
+                        catch (XMLStreamException e){ // este print é feito no controlador ?
+                        System.out.println("Erro ao carregar os dados");
+                        }
+                        execQueriesMenu();
+                        break;
+
+                case 2: try{
+                        before = System.currentTimeMillis();
+                        qe.load("../../../../../../dumpexemplo/ubuntu"); // os paths assim?
+                        after = System.currentTimeMillis();
+                        logtime.writeLog("LOAD -> "+(after-before)+" ms");
+                        Menu.printTempo(after-before); // PRINT TEMPO
+                        }
+                        catch (XMLStreamException e){ // este print é feito no controlador ?
+                        System.out.println("Erro ao carregar os dados");
+                        }
+                        catch(IndexOutOfBoundsException e){
+                        System.out.println("Deve passar o caminho do dump como argumento.");
+                        }
+                        execQueriesMenu();
+                        break;
+            }
+        } while(opcao!=0);
     }
 
     private void execQueriesMenu(){
@@ -76,9 +112,12 @@ public class Controller {
         long id = Menu.getID();
         try{
             before = System.currentTimeMillis();
-            common.Pair<String, String> q1 = qe.infoFromPost(id);
+            Pair<String, String> q1 = qe.infoFromPost(id);
             after = System.currentTimeMillis();
-            //falta parte de escrita no log
+            logtime.writeLog("Query 1: -> " + (after - before) + " ms");
+            log.writeLog("Query1 -> " + q1);
+            Menu.printTempo(after-before); // PRINT TEMPO
+            Menu.printParString(q1); // PRINT RESULT
         }
         catch (PostNotFoundException e){
             System.out.println("O post com ID: " + e.getMessage() + " não existe.");
@@ -94,26 +133,38 @@ public class Controller {
         long before = System.currentTimeMillis();
         List<Long> q2 = qe.topMostActive(n);
         long after = System.currentTimeMillis();
+        logtime.writeLog("Query 2: -> " + (after - before) + " ms");
+        log.writeLog("Query2 -> " + q2);
+        Menu.printTempo(after-before); // PRINT TEMPO
+        Menu.printLongList(q2); // PRINT RESULT
     }
 
     private void handlerQuery3() {
-        LocalDate begin = Menu.getData();
-        LocalDate end = Menu.getData();
+        LocalDate begin = Menu.getData(0);
+        LocalDate end = Menu.getData(1);
 
         long before = System.currentTimeMillis();
         Pair<Long,Long> q3 = qe.totalPosts(begin, end);
         long after = System.currentTimeMillis();
+        logtime.writeLog("Query 3: -> " + (after - before) + " ms");
+        log.writeLog("Query3 -> " + q3);
+        Menu.printTempo(after-before); // PRINT TEMPO
+        Menu.printParLong(q3); // PRINT RESULT
     }
 
     private void handlerQuery4() {
-        String tag = Menu.getString();
-        LocalDate begin = Menu.getData();
-        LocalDate end = Menu.getData();
+        String tag = Menu.getString(0);
+        LocalDate begin = Menu.getData(0);
+        LocalDate end = Menu.getData(1);
 
         try{
             long before = System.currentTimeMillis();
             List<Long> q4 = qe.questionsWithTag(tag, begin, end);
             long after = System.currentTimeMillis();
+            logtime.writeLog("Query 4: -> " + (after - before) + " ms");
+            log.writeLog("Query4 -> " + q4);
+            Menu.printTempo(after-before); // PRINT TEMPO
+            Menu.printLongList(q4); // PRINT RESULT
         }
         catch (TagNotFoundException e){
             System.out.println("Tag " + e.getMessage() + " não existe");
@@ -127,6 +178,10 @@ public class Controller {
             long before = System.currentTimeMillis();
             Pair<String, List<Long>> q5 = qe.getUserInfo(id);
             long after = System.currentTimeMillis();
+            logtime.writeLog("Query 5: -> " + (after - before) + " ms");
+            log.writeLog("Query5 -> " + q5);
+            Menu.printTempo(after-before); // PRINT TEMPO
+            Menu.printParStringList(q5); // PRINT RESULT
         }
         catch (UserNotFoundException e){
             System.out.println("O User com ID: " + e.getMessage() + " não existe.");
@@ -135,8 +190,8 @@ public class Controller {
 
     private void handlerQuery6_7(int query) {
         List<Long> result;
-        LocalDate begin = Menu.getData();
-        LocalDate end = Menu.getData();
+        LocalDate begin = Menu.getData(0);
+        LocalDate end = Menu.getData(1);
         int n = Menu.getN();
 
         long before = System.currentTimeMillis();
@@ -146,15 +201,23 @@ public class Controller {
             result = qe.mostAnsweredQuestions(n, begin, end);
 
         long after = System.currentTimeMillis();
+        logtime.writeLog("Query "+query+": -> " + (after - before) + " ms");
+        log.writeLog("Query"+query+" -> " + qe);
+        Menu.printTempo(after-before); // PRINT TEMPO
+        Menu.printLongList(result); // PRINT RESULT
     }
 
     private void handlerQuery8() {
         int n = Menu.getN();
-        String word = Menu.getString();
+        String word = Menu.getString(1);
 
         long before = System.currentTimeMillis();
         List<Long> q8 = qe.containsWord(n, word);
         long after = System.currentTimeMillis();
+        logtime.writeLog("Query 8: -> " + (after - before) + " ms");
+        log.writeLog("Query8 -> " + q8);
+        Menu.printTempo(after-before); // PRINT TEMPO
+        Menu.printLongList(q8); // PRINT RESULT
     }
 
 
@@ -167,6 +230,10 @@ public class Controller {
             long before = System.currentTimeMillis();
             List<Long> q9 = qe.bothParticipated(n, id1, id2);
             long after = System.currentTimeMillis();
+            logtime.writeLog("Query 9: -> " + (after - before) + " ms");
+            log.writeLog("Query9 -> " + q9);
+            Menu.printTempo(after-before); // PRINT TEMPO
+            Menu.printLongList(q9); // PRINT RESULT
         }
         catch (UserNotFoundException e){
             System.out.println("O User com ID: " + e.getMessage() + " não existe.");
@@ -180,6 +247,10 @@ public class Controller {
             long before = System.currentTimeMillis();
             long q10 = qe.betterAnswer(id);
             long after = System.currentTimeMillis();
+            logtime.writeLog("Query 10: -> " + (after - before) + " ms");
+            log.writeLog("Query10 -> " + q10);
+            Menu.printTempo(after-before); // PRINT TEMPO
+            Menu.printLong(q10); // PRINT RESULT
         }
         catch (PostNotFoundException e){
             System.out.println("O post com ID: " + e.getMessage() + " não existe.");
@@ -191,16 +262,16 @@ public class Controller {
 
     private void handlerQuery11(){
         int n = Menu.getN();
-        LocalDate begin = Menu.getData();
-        LocalDate end = Menu.getData();
+        LocalDate begin = Menu.getData(0);
+        LocalDate end = Menu.getData(1);
 
         long before = System.currentTimeMillis();
         List<Long> q11 = qe.mostUsedBestRep(n, begin, end);
         long after = System.currentTimeMillis();
+        logtime.writeLog("Query 11: -> " + (after - before) + " ms");
+        log.writeLog("Query11 -> " + q11);
+        Menu.printTempo(after-before); // PRINT TEMPO
+        Menu.printLongList(q11); // PRINT RESULT
     }
-
-
-
-
 
 }

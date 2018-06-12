@@ -1,16 +1,25 @@
 package engine;
 
+import common.Pair;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
+import java.util.List;
 import java.util.Scanner;
 
 public class Menu implements Serializable {
 
     private static String[][] operacoes = {
                 {//Menu inicial
-                 "1 - Load Data",
-                 "0 - Exit"},
+                 "1 - Load",
+                 "0 - Sair"},
+                {//Menu Load
+                 "1 - Android Dump",
+                 "2 - Ubuntu Dump",
+                 "0 - Retroceder"},
                 {//Menu queries
                  "1 - Info From Post",
                  "2 - Top Most Active",
@@ -23,15 +32,45 @@ public class Menu implements Serializable {
                  "9 - Both Participated",
                  "10 - Better Answer",
                  "11 - Most Used Best Rep",
-                 "0 - Back"}
+                 "0 - Retroceder"}
     };
 
+    public static void printTempo(long time) {
+        System.out.println("Tempo em ms: ");
+        System.out.println(time);
+    }
+
+    public static void printParLong(Pair<Long,Long> par){
+        System.out.println("Resultado: ");
+        System.out.println(par.toString());
+    }
+
+    public static void printParString(Pair<String,String> par){
+        System.out.println("Resultado: ");
+        System.out.println(par.toString());
+    }
+
+    public static void printLongList (List<Long> list){
+        System.out.println("Resultado: ");
+        System.out.println(list.toString());
+    }
+
+    public static void printParStringList (Pair<String, List<Long>> par){
+        System.out.println("Resultado: ");
+        System.out.println(par.toString());
+    }
+
+    public static void printLong (Long id){
+        System.out.println("Resultado: ");
+        System.out.println(id);
+    }
+
     public static int readOp(){
-        int op;
+        int op=-1;
         Scanner sc = new Scanner(System.in);
         System.out.println("Operação a realizar: ");
-        op = sc.nextInt();
-        sc.close();
+        while(op == -1)
+            op = sc.nextInt();
         return op;
     }
 
@@ -44,21 +83,14 @@ public class Menu implements Serializable {
             System.out.println(op);
     }
 
-    public static void showQueriesMenuOps(){
+    public static void showLoadMenuOps(){
         for(String op : operacoes[1])
             System.out.println(op);
     }
 
-
-    public static String getDumpPath(){
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Insira o path do dump a carregar: ");
-        String path = "";
-
-        while(path.equals(""))
-            path=sc.nextLine();
-
-        return path;
+    public static void showQueriesMenuOps(){
+        for(String op : operacoes[2])
+            System.out.println(op);
     }
 
     public static long getID(){
@@ -87,25 +119,41 @@ public class Menu implements Serializable {
         return n;
     }
 
-    public static LocalDate getData(){
+    private static boolean isDate(String string){
+            LocalDate data = null;
+            DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("uuuu-MM-dd").withResolverStyle(ResolverStyle.STRICT);;
+            try {
+                data = LocalDate.parse(string, dateFormat);
+                return true;
+            }
+            catch (DateTimeParseException e) {
+                return false;
+            }
+    }
+
+    public static LocalDate getData(int tipo){ //tipo 0: begin date, tipo 1: end date
         Scanner sc = new Scanner(System.in);
-        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("YYYY-MM-dd");
         String aux="";
         LocalDate data = null;
-        while(aux.equals("") && data==null) {
+        boolean flag = false;
+
+        if (tipo==0) System.out.println("Insira a data de início: (YYYY-MM-dd)");
+        else System.out.println("Insira a data de fim: (YYYY-MM-dd)");
+
+        while(aux.equals("") || !flag) {
             aux = sc.nextLine();
-            try {
-                data= LocalDate.parse(aux,dateFormat);
-            } catch (Exception e) {
-                System.out.println("Insira a data num formato correto");
-            }
+            flag=isDate(aux);
+            if (!flag) System.out.println("Insira uma data válida");
         }
+        data = LocalDate.parse(aux);
         return data;
     }
 
-    public static String getString(){
+    public static String getString(int tipo){ //tipo 0: tag para as query4; tipo 1: palavra para a Query8
         Scanner sc = new Scanner(System.in);
         String res ="";
+        if(tipo==1) System.out.println("Insira a palavra: ");
+        else System.out.println("Insira a Tag: ");
 
         while(res.equals(""))
             res=sc.nextLine();
