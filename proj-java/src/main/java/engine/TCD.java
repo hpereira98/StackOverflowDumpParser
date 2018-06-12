@@ -6,7 +6,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.nio.file.attribute.UserPrincipalNotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -608,7 +607,7 @@ public class TCD implements li3.TADCommunity {
     // Função para ver se uma data pertence a um dado intervalo de datas
 
     private static boolean isBetween(LocalDate to_check, LocalDate begin, LocalDate end) {
-        return to_check.isAfter(begin) && to_check.isBefore(end);
+        return ((to_check.isAfter(begin) && to_check.isBefore(end)) || to_check.equals(begin) || to_check.equals(end));
     }
 
     private Post getPost(long id) throws PostNotFoundException {

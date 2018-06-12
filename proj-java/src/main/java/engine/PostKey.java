@@ -64,7 +64,7 @@ public class PostKey implements Comparable<PostKey>{
     // COMPARATOR
 
     public int compareTo(PostKey pK) {
-        long test = this.getData().compareTo(pK.getData());
+        long test = pK.getData().compareTo(this.getData());
         if (test==0) test=this.getID() - pK.getID();
         return (int) test;
     }

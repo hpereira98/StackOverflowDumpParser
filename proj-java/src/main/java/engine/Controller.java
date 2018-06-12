@@ -49,9 +49,9 @@ public class Controller {
             switch(opcao){ // Dump ao nivel da pasta proj-java
                 case 0: break;
 
-                case 1: path = "../dumpexemplo/android/"; break;
+                case 1: path = "../../dumpexemplo/android/"; break;
 
-                case 2: path = "../dumpexemplo/ubuntu/"; break;
+                case 2: path = "../../dumpexemplo/ubuntu/"; break;
             }
         } while(opcao < 0 || opcao > 2);
 
