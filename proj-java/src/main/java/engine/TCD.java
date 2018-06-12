@@ -215,7 +215,6 @@ public class TCD implements li3.TADCommunity {
     public Pair<String, List<Long>> getUserInfo(long id) throws UserNotFoundException{
         User user = getUser(id);
 
-        // estes posts já vão estar por data nao é, Pedro? acho que sugeriste isso
         List<Long> ids = user.getUserPosts().stream()
                                             .limit(10)
                                             .map(Post::getID)
@@ -399,7 +398,14 @@ public class TCD implements li3.TADCommunity {
     }
 
     public void clear() {
-
+        this.users.clear();
+        this.posts.clear();
+        this.postAux.clear();
+        this.tags.clear();
+        this.users = null;
+        this.posts = null;
+        this.postAux = null;
+        this.tags = null;
     }
 
     /* -------------------------------- Funções e métodos auxiliares às queries -------------------------------- */
@@ -682,9 +688,9 @@ public class TCD implements li3.TADCommunity {
         List<Post> respostas = posts.stream().filter(p -> p.getTypeID()==2)
                 .collect(Collectors.toList());
 
-        posts.removeAll(respostas); // remover todas as respostas do set
+        posts.removeAll(respostas);
 
-        for(Post r : respostas){ // procurar a pergunta para a qual a resposta foi dada e colocar no set
+        for(Post r : respostas){
             Long parent_id = r.getParentID();
             LocalDateTime data = this.postAux.get(parent_id);
             if(data != null){

@@ -116,7 +116,7 @@ public class User {
      * Setter dos posts que o User fez
      * @param user_posts novos posts
      */
-    public void setUserPosts(Set<Post> user_posts) { this.user_posts = user_posts; }
+    public void setUserPosts(Set<Post> user_posts) { this.user_posts = new TreeSet<>(user_posts); }
 
 
 

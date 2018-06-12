@@ -66,13 +66,6 @@ public class Post implements Comparable<Post> {
         return this.owner_id;
     }
 
-    /**
-     * Setter do ID do autor do Post
-     * @param owner_id novo ID do autor
-     */
-    public void setOwnerID(long owner_id) {
-        this.owner_id = owner_id;
-    }
 
     /**
      * Getter do ID do tipo de Post
@@ -126,8 +119,8 @@ public class Post implements Comparable<Post> {
      * Getter da lista das tags do Post
      * @return lista das tags
      */
-    public List<Tag> getTags() { // FIXME: 21-05-2018
-        return this.tags;
+    public List<Tag> getTags() { //
+        return new ArrayList<>(this.tags);
     }
 
     /**
@@ -135,7 +128,7 @@ public class Post implements Comparable<Post> {
      * @param tags nova lista de tags
      */
     public void setTags(List<Tag> tags) {
-        this.tags = tags;
+        this.tags = new ArrayList<>(tags);
     }
 
     /**

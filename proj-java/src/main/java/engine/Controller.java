@@ -39,7 +39,12 @@ public class Controller {
             menu.showMainMenuOps();
             opcao = Menu.readOp();
             switch(opcao){
-                case 0:  System.out.println("\nAté à próxima!"); break;
+                case 0:  long before = System.currentTimeMillis();
+                         qe.clear();
+                         long after = System.currentTimeMillis();
+                         logtime.writeLog("CLEAR -> " + (after - before) + " ms");
+                         System.out.println("\nAté à próxima!");
+                         break;
                 case 1:  loadMenu(); break;
                 default: System.out.println("Insira uma opção correta"); break;
             }
