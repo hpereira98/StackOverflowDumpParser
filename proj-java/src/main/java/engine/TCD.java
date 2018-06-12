@@ -394,8 +394,7 @@ public class TCD implements li3.TADCommunity {
         }
 
         return new Pair<Long, Long>(n_questions, n_answers);
-    }
-*/
+    }*/
     // Versao stream query 3
     public Pair<Long, Long> totalPosts(LocalDate begin, LocalDate end){
         long n_questions = 0, n_answers = 0;
@@ -405,8 +404,10 @@ public class TCD implements li3.TADCommunity {
                                                            .filter(p -> isBetween(p.getData().toLocalDate(), begin, end))
                                                            .collect(Collectors.groupingBy(Post::getTypeID));
 
-        n_questions = posts_by_type.get(1).size();
-        n_answers = posts_by_type.get(2).size();
+        List<Post> questions = posts_by_type.get(1);
+        List<Post> answers = posts_by_type.get(2);
+        if(questions != null) n_questions = questions.size();
+        if(answers != null) n_answers = answers.size();
 
         return new Pair<>(n_questions, n_answers);
     }
@@ -483,7 +484,7 @@ public class TCD implements li3.TADCommunity {
     // Query 7
     public List<Long> mostAnsweredQuestions(int N, LocalDate begin, LocalDate end) {
         Set<Post> posts_by_n_answers = new TreeSet<>((p1, p2) -> {
-                                                                    if (p2.getScore() == p1.getScore())
+                                                                    if (p2.getNAnswers() == p1.getNAnswers())
                                                                         return Long.compare(p2.getID(), p1.getID());
                                                                     return p2.getNAnswers() - p1.getNAnswers();
                                                                   });
@@ -501,10 +502,10 @@ public class TCD implements li3.TADCommunity {
     // Query 8
     public List<Long> containsWord(int N, String word) {
         return this.posts.values().stream()
-                .filter(t -> t.getTypeID() == 1 && t.getTitulo().contains(word))
-                .limit(N)
-                .map(Post::getID)
-                .collect(Collectors.toList());
+                                  .filter(t -> t.getTypeID() == 1 && t.getTitulo().contains(word))
+                                  .limit(N)
+                                  .map(Post::getID)
+                                  .collect(Collectors.toList());
     }
 
     // Query 9
